@@ -15,8 +15,9 @@
             </RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel HorizontalAlignment="Left" Grid.ColumnSpan="2" Height="40">
+        <StackPanel HorizontalAlignment="Left" Grid.ColumnSpan="2" Height="40" Orientation="Horizontal" >
             <Button Content="Update" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click"></Button>
+            <TextBlock Text="{Binding Message}" Width="635" HorizontalAlignment="Right" Margin="5"></TextBlock>
         </StackPanel>
         <ListView Grid.Row="2" Width="Auto">
             

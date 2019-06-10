@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -18,92 +19,45 @@ using HtmlAgilityPack;
 
 namespace AllItEbooksCrawler
 {
-    public class ItEbook
+    public class MainWindowModel: INotifyPropertyChanged
     {
-        public int Id { get; set; }
-        public string Title { get; set; }
-        public int Year { get; set; }
-        public string Url { get; set; }
-        public string DownloadUrl { get; set; }
-        public string Authors { get; set; }
-        public string Summary { get; set; }
-        public string Category { get; set; }
-        public string ISBN { get; set; }
-        public int Pages { get; set; }
-    }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-    public static class Crawler
-    {
-        public static int PagesNum = 10;
-
-        public static int Delay = 500;
-
-        public async static void UpdateAllFromWeb()
+        protected virtual void OnPropertyChanged(string propertyName)
         {
-            HtmlDocument listPage = null;
-            HtmlWeb web = new HtmlWeb();
-            HtmlDocument detailPage = null;
-            //WebClient wcl = new WebClient();
-            var url = "http://www.allitebooks.org/page";
-
-            var list = new List<ItEbook>();
-
-            for (int page = 1; page <= PagesNum; page++)
-            {
-                try
-                {
-                    listPage = await web.LoadFromWebAsync($"{url}/{page}");
-                }
-                catch
-                {
-                    break;
-                } 
-                foreach (var bookElement in listPage.DocumentNode.SelectNodes("//article"))
-                {
-                    var newBook = new ItEbook();
-                    newBook.Id = int.Parse(bookElement.Attributes["id"].Value.Substring(5));
-                    newBook.Title = bookElement.SelectSingleNode("//h2[@class='entry-title']/a").InnerText;
-                    newBook.Url = bookElement.SelectSingleNode("//h2[@class='entry-title']/a").Attributes["href"].Value;
-                    newBook.Summary = bookElement.SelectSingleNode("//div[@class='entry-summary']/p").InnerText;
-                    detailPage = await web.LoadFromWebAsync(newBook.Url);
-                    var detail = detailPage.DocumentNode.SelectSingleNode("//div[@class='book-detail']/dl");
-                    var dtNodes = detail.SelectNodes("dt");
-                    var ddNodes = detail.SelectNodes("dd");
-                    for (var i=0; i<dtNodes.Count; i++)
-                    {
-                        if (dtNodes[i].InnerText == "Year:")
-                            newBook.Year = int.Parse(ddNodes[i].InnerText);
-                        if (dtNodes[i].InnerText == "Category:")
-                            newBook.Category = ddNodes[i].InnerText;
-                        if (dtNodes[i].InnerText == "Pages:")
-                            newBook.Pages = int.Parse(ddNodes[i].InnerText);
-                        if (dtNodes[i].InnerText.Contains("Author"))
-                            newBook.Authors = ddNodes[i].InnerText;
-                    }
-
-
-                    list.Add(newBook);
-                }
-                Thread.Sleep(Delay);
-            }
-            
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
 
+        private string _message;
+         public string Message { get { return _message; } set { _message = value; OnPropertyChanged("Message"); } }
+    }
+    
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        Crawler crawler;
+
+        MainWindowModel model = new MainWindowModel();
+        
         public MainWindow()
         {
             InitializeComponent();
+            crawler = new Crawler();
+            crawler.Notified += Crawler_Notified;
+            DataContext = model;
+        }
+
+        private void Crawler_Notified(string message)
+        {
+            Application.Current.Dispatcher.Invoke(() => { model.Message = message; });
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Crawler.UpdateAllFromWeb();
+            crawler.UpdateAllFromWeb();
         }
     }
 }
