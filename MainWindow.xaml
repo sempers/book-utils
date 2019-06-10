@@ -9,6 +9,9 @@
     <Grid>
         <Grid.ColumnDefinitions>
 
+            <ColumnDefinition Width="80*"/>
+            <ColumnDefinition Width="299*"/>
+
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="40">
@@ -17,10 +20,22 @@
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Left" Grid.ColumnSpan="2" Height="40" Orientation="Horizontal" >
             <Button Content="Update" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click"></Button>
-            <TextBlock Text="{Binding Message}" Width="635" HorizontalAlignment="Right" Margin="5"></TextBlock>
+            <Button Content="Download" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click_1"></Button>
+            <Button Content="Correct" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click_2"></Button>
+            <TextBlock Text="{Binding Message}" Width="500" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5"></TextBlock>
         </StackPanel>
-        <ListView Grid.Row="2" Width="Auto">
-            
+        <ListView Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=Books, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" Grid.ColumnSpan="2">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel LastChildFill="True">
+                        <TextBlock Text="{Binding Authors}" Width="300"></TextBlock>
+                        <TextBlock Text="{Binding Title}" Width="500"></TextBlock>
+                        <TextBlock Text="{Binding Year}" Width="50"></TextBlock>
+                        <TextBlock Text="{Binding Category}" Width="250"></TextBlock>
+                        <TextBlock Text="{Binding DownloadUrl}" ></TextBlock>
+                    </DockPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
     </Grid>
 </Window>
