@@ -55,7 +55,7 @@ namespace AllItEbooksCrawler
         {
             InitializeComponent();
             crawler = new Crawler();
-            crawler.Notified += Crawler_Notified;
+            crawler.Notify += Crawler_Notified;
             DataContext = model;
             UpdateFromDb();           
         }

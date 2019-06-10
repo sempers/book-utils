@@ -37,9 +37,9 @@ namespace AllItEbooksCrawler
 
         public static int DELAY = 50;
 
-        public static string ITBOOKS = @".\it-ebooks";
+        public static string ITBOOKS = @"D:\it-ebooks";
 
-        public event NotifyHandler Notified;
+        public event NotifyHandler Notify;
 
         public List<Book> GetFromDb()
         {
@@ -57,8 +57,8 @@ namespace AllItEbooksCrawler
 
         public void DownloadBook(Book book)
         {
-            //try
-            //{
+            try
+            {
                 var category = book.Category;
                 var firstCat = category.Split(';')[0];
 
@@ -82,41 +82,42 @@ namespace AllItEbooksCrawler
                     MakeDir(Path.Combine(ITBOOKS, dirs[0], dirs[1]));
                     MakeDir(Path.Combine(ITBOOKS, dirs[0], dirs[1], dirs[2]));
                 }
-                var filename = $"[{book.Year}] {book.Title.Trim()} - {book.Authors.Trim()}.pdf";
+                var filename = $"[{book.Year}] {book.Title.Trim().Replace(":", "_")} - {book.Authors.Trim().Replace(":", "_")}.pdf";
                 var path = Path.Combine(middlePart, filename);
                 if (File.Exists(path))
                     File.Delete(path);
                 File.WriteAllText(path, "");
-            //}
-            //catch { }
+            }
+            catch { }
         }
 
         public void DownloadAll()
         {
-            Notified("Starting download...");
+            Notify("Starting download...");
             using (var db = new AppDbContext())
             {
                 foreach (var book in db.Books)
                 {
+                    if (!string.IsNullOrEmpty(book.DownloadUrl))
                     DownloadBook(book);
                 }
             }
-            Notified("Download finished");
+            Notify("Download finished");
         }
 
         public void CorrectTitles()
         {
-            Notified("Starting correction...");
+            Notify("Starting correction...");
             using (var db = new AppDbContext())
             {
                 foreach (var book in db.Books)
                 {
                     book.Title = book.Title.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
-                    book.Category = book.Category.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&").Replace("Datebases", "Databases");
+                    book.Category = book.Category.Replace("datebases", "databases");
                 }
                 db.SaveChanges();
             }
-            Notified("Correction finished.");
+            Notify("Correction finished.");
         }
 
         public async Task UpdateAllFromWeb()
@@ -124,7 +125,7 @@ namespace AllItEbooksCrawler
             using (var db = new AppDbContext())
             {
 
-                Notified("Updating all from web...");
+                Notify("Updating all from web...");
                 HtmlDocument listPage = null;
                 HtmlWeb web = new HtmlWeb();
                 HtmlDocument detailPage = null;
@@ -181,7 +182,7 @@ namespace AllItEbooksCrawler
                                 if (href.Contains(".pdf"))
                                     newBook.DownloadUrl = href;
                             }
-                            Notified($"Loading page {page}...");
+                            Notify($"Loading page {page}...");
                             list.Add(newBook);
                         }
                         catch (Exception e)
@@ -200,8 +201,9 @@ namespace AllItEbooksCrawler
                     }
                    
                     
-                    Notified("Updating finished.");
+                    Notify($"Page {page} saved.");
                 }
+                Notify("Updating all finished.");
             }
         }
     }
