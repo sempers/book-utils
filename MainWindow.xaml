@@ -28,6 +28,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <DockPanel LastChildFill="True">
+                        <CheckBox IsChecked="{Binding IsChecked}"></CheckBox>
                         <TextBlock Text="{Binding Authors}" Width="300"></TextBlock>
                         <TextBlock Text="{Binding Title}" Width="500"></TextBlock>
                         <TextBlock Text="{Binding Year}" Width="50"></TextBlock>

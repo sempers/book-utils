@@ -20,6 +20,7 @@ namespace AllItEbooksCrawler
         public string ISBN { get; set; }
         public int Pages { get; set; }
 
+        public bool IsChecked { get; set; }
         public override string ToString()
         {
             return $"[{Year}] {Authors}. {Title}";

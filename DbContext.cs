@@ -22,6 +22,7 @@ namespace AllItEbooksCrawler
         {
             modelBuilder.Entity<Book>().ToTable("Books");
             modelBuilder.Entity<Book>().HasKey(x => x.Id).Property(x => x.Id).HasColumnName("Id").HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<Book>().Ignore(x => x.IsChecked);
             modelBuilder.Entity<Book>().Property(x => x.PostId).HasColumnName("PostId");
             modelBuilder.Entity<Book>().Property(x => x.Authors).HasColumnName("Authors");
             modelBuilder.Entity<Book>().Property(x => x.Title).HasColumnName("Title");
