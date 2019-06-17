@@ -5,13 +5,49 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AllItEbooksCrawler"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="765.426">
+        Title="MainWindow" Height="1969.423" Width="1297.553" KeyUp="Window_KeyUp">
+    <Window.Resources>
+        <DataTemplate x:Key="authorsTmpl" DataType="{x:Type local:Book}">
+            <DockPanel>
+                <CheckBox IsChecked="{Binding IsChecked}" Width="20"></CheckBox>
+                <TextBlock Text="{Binding Authors}" ></TextBlock>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="titleTmpl" DataType="{x:Type local:Book}">
+            <TextBlock Text="{Binding Title}" ></TextBlock>
+        </DataTemplate>
+        <DataTemplate x:Key="yearTmpl" DataType="{x:Type local:Book}">
+            <TextBlock Text="{Binding Year}" ></TextBlock>
+        </DataTemplate>
+        <DataTemplate x:Key="categoryTmpl" DataType="{x:Type local:Book}">
+            <TextBlock Text="{Binding Category}"></TextBlock>
+            <DataTemplate.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Suggested}" Value="True"></Condition>
+                        <Condition Binding="{Binding Approved}" Value="0"></Condition>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="TextBlock.Foreground" Value="Blue"></Setter>
+                </MultiDataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Suggested}" Value="False"></Condition>
+                        <Condition Binding="{Binding Approved}" Value="1"></Condition>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="TextBlock.Foreground" Value="Black"></Setter>
+                    <Setter Property="TextBlock.FontWeight" Value="Bold"></Setter>
+                </MultiDataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <DataTemplate x:Key="linkTmpl" DataType="{x:Type local:Book}">
+            <TextBlock Text="{Binding DownloadUrl}"></TextBlock>
+        </DataTemplate>
+        
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-
             <ColumnDefinition Width="80*"/>
             <ColumnDefinition Width="299*"/>
-
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="40">
@@ -23,12 +59,29 @@
             <Button Content="Download" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click_1"></Button>
             <Button Content="Correct" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click_2"></Button>
             <TextBlock Text="{Binding Message}" Width="500" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5"></TextBlock>
+            <ComboBox Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="400" Margin="5" SelectionChanged="catListBox_SelectionChanged"></ComboBox>
         </StackPanel>
-        <ListView Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=Books, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" Grid.ColumnSpan="2">
-            <ListView.ItemTemplate>
+        <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=Books, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1">
+            <ListView.Resources>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Style.Triggers>
+                        
+                    </Style.Triggers>
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Authors" Width="320" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
+                    <GridViewColumn Header="Title" Width="500" CellTemplate="{StaticResource titleTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Year" Width="50" CellTemplate="{StaticResource yearTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Category" Width="250" CellTemplate="{StaticResource categoryTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Link" Width="Auto" CellTemplate="{StaticResource linkTmpl}"></GridViewColumn>
+                </GridView>
+            </ListView.View>
+            <!--<ListView.ItemTemplate>
                 <DataTemplate>
                     <DockPanel LastChildFill="True">
-                        <CheckBox IsChecked="{Binding IsChecked}"></CheckBox>
+                        <CheckBox IsChecked="{Binding IsChecked}" Width="20"></CheckBox>
                         <TextBlock Text="{Binding Authors}" Width="300"></TextBlock>
                         <TextBlock Text="{Binding Title}" Width="500"></TextBlock>
                         <TextBlock Text="{Binding Year}" Width="50"></TextBlock>
@@ -36,7 +89,8 @@
                         <TextBlock Text="{Binding DownloadUrl}" ></TextBlock>
                     </DockPanel>
                 </DataTemplate>
-            </ListView.ItemTemplate>
+            </ListView.ItemTemplate>-->
         </ListView>
+        
     </Grid>
 </Window>

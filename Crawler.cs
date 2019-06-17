@@ -113,11 +113,37 @@ namespace AllItEbooksCrawler
                 foreach (var book in db.Books)
                 {
                     book.Title = book.Title.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
-                    book.Category = book.Category.Replace("datebases", "databases");
+                    book.Category = book.Category.Replace("datebases", "databases")
+                        //.Replace("computers-technology/ai-machine-learning", "ai-machine-learning")
+                        //.Replace("web-development", "web")
+                        //.Replace("computers-technology/computer-science", "computer-science")
+                        //.Replace("front-end-frameworks", "frameworks")
+                        //.Replace("programming/c;programming/net", "c-sharp")
+                        .Replace("angularjs", "angular-js")
+                        ;
                 }
                 db.SaveChanges();
             }
             Notify("Correction finished.");
+        }
+
+        public void SuggestCategories()
+        {
+           
+        }
+
+        public void ChangeCategory(int id, string category)
+        {
+            using (var db = new AppDbContext())
+            {
+                var book = db.Books.Find(id);
+                if (book != null)
+                {
+                    book.Category = category;
+                    book.Approved = 1;
+                    db.SaveChanges();
+                }
+            }
         }
 
         public async Task UpdateAllFromWeb()

@@ -100,3 +100,33 @@ D:\projects\CS\AllItEbookCrawler\obj\Debug\AllItEbooksCrawler.Properties.Resourc
 D:\projects\CS\AllItEbookCrawler\obj\Debug\AllItEbooksCrawler.csproj.GenerateResource.Cache
 D:\projects\CS\AllItEbookCrawler\obj\Debug\AllItEbooksCrawler.exe
 D:\projects\CS\AllItEbookCrawler\obj\Debug\AllItEbooksCrawler.pdb
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\AllItEbooksCrawler.exe.config
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\AllItEbooksCrawler.exe
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\AllItEbooksCrawler.pdb
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\EntityFramework.dll
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\EntityFramework.SqlServer.dll
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\HtmlAgilityPack.dll
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\SQLite.CodeFirst.dll
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\System.Data.SQLite.dll
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\System.Data.SQLite.EF6.dll
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\System.Data.SQLite.Linq.dll
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\EntityFramework.xml
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\EntityFramework.SqlServer.xml
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\HtmlAgilityPack.pdb
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\HtmlAgilityPack.xml
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\MainWindow.g.cs
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\App.g.cs
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler_Content.g.cs
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler_MarkupCompile.cache
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler_MarkupCompile.lref
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\MainWindow.baml
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.g.resources
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.Properties.Resources.resources
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.GenerateResource.Cache
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.exe
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.pdb
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\GeneratedInternalTypeHelper.g.cs
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\categories.txt
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csprojAssemblyReference.cache
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.CoreCompileInputs.cache
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.CopyComplete

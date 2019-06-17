@@ -129,6 +129,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="categories.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\System.Data.SQLite.dll" />
     <Content Include="lib\System.Data.SQLite.EF6.dll" />
     <Content Include="lib\System.Data.SQLite.Linq.dll" />

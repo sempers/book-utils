@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("categories.txt")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("lib/system.data.sqlite.dll")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("lib/system.data.sqlite.ef6.dll")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("lib/system.data.sqlite.linq.dll")]
