@@ -161,19 +161,32 @@ namespace AllItEbooksCrawler
                 listPage = await web.LoadFromWebAsync("http://www.allitebooks.org");
                 var pagination = listPage.DocumentNode.SelectNodes("//div[@class='pagination clearfix']/a");
                 PAGES_NUM = int.Parse(pagination.Last().InnerText);
-
+                var alreadyThereCounter = 0;
                 for (var page = 1; page <= PAGES_NUM; page++)
                 {
                     var list = new List<Book>();
-                    List<string> errUrls = new List<string>();
+                    var errUrls = new List<string>();
                     listPage = await web.LoadFromWebAsync($"{url}/{page}");
                     var pageBookNodes = listPage.DocumentNode.SelectNodes("//article");
+                    
                     foreach (var bookElement in pageBookNodes)
                     {
                         var newBook = new Book();
                         try
                         {
                             newBook.PostId = int.Parse(bookElement.Attributes["id"].Value.Substring(5));
+                            if (db.Books.Any(b => b.PostId == newBook.PostId))
+                            {
+                                alreadyThereCounter++;
+                                if (alreadyThereCounter > 10)
+                                {
+                                    goto final;
+                                } else
+                                {
+                                    continue;
+                                }
+                            }
+                            
                             newBook.Title = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a").InnerText;
                             newBook.Url = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a").Attributes["href"].Value;
                             newBook.Summary = bookElement.SelectSingleNode("div/div[@class='entry-summary']/p").InnerText;
@@ -216,7 +229,7 @@ namespace AllItEbooksCrawler
                             errUrls.Add(newBook.Url);
                             var x = 1;
                         }
-                        foreach (var book in list)
+                        final:  foreach (var book in list)
                         {
                             if (!db.Books.Any(b => b.PostId == book.PostId))
                                 db.Books.Add(book);
@@ -226,8 +239,9 @@ namespace AllItEbooksCrawler
                         Thread.Sleep(DELAY);
                     }
                    
-                    
                     Notify($"Page {page} saved.");
+                    if (alreadyThereCounter > 10)
+                        break;
                 }
                 Notify("Updating all finished.");
             }
