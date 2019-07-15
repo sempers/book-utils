@@ -78,7 +78,6 @@ namespace AllItEbooksCrawler
         {
             var list = crawler.GetFromDb();
             model.Books.Clear();
-            list = list.OrderBy(b => -b.Year).ToList();
             list.ForEach(b => {
                 var path = CalcPath(b);
                 if (File.Exists(path))
@@ -89,6 +88,8 @@ namespace AllItEbooksCrawler
             {
                 model.Books.Add(book);
             }
+            model.Sortings.Add("PostId");
+            SortList("PostId");
         }
 
         public void MakeDir(string path)
@@ -275,28 +276,33 @@ namespace AllItEbooksCrawler
             List<Book> newList = null;
             switch (column)
             {
+                case "PostId":
+                if (GetSorting("PostId") < 0)
+                    newList = model.Books.OrderByDescending(b => b.PostId).ToList();
+                else
+                    newList = model.Books.OrderBy(b => b.PostId).ToList();
+                break;
                 case "Title":
                 if (GetSorting("Title") < 0)
                     newList = model.Books.OrderByDescending(b => b.Title).ToList();
                 else
                     newList = model.Books.OrderBy(b => b.Title).ToList();
-                LoadList(newList);
                     break;
                 case "Year":
                 if (GetSorting("Year") < 0)
                     newList = model.Books.OrderByDescending(b => b.Year).ToList();
                 else
                     newList = model.Books.OrderBy(b => b.Year).ToList();
-                LoadList(newList);
                     break;
                 case "Category":
                 if (GetSorting("Category") < 0)
                     newList = model.Books.OrderByDescending(b => b.Category).ToList();
                 else
                     newList = model.Books.OrderBy(b => b.Category).ToList();
-                    LoadList(newList);
                     break;
             }
+            if (newList != null)
+                LoadList(newList);
         }        
 
         private void Crawler_Notified(string message)
