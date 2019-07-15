@@ -130,3 +130,5 @@ D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\categories.txt
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csprojAssemblyReference.cache
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.CoreCompileInputs.cache
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.CopyComplete
+D:\prj\AllItEbookCrawler\obj\Debug\GeneratedInternalTypeHelper.g.cs
+D:\prj\AllItEbookCrawler\bin\Debug\categories.txt

@@ -42,7 +42,7 @@
         <DataTemplate x:Key="linkTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding DownloadUrl}"></TextBlock>
         </DataTemplate>
-        
+
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -58,14 +58,15 @@
             <Button Content="Update" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click"></Button>
             <Button Content="Download" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click_1"></Button>
             <Button Content="Correct" Width="100" HorizontalAlignment="Left" Margin="5" Click="Button_Click_2"></Button>
-            <TextBlock Text="{Binding Message}" Width="500" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5"></TextBlock>
+            <TextBox Width="480" Margin="5" Text="{Binding SearchTitle}" TextChanged="TextBox_TextChanged_1"/>
             <ComboBox Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="400" Margin="5" SelectionChanged="catListBox_SelectionChanged"></ComboBox>
+            <TextBlock Text="{Binding Message}" Width="200" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,12"/>
         </StackPanel>
         <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=Books, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1">
             <ListView.Resources>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Style.Triggers>
-                        
+
                     </Style.Triggers>
                 </Style>
             </ListView.Resources>
@@ -91,6 +92,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>-->
         </ListView>
-        
+
     </Grid>
 </Window>

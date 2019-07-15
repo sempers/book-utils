@@ -33,11 +33,16 @@ namespace AllItEbooksCrawler
         private string _message;
         public string Message { get { return _message; } set { _message = value; OnPropertyChanged("Message"); } }
 
+        private string _searchTitle;
+        public string SearchTitle { get { return _searchTitle; } set { _searchTitle = value; OnPropertyChanged("SearchTitle"); } }
+
         public HashSet<string> Sortings = new HashSet<string>();
 
         public ObservableCollection<Book> Books { get; set; }
 
         public ObservableCollection<string> Categories { get; set; }
+
+        public List<Book> UnfilteredList;
 
         public MainWindowModel()
         {
@@ -200,7 +205,6 @@ namespace AllItEbooksCrawler
 
         private async Task DownloadCheckedAsync()
         {
-            //Application.Current.Dispatcher.Invoke(() => { model.Message = "Downloads initialized..."; });
             List<Book> subset = model.Books.Where(b => b.IsChecked && !string.IsNullOrEmpty(b.DownloadUrl) && !File.Exists(CalcPath(b))).ToList();
             if (subset.Count == 0)
                 return;
@@ -234,6 +238,38 @@ namespace AllItEbooksCrawler
             }
         }
 
+        private void FilterListByTitle(string search)
+        {
+            if (string.IsNullOrEmpty(search))
+            {
+                if (model.UnfilteredList != null)
+                {
+                    LoadList(model.UnfilteredList);
+                    model.UnfilteredList = null;
+                }
+                else
+                {
+                    LoadList(new List<Book>());
+                }
+            }
+            else
+            {
+                if (model.UnfilteredList == null)
+                    model.UnfilteredList = model.Books.ToList();
+                var newList = model.UnfilteredList.FindAll(book => book.Title.ToUpper().Contains(search.ToUpper())).ToList();
+                LoadList(newList);
+            }
+        }
+
+        private void LoadList(List<Book> list)
+        {
+            model.Books.Clear();
+            foreach (var book in list)
+            {
+                model.Books.Add(book);
+            }
+        }
+
         private void SortList(string column)
         {
             List<Book> newList = null;
@@ -244,33 +280,21 @@ namespace AllItEbooksCrawler
                     newList = model.Books.OrderByDescending(b => b.Title).ToList();
                 else
                     newList = model.Books.OrderBy(b => b.Title).ToList();
-                    model.Books.Clear();
-                    foreach (var book in newList) 
-                    {
-                        model.Books.Add(book);
-                    }
+                LoadList(newList);
                     break;
                 case "Year":
                 if (GetSorting("Year") < 0)
                     newList = model.Books.OrderByDescending(b => b.Year).ToList();
                 else
                     newList = model.Books.OrderBy(b => b.Year).ToList();
-                    model.Books.Clear();
-                    foreach (var book in newList)
-                    {
-                        model.Books.Add(book);
-                    }
+                LoadList(newList);
                     break;
                 case "Category":
                 if (GetSorting("Category") < 0)
                     newList = model.Books.OrderByDescending(b => b.Category).ToList();
                 else
                     newList = model.Books.OrderBy(b => b.Category).ToList();
-                    model.Books.Clear();
-                    foreach (var book in newList)
-                    {
-                        model.Books.Add(book);
-                    }
+                    LoadList(newList);
                     break;
             }
         }        
@@ -377,6 +401,36 @@ namespace AllItEbooksCrawler
                     return;
                 item.Suggested = false; item.Approved = 1; item.Category = item.OldCategory;
                 crawler.ChangeCategory(item.Id, item.Category);
+            }
+        }
+
+        private void TextBox_TextInput(object sender, TextCompositionEventArgs e)
+        {
+            
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+            
+        }
+
+        private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            
+        }
+
+        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
+        {
+            var search = ((TextBox)e.Source).Text;
+            if (!string.IsNullOrEmpty(search))
+            {
+                if (search.Length >= 3)
+                    FilterListByTitle(search);
+            }
+            else
+            {
+                FilterListByTitle("");
             }
         }
     }
