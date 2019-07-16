@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace AllItEbooksCrawler
     public class Book: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public static string ROOT = null;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -22,7 +25,6 @@ namespace AllItEbooksCrawler
         public int Year { get; set; }
         public string Url { get; set; }
         public string DownloadUrl { get; set; }
-        public string LocalPath { get; set; }
         public string Authors { get; set; }
         public string Summary { get; set; }
         private string _category { get; set; }
@@ -42,6 +44,51 @@ namespace AllItEbooksCrawler
         public override string ToString()
         {
             return $"[{Year}] {Authors}. {Title}";
+        }
+
+        public string ClearAuthors
+        {
+            get
+            {
+                var src = Authors.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ");
+                var split = src.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length > 2)
+                    return $"{split[0]}, {split[1]} et al";
+                else
+                    return src;
+            }
+        }
+
+        public string ClearTitle
+        {
+            get
+            {
+                var src = Title.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ");
+                return src;
+            }
+        }
+
+        public string PdfFileName
+        {
+            get { return $"[{Year}] {ClearTitle} - {ClearAuthors}.pdf"; }
+        }
+
+        public string FirstCategory
+        {
+            get
+            {
+                if (Category == null)
+                    return "";
+                return Category.Split(';')[0];
+            }
+        }
+
+        public string LocalPath
+        {
+            get
+            {
+                return Path.Combine(ROOT, FirstCategory.Replace("/","\\"), PdfFileName);
+            }
         }
     }
 }

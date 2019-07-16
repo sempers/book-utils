@@ -1,0 +1,7 @@
+﻿datebases = databases
+angularjs = angular-js
+web/javascript/node-js = web/frameworks/node-js
+computers-technology/computer-science = computer-science
+programming/elixir = programming/erlang
+networking-cloud-computing = networking
+web-development = web
