@@ -75,7 +75,7 @@ namespace AllItEbooksCrawler
             DataContext = model;
             UpdateFromDb();
             //SuggestCategories();
-            UpdateCategoriesDropBox();
+            UpdateCategories();
         }
 
         public void LoadCorrections()
@@ -112,7 +112,7 @@ namespace AllItEbooksCrawler
                 Directory.CreateDirectory(path);
         }
 
-        public void UpdateCategoriesDropBox()
+        public void UpdateCategories()
         {
             List<string> list = new List<string>();
             foreach (var book in model.Books)
@@ -180,7 +180,7 @@ namespace AllItEbooksCrawler
 
         private async Task DownloadCheckedAsync()
         {
-            List<Book> subset = model.Books.Where(b => b.IsChecked && !string.IsNullOrEmpty(b.DownloadUrl) && !File.Exists(b.LocalPath)).ToList();
+            var subset = model.Books.Where(b => b.IsChecked && !string.IsNullOrEmpty(b.DownloadUrl) && !File.Exists(b.LocalPath)).ToList();
             if (subset.Count == 0)
                 return;
             Notify("Downloads initialized...");
@@ -291,29 +291,29 @@ namespace AllItEbooksCrawler
             switch (column)
             {
                 case "PostId":
-                if (GetSorting("PostId") < 0)
-                    newList = model.Books.OrderByDescending(b => b.PostId).ToList();
-                else
-                    newList = model.Books.OrderBy(b => b.PostId).ToList();
-                break;
+                    if (GetSorting("PostId") < 0)
+                        newList = model.Books.OrderByDescending(b => b.PostId).ToList();
+                    else
+                        newList = model.Books.OrderBy(b => b.PostId).ToList();
+                    break;
                 case "Title":
-                if (GetSorting("Title") < 0)
-                    newList = model.Books.OrderByDescending(b => b.Title).ToList();
-                else
-                    newList = model.Books.OrderBy(b => b.Title).ToList();
-                break;
+                    if (GetSorting("Title") < 0)
+                        newList = model.Books.OrderByDescending(b => b.Title).ToList();
+                    else
+                        newList = model.Books.OrderBy(b => b.Title).ToList();
+                    break;
                 case "Year":
-                if (GetSorting("Year") < 0)
-                    newList = model.Books.OrderByDescending(b => b.Year).ToList();
-                else
-                    newList = model.Books.OrderBy(b => b.Year).ToList();
-                break;
+                    if (GetSorting("Year") < 0)
+                        newList = model.Books.OrderByDescending(b => b.Year).ToList();
+                    else
+                        newList = model.Books.OrderBy(b => b.Year).ToList();
+                    break;
                 case "Category":
-                if (GetSorting("Category") < 0)
-                    newList = model.Books.OrderByDescending(b => b.Category).ToList();
-                else
-                    newList = model.Books.OrderBy(b => b.Category).ToList();
-                break;
+                    if (GetSorting("Category") < 0)
+                        newList = model.Books.OrderByDescending(b => b.Category).ToList();
+                    else
+                        newList = model.Books.OrderBy(b => b.Category).ToList();
+                    break;
             }
             if (newList != null)
                 LoadList(newList);
@@ -346,7 +346,7 @@ namespace AllItEbooksCrawler
             crawler.Correct(corrections);
             DeleteEmptyFolders();
             UpdateFromDb();
-            UpdateCategoriesDropBox();
+            UpdateCategories();
         }
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -371,32 +371,36 @@ namespace AllItEbooksCrawler
 
         private void catListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var item = listView.SelectedItem as Book;
+            var items = listView.SelectedItems;
             // Фильтр по категории
-            if (item == null)
+            if (items.Count == 0)
             {
-                FilterListByCategory(catListBox.SelectedItem.ToString());
+                if (catListBox.SelectedItem != null)
+                    FilterListByCategory(catListBox.SelectedItem.ToString());
                 return;
             }
             //Присвоение категории
-            if (item.FirstCategory == catListBox.SelectedItem.ToString())
-                return;
-            else
+            foreach (Book item in items)
             {
-                item.Category = catListBox.SelectedItem.ToString();
-                if (item.Approved == 0) item.Approved = 1;
-                if (item.Suggested) item.Suggested = false;
-                var oldPath = item.LocalPath;
-                crawler.ChangeCategory(item.Id, item.Category);
-                if (File.Exists(oldPath))
+                if (catListBox.SelectedItem == null || item.FirstCategory == catListBox.SelectedItem.ToString())
+                    continue;
+                else
                 {
-                    var newPath = item.LocalPath;
-                    MakeDir(Path.GetDirectoryName(newPath));
-                    try
+                    item.Category = catListBox.SelectedItem.ToString();
+                    if (item.Approved == 0) item.Approved = 1;
+                    if (item.Suggested) item.Suggested = false;
+                    var oldPath = item.LocalPath;
+                    crawler.ChangeCategory(item.Id, item.Category);
+                    if (File.Exists(oldPath))
                     {
-                        File.Move(oldPath, newPath);
+                        var newPath = item.LocalPath;
+                        MakeDir(Path.GetDirectoryName(newPath));
+                        try
+                        {
+                            File.Move(oldPath, newPath);
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
             }
         }
@@ -452,6 +456,20 @@ namespace AllItEbooksCrawler
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             SuggestCategories();
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(catListBox.Text) && !model.Categories.Contains(catListBox.Text))
+            {
+                model.Categories.Add(catListBox.Text);
+                var sorted = model.Categories.OrderBy(x => x).ToList();
+                model.Categories.Clear();
+                foreach (var s in sorted)
+                {
+                    model.Categories.Add(s);
+                }
+            }
         }
     }
 }

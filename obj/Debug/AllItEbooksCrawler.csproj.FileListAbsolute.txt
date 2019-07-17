@@ -126,10 +126,11 @@ D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.Gene
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.exe
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.pdb
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\GeneratedInternalTypeHelper.g.cs
-D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\categories.txt
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csprojAssemblyReference.cache
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.CoreCompileInputs.cache
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.CopyComplete
 D:\prj\AllItEbookCrawler\obj\Debug\GeneratedInternalTypeHelper.g.cs
 D:\prj\AllItEbookCrawler\bin\Debug\settings\categories.txt
 D:\prj\AllItEbookCrawler\bin\Debug\settings\corrections.txt
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\settings\categories.txt
+D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\settings\corrections.txt
