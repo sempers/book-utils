@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="788" Width="1800" KeyUp="Window_KeyUp">
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <DataTemplate x:Key="postIdTmpl" DataType="{x:Type local:Book}">
             <DockPanel>
                 <CheckBox IsChecked="{Binding IsChecked}" Width="20"></CheckBox>
@@ -26,6 +27,17 @@
             <TextBlock Text="{Binding Category}"></TextBlock>
             <DataTemplate.Triggers>
                 <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding CategoryEdited}" Value="False"></Condition></MultiDataTrigger.Conditions>
+                    <Setter Property="TextBlock.Visibility" Value="Visible"></Setter>
+                </MultiDataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding CategoryEdited}" Value="True"></Condition>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="TextBlock.Visibility" Value="Hidden"></Setter>
+                </MultiDataTrigger>
+                <MultiDataTrigger>                    
                     <MultiDataTrigger.Conditions>
                         <Condition Binding="{Binding Suggested}" Value="True"></Condition>
                         <Condition Binding="{Binding Approved}" Value="0"></Condition>
@@ -60,6 +72,7 @@
             <TextBox Width="480" Margin="5" Text="{Binding SearchTitle}" TextChanged="TextBox_TextChanged_1"/>
             <ComboBox Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="400" Margin="5" SelectionChanged="catListBox_SelectionChanged"></ComboBox>
             <Button Content="Filter mode" Margin="5" Click="Button_Click_3"></Button>
+            <Button Content="Suggest" Margin="5" Click="Button_Click_4"></Button>
         </StackPanel>
         <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=Books, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1">
             <ListView.Resources>

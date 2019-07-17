@@ -36,6 +36,7 @@ namespace AllItEbooksCrawler
             modelBuilder.Entity<Book>().Property(x => x.Approved).HasColumnName("Approved");
             modelBuilder.Entity<Book>().Ignore(x => x.Suggested);
             modelBuilder.Entity<Book>().Ignore(x => x.OldCategory);
+            modelBuilder.Entity<Book>().Ignore(x => x.CategoryEdited);
             base.OnModelCreating(modelBuilder);
             
         }

@@ -74,7 +74,7 @@ namespace AllItEbooksCrawler
             crawler.Notify += Crawler_Notified;
             DataContext = model;
             UpdateFromDb();
-            SuggestCategories();
+            //SuggestCategories();
             UpdateCategoriesDropBox();
         }
 
@@ -144,13 +144,15 @@ namespace AllItEbooksCrawler
                 {"Go", "programming/go" },
                 {"MongoDB", "databases/mongodb" },
                 {"Android", "programming/android" },
+                {"iOS", "programming/ios" },
                 {"Angular", "web/frameworks/angular-js" },
                 {"Javascript", "web/javascript" },
                 {"Java", "programming/java" },
                 {"Blockchain|Bitcoin|Ethereum", "programming/blockchain" },
                 {"C++", "programming/cpp" },
                 {"Amazon", "networking/cloud-computing/amazon" },
-                {"Azure", "networking/cloud-computing/azure" }
+                {"Azure", "networking/cloud-computing/azure" },
+                {"Unity", "game-programming/unity" }
             };
             foreach (var book in model.Books.Where(b => b.Approved == 0))
             {
@@ -399,8 +401,6 @@ namespace AllItEbooksCrawler
             }
         }
 
-
-
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back)
@@ -447,6 +447,11 @@ namespace AllItEbooksCrawler
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             listView.SelectedIndex = -1;
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            SuggestCategories();
         }
     }
 }

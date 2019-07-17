@@ -87,19 +87,16 @@ namespace AllItEbooksCrawler
                 foreach (var book in db.Books)
                 {
                     book.Title = book.Title.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
-                    foreach (var correction in corrections)
-                    {
-                        book.Category = book.Category.Replace(correction.Key.Trim(), correction.Value.Trim());
-                    }                    
+                    if (book.Category != null)
+                        foreach (var correction in corrections)
+                        {
+                            book.Category = book.Category.Replace(correction.Key.Trim(), correction.Value.Trim());
+                        }
+                    book.Category = book.FirstCategory;
                 }
                 db.SaveChanges();
             }
             Notify("Correction finished.");
-        }
-
-        public void SuggestCategories()
-        {
-           
         }
 
         public void ChangeCategory(int id, string category)
@@ -183,6 +180,7 @@ namespace AllItEbooksCrawler
                                     {
                                         book.Category = book.Category.Replace(correction.Key.Trim(), correction.Value.Trim());
                                     }
+                                    book.Category = book.FirstCategory;
                                 }
                                     
                                 if (dtNodes[i].InnerText == "Pages:")
