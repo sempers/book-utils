@@ -1,0 +1,11 @@
+﻿Node.JS=web/javascript/node-js
+R =programming/r
+Go =programming/go
+MongoDB=databases/mongodb
+Android=programming/android
+iOS=programming/ios
+Angular=web/javascript/angular-js
+Blockchain|Bitcoin|Ethereum=programming/blockchain
+Amazon=web-services/cloud/amazon
+Azure=web-services/cloud/azure
+Unity=game-programming/unity

@@ -74,7 +74,6 @@ namespace AllItEbooksCrawler
             crawler.Notify += Crawler_Notified;
             DataContext = model;
             UpdateFromDb();
-            //SuggestCategories();
             UpdateCategories();
         }
 
@@ -137,36 +136,27 @@ namespace AllItEbooksCrawler
 
         public void SuggestCategories()
         {
-            var DICT = new Dictionary<string, string>
-            {
-                {"Node.JS", "web/javascript/node-js" },
-                {"R", "programming/r" },
-                {"Go", "programming/go" },
-                {"MongoDB", "databases/mongodb" },
-                {"Android", "programming/android" },
-                {"iOS", "programming/ios" },
-                {"Angular", "web/frameworks/angular-js" },
-                {"Javascript", "web/javascript" },
-                {"Java", "programming/java" },
-                {"Blockchain|Bitcoin|Ethereum", "programming/blockchain" },
-                {"C++", "programming/cpp" },
-                {"Amazon", "networking/cloud-computing/amazon" },
-                {"Azure", "networking/cloud-computing/azure" },
-                {"Unity", "game-programming/unity" }
-            };
-            foreach (var book in model.Books.Where(b => b.Approved == 0))
-            {
-                var titleWords = book.Title.Replace(",", "").Split(' ').ToList();
-                foreach (var kvPair in DICT)
+            if (File.Exists("./settings/suggestions.txt")) {
+                var dict = new Dictionary<string, string>();
+                foreach (var line in File.ReadAllLines("./settings/suggestions.txt"))
                 {
-                    var keys = kvPair.Key.Split('|');
-                    foreach (var key in keys)
+                    var split = line.Split('=');
+                    dict.Add(split[0], split[1]);
+                }
+                foreach (var book in model.Books.Where(b => b.Approved == 0))
+                {
+                    var titleWords = book.Title.Replace(",", "").Split(' ').ToList();
+                    foreach (var kvPair in dict)
                     {
-                        if (!book.Suggested && titleWords.Contains(key) && !book.Category.Contains(kvPair.Value))
+                        var keys = kvPair.Key.Split('|');
+                        foreach (var key in keys)
                         {
-                            book.OldCategory = book.Category;
-                            book.Category = kvPair.Value;
-                            book.Suggested = true;
+                            if (!book.Suggested && titleWords.Contains(key) && !book.Category.Contains(kvPair.Value))
+                            {
+                                book.OldCategory = book.Category;
+                                book.Category = kvPair.Value;
+                                book.Suggested = true;
+                            }
                         }
                     }
                 }

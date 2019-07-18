@@ -11,7 +11,6 @@ namespace AllItEbooksCrawler
 {
     public delegate void NotifyHandler(string message);
 
-
     public class PostIdComparer : IEqualityComparer<Book>
     {
         public bool Equals(Book a, Book b)
@@ -37,8 +36,6 @@ namespace AllItEbooksCrawler
 
         public static int DELAY = 50;
 
-        public static string ITBOOKS = @"D:\it-ebooks";
-
         public event NotifyHandler Notify;
 
         public List<Book> GetFromDb()
@@ -53,30 +50,6 @@ namespace AllItEbooksCrawler
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-        }
-
-        public void DownloadBook(Book book)
-        {
-            try
-            {
-                var path = book.LocalPath;
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
-            catch { }
-        }
-
-        public void DownloadAll()
-        {
-            Notify("Starting download...");
-            using (var db = new AppDbContext())
-            {
-                foreach (var book in db.Books)
-                {
-                    if (!string.IsNullOrEmpty(book.DownloadUrl))
-                    DownloadBook(book);
-                }
-            }
-            Notify("Download finished");
         }
 
         public void Correct(Dictionary<string, string> corrections)
