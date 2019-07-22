@@ -8,3 +8,5 @@ programming/c-sharp/unity = game-programming/unity
 web/ruby = programming/ruby
 web/python = programming/python
 web/frameworks = web/javascript
+graphics-design/web-design = web/ux-ui
+web/html-html5-css = web/html-css

@@ -7,6 +7,18 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="788" Width="1800" KeyUp="Window_KeyUp">
     <Window.Resources>
+        <Style TargetType="ToolTip">
+            <Style.Resources>
+                <Style TargetType="ContentPresenter">
+                    <Style.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap" />
+                        </Style>
+                    </Style.Resources>
+                </Style>
+            </Style.Resources>
+            <Setter Property="MaxWidth" Value="500" />
+        </Style>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <DataTemplate x:Key="postIdTmpl" DataType="{x:Type local:Book}">
             <DockPanel>
@@ -18,7 +30,7 @@
             <TextBlock Text="{Binding Authors}" ></TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="titleTmpl" DataType="{x:Type local:Book}">
-            <TextBlock Text="{Binding Title}" ></TextBlock>
+            <TextBlock Text="{Binding Title}" ToolTip="{Binding Summary}"></TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="yearTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Year}" ></TextBlock>
@@ -26,17 +38,6 @@
         <DataTemplate x:Key="categoryTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Category}"></TextBlock>
             <DataTemplate.Triggers>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding CategoryEdited}" Value="False"></Condition></MultiDataTrigger.Conditions>
-                    <Setter Property="TextBlock.Visibility" Value="Visible"></Setter>
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding CategoryEdited}" Value="True"></Condition>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="TextBlock.Visibility" Value="Hidden"></Setter>
-                </MultiDataTrigger>
                 <MultiDataTrigger>                    
                     <MultiDataTrigger.Conditions>
                         <Condition Binding="{Binding Suggested}" Value="True"></Condition>
@@ -63,7 +64,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="36"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Left" Height="40" Grid.Row="0" Orientation="Horizontal" Margin="125,0,0,0">
             <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click"></Button>
@@ -72,11 +73,11 @@
             
             <TextBox VerticalContentAlignment="Center" Width="500" Margin="5" Text="{Binding SearchTitle}" TextChanged="TextBox_TextChanged_1"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="Button_Click_5"></Button>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged"></ComboBox>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged" TextInput="catListBox_TextInput"></ComboBox>
             <Button Content="Filter mode" Margin="5" Padding="5" Click="Button_Click_3"></Button>
             <Button Content="Suggest" Margin="5" Padding="5" Click="Button_Click_4"></Button>
         </StackPanel>
-        <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=Books, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1">
+        <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=ShownBooks, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1">
             <ListView.Resources>
                 <Style TargetType="{x:Type ListViewItem}">
                     <Style.Triggers>
@@ -96,7 +97,7 @@
         </ListView>
         <StatusBar Grid.Row="2" >
             <StatusBarItem>
-                <TextBlock Text="{Binding Message}" Width="200" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock Text="{Binding Message}" Width="200" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

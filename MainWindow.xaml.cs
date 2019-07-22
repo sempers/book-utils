@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -38,16 +39,106 @@ namespace AllItEbooksCrawler
 
         public HashSet<string> Sortings = new HashSet<string>();
 
-        public ObservableCollection<Book> Books { get; set; }
+        public ObservableCollection<Book> ShownBooks { get; set; }
 
         public ObservableCollection<string> Categories { get; set; }
 
-        public List<Book> UnfilteredList;
+        public List<Book> Books;
 
         public MainWindowModel()
         {
-            Books = new ObservableCollection<Book>();
+            ShownBooks = new ObservableCollection<Book>();
+            Books = new List<Book>();
             Categories = new ObservableCollection<string>();
+        }
+
+        public void LoadList(List<Book> list)
+        {
+            ShownBooks.Clear();
+            foreach (var book in list)
+            {
+                ShownBooks.Add(book);
+            }
+        }
+
+        private int GetSorting(string column)
+        {
+            if (Sortings.Contains(column))
+            {
+                Sortings.Remove(column);
+                return -1;
+            }
+            else
+            {
+                Sortings.Add(column);
+                return 1;
+            }
+        }
+
+        public void FilterListByCategory(string category)
+        {
+            if (category == "(no category)" || string.IsNullOrEmpty(category))
+            {
+                if (Books != null)
+                {
+                    LoadList(Books);
+                }
+            }
+            else
+            {
+                var filteredList = Books.FindAll(book => book.Category == category).ToList();
+                LoadList(filteredList);
+            }
+        }
+
+        public void FilterListByTitle(string search)
+        {
+            if (string.IsNullOrEmpty(search))
+            {
+                if (Books != null)
+                {
+                    LoadList(Books);
+                }
+            }
+            else
+            {
+                var filteredList = Books.FindAll(book => book.Title.ToUpper().Contains(search.ToUpper())).ToList();
+                LoadList(filteredList);
+            }
+        }
+
+        public void SortList(string column)
+        {
+            List<Book> sortedList = null;
+            switch (column)
+            {
+                case "PostId":
+                if (GetSorting("PostId") < 0)
+                    sortedList = ShownBooks.OrderByDescending(b => b.PostId).ToList();
+                else
+                    sortedList = ShownBooks.OrderBy(b => b.PostId).ToList();
+                break;
+                case "Title":
+                if (GetSorting("Title") < 0)
+                    sortedList = ShownBooks.OrderByDescending(b => b.Title).ToList();
+                else
+                    sortedList = ShownBooks.OrderBy(b => b.Title).ToList();
+                break;
+                case "Year":
+                if (GetSorting("Year") < 0)
+                    sortedList = ShownBooks.OrderByDescending(b => b.Year).ToList();
+                else
+                    sortedList = ShownBooks.OrderBy(b => b.Year).ToList();
+                break;
+                case "Category":
+                if (GetSorting("Category") < 0)
+                    sortedList = ShownBooks.OrderByDescending(b => b.Category).ToList();
+                else
+                    sortedList = ShownBooks.OrderBy(b => b.Category).ToList();
+                break;
+            }
+            if (sortedList != null)
+                LoadList(sortedList);
         }
     }
 
@@ -63,7 +154,9 @@ namespace AllItEbooksCrawler
 
         public const string ROOT = @"D:\it-ebooks";
 
-        public Dictionary<string, string> corrections;
+        public bool Suggested { get; set; } = false;   
+
+        public Dictionary<string, string> TxtCorrections { get; set; }
 
         public MainWindow()
         {
@@ -81,11 +174,11 @@ namespace AllItEbooksCrawler
         {
             if (File.Exists("./settings/corrections.txt"))
             {
-                corrections = new Dictionary<string, string>();
+                TxtCorrections = new Dictionary<string, string>();
                 foreach (var line in File.ReadAllLines("./settings/corrections.txt"))
                 {
                     var split = line.Split('=');
-                    corrections.Add(split[0], split[1]);
+                    TxtCorrections.Add(split[0], split[1]);
                 }
             }
         }
@@ -100,9 +193,10 @@ namespace AllItEbooksCrawler
                     b.IsChecked = true;
                 }
             });
-            LoadList(list);
+            model.Books = list;
+            model.LoadList(list);
             model.Sortings.Add("PostId");
-            SortList("PostId");
+            model.SortList("PostId");
         }
 
         public void MakeDir(string path)
@@ -113,17 +207,25 @@ namespace AllItEbooksCrawler
 
         public void UpdateCategories()
         {
-            List<string> list = new List<string>();
-            foreach (var book in model.Books)
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+            foreach (var book in model.ShownBooks)
             {
                 var firstCat = book.FirstCategory;
-                if (!string.IsNullOrEmpty(firstCat) && !list.Contains(firstCat))
-                    list.Add(firstCat);
+                if (!string.IsNullOrEmpty(firstCat))
+                    if (!dict.ContainsKey(firstCat))
+                        dict.Add(firstCat, 1);
+                    else
+                        dict[firstCat]++;
             }
             foreach (var add in File.ReadAllLines("./settings/categories.txt"))
             {
-                if (!list.Contains(add))
-                    list.Add(add);
+                if (!dict.ContainsKey(add))
+                    dict.Add(add, 0);
+            }
+            List<string> list = new List<string>();
+            foreach (var kv in dict)
+            {
+                list.Add($"{kv.Key}");
             }
             list.Add("(no category)");
             list.Sort();
@@ -131,6 +233,18 @@ namespace AllItEbooksCrawler
             foreach (var cat in list)
             {
                 model.Categories.Add(cat);
+            }
+        }
+
+        public void UnsuggestCategories()
+        {
+            foreach (var book in model.ShownBooks)
+            {
+                if (book.Suggested)
+                {
+                    book.Suggested = false;
+                    book.Category = book.OldCategory;
+                }
             }
         }
 
@@ -143,7 +257,7 @@ namespace AllItEbooksCrawler
                     var split = line.Split('=');
                     dict.Add(split[0], split[1]);
                 }
-                foreach (var book in model.Books.Where(b => b.Approved == 0))
+                foreach (var book in model.ShownBooks.Where(b => b.Approved == 0))
                 {
                     var titleWords = book.Title.Replace(",", "").Split(' ').ToList();
                     foreach (var kvPair in dict)
@@ -170,7 +284,7 @@ namespace AllItEbooksCrawler
 
         private async Task DownloadCheckedAsync()
         {
-            var subset = model.Books.Where(b => b.IsChecked && !string.IsNullOrEmpty(b.DownloadUrl) && !File.Exists(b.LocalPath)).ToList();
+            var subset = model.ShownBooks.Where(b => b.IsChecked && !string.IsNullOrEmpty(b.DownloadUrl) && !File.Exists(b.LocalPath)).ToList();
             if (subset.Count == 0)
                 return;
             Notify("Downloads initialized...");
@@ -191,74 +305,6 @@ namespace AllItEbooksCrawler
             Application.Current.Dispatcher.Invoke(() => { model.Message = "Downloads finished."; });
         }
 
-        private int GetSorting(string column)
-        {
-            if (model.Sortings.Contains(column))
-            {
-                model.Sortings.Remove(column);
-                return -1;
-            }
-            else
-            {
-                model.Sortings.Add(column);
-                return 1;
-            }
-        }
-
-        private void FilterListByCategory(string category)
-        {
-            if (category == "(no category)" || string.IsNullOrEmpty(category))
-            {
-                if (model.UnfilteredList != null)
-                {
-                    LoadList(model.UnfilteredList);
-                    model.UnfilteredList = null;
-                }
-                else
-                {
-                    LoadList(new List<Book>());
-                }
-            }
-            else
-            {
-                if (model.UnfilteredList == null)
-                    model.UnfilteredList = model.Books.ToList();
-                var newList = model.UnfilteredList.FindAll(book => book.Category == category).ToList();
-                LoadList(newList);
-            }
-        }
-
-        private void FilterListByTitle(string search)
-        {
-            if (string.IsNullOrEmpty(search))
-            {
-                if (model.UnfilteredList != null)
-                {
-                    LoadList(model.UnfilteredList);
-                    model.UnfilteredList = null;
-                }
-                else
-                {
-                    LoadList(new List<Book>());
-                }
-            }
-            else
-            {
-                if (model.UnfilteredList == null)
-                    model.UnfilteredList = model.Books.ToList();
-                var newList = model.UnfilteredList.FindAll(book => book.Title.ToUpper().Contains(search.ToUpper())).ToList();
-                LoadList(newList);
-            }
-        }
-
-        private void LoadList(List<Book> list)
-        {
-            model.Books.Clear();
-            foreach (var book in list)
-            {
-                model.Books.Add(book);
-            }
-        }
 
         private void DeleteEmptyFolders(string folder = null)
         {
@@ -275,38 +321,10 @@ namespace AllItEbooksCrawler
             }
         }
 
-        private void SortList(string column)
+        private string ClearNumberInCategory(string category)
         {
-            List<Book> newList = null;
-            switch (column)
-            {
-                case "PostId":
-                    if (GetSorting("PostId") < 0)
-                        newList = model.Books.OrderByDescending(b => b.PostId).ToList();
-                    else
-                        newList = model.Books.OrderBy(b => b.PostId).ToList();
-                    break;
-                case "Title":
-                    if (GetSorting("Title") < 0)
-                        newList = model.Books.OrderByDescending(b => b.Title).ToList();
-                    else
-                        newList = model.Books.OrderBy(b => b.Title).ToList();
-                    break;
-                case "Year":
-                    if (GetSorting("Year") < 0)
-                        newList = model.Books.OrderByDescending(b => b.Year).ToList();
-                    else
-                        newList = model.Books.OrderBy(b => b.Year).ToList();
-                    break;
-                case "Category":
-                    if (GetSorting("Category") < 0)
-                        newList = model.Books.OrderByDescending(b => b.Category).ToList();
-                    else
-                        newList = model.Books.OrderBy(b => b.Category).ToList();
-                    break;
-            }
-            if (newList != null)
-                LoadList(newList);
+            var re = new Regex(@"\(\d+\)");
+            return re.Replace(category, "");
         }
 
         private void Crawler_Notified(string message)
@@ -316,7 +334,7 @@ namespace AllItEbooksCrawler
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await crawler.UpdateAllFromWeb(corrections);
+            await crawler.UpdateAllFromWeb(TxtCorrections);
             UpdateFromDb();
         }
 
@@ -333,7 +351,8 @@ namespace AllItEbooksCrawler
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            crawler.Correct(corrections);
+            LoadCorrections();
+            crawler.Correct(TxtCorrections);
             DeleteEmptyFolders();
             UpdateFromDb();
             UpdateCategories();
@@ -356,17 +375,18 @@ namespace AllItEbooksCrawler
             if (e.OriginalSource as GridViewColumnHeader == null)
                 return;
             var column = (e.OriginalSource as GridViewColumnHeader).Content.ToString();
-            SortList(column);
+            model.SortList(column);
         }
 
         private void catListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             var items = listView.SelectedItems;
             // Фильтр по категории
             if (items.Count == 0)
             {
                 if (catListBox.SelectedItem != null)
-                    FilterListByCategory(catListBox.SelectedItem.ToString());
+                    model.FilterListByCategory(catListBox.SelectedItem.ToString());
                 return;
             }
             //Присвоение категории
@@ -430,11 +450,11 @@ namespace AllItEbooksCrawler
             if (!string.IsNullOrEmpty(search))
             {
                 if (search.Length >= 3)
-                    FilterListByTitle(search);
+                    model.FilterListByTitle(search);
             }
             else
             {
-                FilterListByTitle("");
+                model.FilterListByTitle("");
             }
         }
 
@@ -445,7 +465,15 @@ namespace AllItEbooksCrawler
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            SuggestCategories();
+            if (Suggested)
+            {
+                UnsuggestCategories();
+            }
+            else
+            {
+                SuggestCategories();
+            }
+            Suggested = !Suggested;
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
@@ -460,6 +488,11 @@ namespace AllItEbooksCrawler
                     model.Categories.Add(s);
                 }
             }
+        }
+
+        private void catListBox_TextInput(object sender, TextCompositionEventArgs e)
+        {
+
         }
     }
 }

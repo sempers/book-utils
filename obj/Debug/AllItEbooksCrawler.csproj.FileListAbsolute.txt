@@ -134,3 +134,4 @@ D:\prj\AllItEbookCrawler\bin\Debug\settings\categories.txt
 D:\prj\AllItEbookCrawler\bin\Debug\settings\corrections.txt
 D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\settings\categories.txt
 D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\settings\corrections.txt
+D:\prj\AllItEbookCrawler\bin\Debug\settings\suggestions.txt

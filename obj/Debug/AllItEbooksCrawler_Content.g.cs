@@ -14,5 +14,6 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("lib/system.data.sqlite.ef6.dll")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("lib/system.data.sqlite.linq.dll")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("lib/x86/sqlite.interop.dll")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("settings/suggestions.txt")]
 
 
