@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("settings/hidden.txt")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("settings/categories.txt")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("settings/corrections.txt")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("lib/system.data.sqlite.dll")]

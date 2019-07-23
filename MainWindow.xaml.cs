@@ -22,126 +22,11 @@ using HtmlAgilityPack;
 
 namespace AllItEbooksCrawler
 {
-    public class MainWindowModel : INotifyPropertyChanged
+    public class BookCategory
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private string _message;
-        public string Message { get { return _message; } set { _message = value; OnPropertyChanged("Message"); } }
-
-        private string _searchTitle;
-        public string SearchTitle { get { return _searchTitle; } set { _searchTitle = value; OnPropertyChanged("SearchTitle"); } }
-
-        public HashSet<string> Sortings = new HashSet<string>();
-
-        public ObservableCollection<Book> ShownBooks { get; set; }
-
-        public ObservableCollection<string> Categories { get; set; }
-
-        public List<Book> Books;
-
-        public MainWindowModel()
-        {
-            ShownBooks = new ObservableCollection<Book>();
-            Books = new List<Book>();
-            Categories = new ObservableCollection<string>();
-        }
-
-        public void LoadList(List<Book> list)
-        {
-            ShownBooks.Clear();
-            foreach (var book in list)
-            {
-                ShownBooks.Add(book);
-            }
-        }
-
-        private int GetSorting(string column)
-        {
-            if (Sortings.Contains(column))
-            {
-                Sortings.Remove(column);
-                return -1;
-            }
-            else
-            {
-                Sortings.Add(column);
-                return 1;
-            }
-        }
-
-        public void FilterListByCategory(string category)
-        {
-            if (category == "(no category)" || string.IsNullOrEmpty(category))
-            {
-                if (Books != null)
-                {
-                    LoadList(Books);
-                }
-            }
-            else
-            {
-                var filteredList = Books.FindAll(book => book.Category == category).ToList();
-                LoadList(filteredList);
-            }
-        }
-
-        public void FilterListByTitle(string search)
-        {
-            if (string.IsNullOrEmpty(search))
-            {
-                if (Books != null)
-                {
-                    LoadList(Books);
-                }
-            }
-            else
-            {
-                var filteredList = Books.FindAll(book => book.Title.ToUpper().Contains(search.ToUpper())).ToList();
-                LoadList(filteredList);
-            }
-        }
-
-        public void SortList(string column)
-        {
-            List<Book> sortedList = null;
-            switch (column)
-            {
-                case "PostId":
-                if (GetSorting("PostId") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.PostId).ToList();
-                else
-                    sortedList = ShownBooks.OrderBy(b => b.PostId).ToList();
-                break;
-                case "Title":
-                if (GetSorting("Title") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.Title).ToList();
-                else
-                    sortedList = ShownBooks.OrderBy(b => b.Title).ToList();
-                break;
-                case "Year":
-                if (GetSorting("Year") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.Year).ToList();
-                else
-                    sortedList = ShownBooks.OrderBy(b => b.Year).ToList();
-                break;
-                case "Category":
-                if (GetSorting("Category") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.Category).ToList();
-                else
-                    sortedList = ShownBooks.OrderBy(b => b.Category).ToList();
-                break;
-            }
-            if (sortedList != null)
-                LoadList(sortedList);
-        }
+        public string Value { get; set; }
+        public int Num { get; set;  }
     }
-
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -157,17 +42,18 @@ namespace AllItEbooksCrawler
         public bool Suggested { get; set; } = false;   
 
         public Dictionary<string, string> TxtCorrections { get; set; }
+        public List<string> TxtHidden { get; set; }
 
+        
         public MainWindow()
         {
             InitializeComponent();
             Book.ROOT = ROOT;
-            LoadCorrections();
             crawler = new Crawler();
             crawler.Notify += Crawler_Notified;
             DataContext = model;
-            UpdateFromDb();
-            UpdateCategories();
+            LoadBooksFromDb();
+            ListCategories();
         }
 
         public void LoadCorrections()
@@ -183,9 +69,29 @@ namespace AllItEbooksCrawler
             }
         }
 
-        private void UpdateFromDb()
+        public void LoadHidden()
+        {
+            if (File.Exists("./settings/hidden.txt"))
+            {
+                TxtHidden = File.ReadAllLines("./settings/hidden.txt").ToList();
+            }
+        }
+
+        private bool HiddenIncludes(Book b)
+        {
+            foreach (var line in TxtHidden)
+            {
+                if (line.Contains("*") && b.FirstCategory.Contains(line.Replace("*", "")) || b.FirstCategory == line)
+                    return true;
+            }
+            return false;
+        }
+
+        private void LoadBooksFromDb()
         {
             var list = crawler.GetFromDb();
+            LoadHidden();
+            int count = list.RemoveAll(b => HiddenIncludes(b));
             list.ForEach(b =>
             {
                 if (File.Exists(b.LocalPath))
@@ -205,7 +111,7 @@ namespace AllItEbooksCrawler
                 Directory.CreateDirectory(path);
         }
 
-        public void UpdateCategories()
+        public void ListCategories()
         {
             Dictionary<string, int> dict = new Dictionary<string, int>();
             foreach (var book in model.ShownBooks)
@@ -334,8 +240,8 @@ namespace AllItEbooksCrawler
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await crawler.UpdateAllFromWeb(TxtCorrections);
-            UpdateFromDb();
+            await crawler.UpdateDbFromWeb(TxtCorrections);
+            LoadBooksFromDb();
         }
 
         private void ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -354,15 +260,21 @@ namespace AllItEbooksCrawler
             LoadCorrections();
             crawler.Correct(TxtCorrections);
             DeleteEmptyFolders();
-            UpdateFromDb();
-            UpdateCategories();
+            LoadBooksFromDb();
+            ListCategories();
         }
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Book item = listView.SelectedItem as Book;
             if (item != null)
+            {
                 catListBox.SelectedValue = item.FirstCategory;
+                model.FilterMode = false;
+            } else
+            {
+                model.FilterMode = true;
+            }
         }
 
         private void ListView_Click(object sender, RoutedEventArgs e)
@@ -380,10 +292,9 @@ namespace AllItEbooksCrawler
 
         private void catListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             var items = listView.SelectedItems;
             // Фильтр по категории
-            if (items.Count == 0)
+            if (items.Count == 0 || model.FilterMode)
             {
                 if (catListBox.SelectedItem != null)
                     model.FilterListByCategory(catListBox.SelectedItem.ToString());

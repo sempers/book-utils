@@ -66,6 +66,7 @@ namespace AllItEbooksCrawler
                             book.Category = book.Category.Replace(correction.Key.Trim(), correction.Value.Trim());
                         }
                     book.Category = book.FirstCategory;
+                    book.Summary = book.Summary.Replace("&#8230;", "...");
                 }
                 db.SaveChanges();
             }
@@ -86,7 +87,7 @@ namespace AllItEbooksCrawler
             }
         }
 
-        public async Task UpdateAllFromWeb(Dictionary<string, string> corrections)
+        public async Task UpdateDbFromWeb(Dictionary<string, string> corrections)
         {
             using (var db = new AppDbContext())
             {

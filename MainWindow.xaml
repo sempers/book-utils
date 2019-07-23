@@ -58,7 +58,7 @@
         <DataTemplate x:Key="linkTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding DownloadUrl}"></TextBlock>
         </DataTemplate>
-
+        
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -69,18 +69,26 @@
         <StackPanel HorizontalAlignment="Left" Height="40" Grid.Row="0" Orientation="Horizontal" Margin="125,0,0,0">
             <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click"></Button>
             <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_1"></Button>
-            <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_2"></Button>
-            
+            <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_2"></Button>            
             <TextBox VerticalContentAlignment="Center" Width="500" Margin="5" Text="{Binding SearchTitle}" TextChanged="TextBox_TextChanged_1"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="Button_Click_5"></Button>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged" TextInput="catListBox_TextInput"></ComboBox>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged" TextInput="catListBox_TextInput">
+                <!--<ComboBoxItem IsSelected="True">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding V}"></TextBlock>
+                    </StackPanel>
+                </ComboBoxItem>-->
+            </ComboBox>
             <Button Content="Filter mode" Margin="5" Padding="5" Click="Button_Click_3"></Button>
             <Button Content="Suggest" Margin="5" Padding="5" Click="Button_Click_4"></Button>
         </StackPanel>
         <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=ShownBooks, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1">
             <ListView.Resources>
-                <Style TargetType="{x:Type ListViewItem}">
+                <Style  TargetType="{x:Type ListView}">
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding FilterMode}" Value="True">
+                            <Setter Property="Background" Value="Honeydew"/>
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </ListView.Resources>
