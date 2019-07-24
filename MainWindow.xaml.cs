@@ -58,10 +58,10 @@ namespace AllItEbooksCrawler
 
         public void LoadCorrections()
         {
-            if (File.Exists("./settings/corrections.txt"))
+            if (File.Exists("../../settings/corrections.txt"))
             {
                 TxtCorrections = new Dictionary<string, string>();
-                foreach (var line in File.ReadAllLines("./settings/corrections.txt"))
+                foreach (var line in File.ReadAllLines("../../settings/corrections.txt"))
                 {
                     var split = line.Split('=');
                     TxtCorrections.Add(split[0], split[1]);
@@ -71,9 +71,9 @@ namespace AllItEbooksCrawler
 
         public void LoadHidden()
         {
-            if (File.Exists("./settings/hidden.txt"))
+            if (File.Exists("../../settings/hidden.txt"))
             {
-                TxtHidden = File.ReadAllLines("./settings/hidden.txt").ToList();
+                TxtHidden = File.ReadAllLines("../../settings/hidden.txt").ToList();
             }
         }
 
@@ -123,9 +123,9 @@ namespace AllItEbooksCrawler
                     else
                         dict[firstCat]++;
             }
-            foreach (var add in File.ReadAllLines("./settings/categories.txt"))
+            foreach (var add in File.ReadAllLines("../../settings/categories.txt"))
             {
-                if (!dict.ContainsKey(add))
+                if (!string.IsNullOrEmpty(add) && !dict.ContainsKey(add))
                     dict.Add(add, 0);
             }
             List<string> list = new List<string>();
@@ -156,9 +156,9 @@ namespace AllItEbooksCrawler
 
         public void SuggestCategories()
         {
-            if (File.Exists("./settings/suggestions.txt")) {
+            if (File.Exists("../../settings/suggestions.txt")) {
                 var dict = new Dictionary<string, string>();
-                foreach (var line in File.ReadAllLines("./settings/suggestions.txt"))
+                foreach (var line in File.ReadAllLines("../../settings/suggestions.txt"))
                 {
                     var split = line.Split('=');
                     dict.Add(split[0], split[1]);
@@ -294,7 +294,7 @@ namespace AllItEbooksCrawler
         {
             var items = listView.SelectedItems;
             // Фильтр по категории
-            if (items.Count == 0 || model.FilterMode)
+            if (items.Count == 0)
             {
                 if (catListBox.SelectedItem != null)
                     model.FilterListByCategory(catListBox.SelectedItem.ToString());
@@ -397,16 +397,27 @@ namespace AllItEbooksCrawler
             Suggested = !Suggested;
         }
 
+        private void UpdateCategories()
+        {
+            var sorted = model.Categories.OrderBy(x => x).ToList();
+            model.Categories.Clear();
+            foreach (var s in sorted)
+            {
+                model.Categories.Add(s);
+            }
+        }
+
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(catListBox.Text) && !model.Categories.Contains(catListBox.Text))
             {
-                model.Categories.Add(catListBox.Text);
-                var sorted = model.Categories.OrderBy(x => x).ToList();
-                model.Categories.Clear();
-                foreach (var s in sorted)
+                var newCategory = catListBox.Text;
+                model.Categories.Add(newCategory);
+                UpdateCategories();
+                var item = listView.SelectedItem as Book;
+                if (item!=null && string.IsNullOrEmpty(item.Category))
                 {
-                    model.Categories.Add(s);
+                    item.Category = newCategory; 
                 }
             }
         }
@@ -414,6 +425,11 @@ namespace AllItEbooksCrawler
         private void catListBox_TextInput(object sender, TextCompositionEventArgs e)
         {
 
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            ListCategories();
         }
     }
 }

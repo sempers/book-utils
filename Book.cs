@@ -31,9 +31,6 @@ namespace AllItEbooksCrawler
         private string _category { get; set; }
         public string Category { get { return _category; } set { _category = value; OnPropertyChanged("Category"); } }
 
-        private bool _categoryEdited { get; set; }
-        public bool CategoryEdited { get { return _categoryEdited; } set { _categoryEdited = value; OnPropertyChanged("CategoryEdited"); } }
-
         public static ObservableCollection<string> Categories { get; set; } = new ObservableCollection<string>();
 
         public string OldCategory { get; set; }

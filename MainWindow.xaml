@@ -81,6 +81,7 @@
             </ComboBox>
             <Button Content="Filter mode" Margin="5" Padding="5" Click="Button_Click_3"></Button>
             <Button Content="Suggest" Margin="5" Padding="5" Click="Button_Click_4"></Button>
+            <Button Content="Update" Margin="5" Padding="5" Click="Button_Click_6"></Button>
         </StackPanel>
         <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=ShownBooks, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1">
             <ListView.Resources>
