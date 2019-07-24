@@ -30,7 +30,7 @@ namespace AllItEbooksCrawler
         }
     }
 
-    public class Crawler
+    public class Crawler : IDisposable
     {
         public static int PAGES_NUM = 50;
 
@@ -38,25 +38,21 @@ namespace AllItEbooksCrawler
 
         public event NotifyHandler Notify;
 
-        public List<Book> GetFromDb()
+        private AppDbContext db;
+        public Crawler()
         {
-            using (var db = new AppDbContext())
-            {
-                return db.Books.ToList();
-            }
+            db = new AppDbContext();
         }
 
-        public void MakeDir(string path)
+        public List<Book> GetFromDb()
         {
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
+            return db.Books.ToList();            
         }
 
         public void Correct(Dictionary<string, string> corrections)
         {
             Notify("Starting correction...");
-            using (var db = new AppDbContext())
-            {
+
                 foreach (var book in db.Books)
                 {
                     book.Title = book.Title.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
@@ -69,14 +65,13 @@ namespace AllItEbooksCrawler
                     book.Summary = book.Summary.Replace("&#8230;", "...");
                 }
                 db.SaveChanges();
-            }
+            
             Notify("Correction finished.");
         }
 
         public void ChangeCategory(int id, string category)
         {
-            using (var db = new AppDbContext())
-            {
+
                 var book = db.Books.Find(id);
                 if (book != null)
                 {
@@ -84,20 +79,19 @@ namespace AllItEbooksCrawler
                     book.Approved = 1;
                     db.SaveChanges();
                 }
-            }
+            
         }
 
         public async Task UpdateDbFromWeb(Dictionary<string, string> corrections)
         {
-            using (var db = new AppDbContext())
-            {
+
 
                 Notify("Updating all from web...");
                 HtmlDocument listPage = null;
                 HtmlWeb web = new HtmlWeb();
                 HtmlDocument detailPage = null;
 
-                var url = "http://www.allitebooks.org/page";                
+                var url = "http://www.allitebooks.org/page";
 
                 listPage = await web.LoadFromWebAsync("http://www.allitebooks.org");
                 var pagination = listPage.DocumentNode.SelectNodes("//div[@class='pagination clearfix']/a");
@@ -109,7 +103,7 @@ namespace AllItEbooksCrawler
                     var errUrls = new List<string>();
                     listPage = await web.LoadFromWebAsync($"{url}/{page}");
                     var pageBookNodes = listPage.DocumentNode.SelectNodes("//article");
-                    
+
                     foreach (var bookElement in pageBookNodes)
                     {
                         var book = new Book();
@@ -122,12 +116,13 @@ namespace AllItEbooksCrawler
                                 if (alreadyThereCounter > 10)
                                 {
                                     goto final;
-                                } else
+                                }
+                                else
                                 {
                                     continue;
                                 }
                             }
-                            
+
                             book.Title = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a").InnerText;
                             book.Title = book.Title.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
                             book.Url = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a").Attributes["href"].Value;
@@ -149,14 +144,14 @@ namespace AllItEbooksCrawler
                                     }
                                     s = s.Substring(0, s.Length - 1);
                                     book.Category = s;
-                                    
+
                                     foreach (var correction in corrections)
                                     {
                                         book.Category = book.Category.Replace(correction.Key.Trim(), correction.Value.Trim());
                                     }
                                     book.Category = book.FirstCategory;
                                 }
-                                    
+
                                 if (dtNodes[i].InnerText == "Pages:")
                                     book.Pages = int.Parse(ddNodes[i].InnerText);
                                 if (dtNodes[i].InnerText.Contains("Author"))
@@ -169,6 +164,7 @@ namespace AllItEbooksCrawler
                                 if (href.Contains(".pdf"))
                                     book.DownloadUrl = href;
                             }
+                            book.Sync = 0;
                             Notify($"Loading page {page}...");
                             list.Add(book);
                         }
@@ -187,13 +183,28 @@ namespace AllItEbooksCrawler
                         File.AppendAllLines("log.txt", errUrls.ToArray());
                         Thread.Sleep(DELAY);
                     }
-                   
+
                     Notify($"Page {page} saved.");
                     if (alreadyThereCounter > 10)
                         break;
                 }
                 Notify("Updating all finished.");
+            
+        }
+
+        internal void SyncBook(int id)
+        {
+            var book = db.Books.Find(id);
+            if (book != null)
+            {
+                book.Sync = 1;
+                db.SaveChanges();
             }
+        }
+
+        public void Dispose()
+        {
+            db.Dispose();
         }
     }
 }

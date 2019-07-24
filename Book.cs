@@ -37,6 +37,8 @@ namespace AllItEbooksCrawler
         public string ISBN { get; set; }
         public int Pages { get; set; }
 
+        public int Sync { get; set; }
+
         private int _approved;
         public int Approved { get { return _approved; } set { _approved = value; OnPropertyChanged("Approved"); } }
 

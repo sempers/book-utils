@@ -92,9 +92,18 @@ namespace AllItEbooksCrawler
             var list = crawler.GetFromDb();
             LoadHidden();
             int count = list.RemoveAll(b => HiddenIncludes(b));
+            int syncNotDownloaded = 0;
             list.ForEach(b =>
             {
                 if (File.Exists(b.LocalPath))
+                {
+                    b.IsChecked = true;
+                    if (b.Sync == 0)
+                    {
+                        crawler.SyncBook(b.Id);
+                        syncNotDownloaded++;
+                    }
+                } else if (b.Sync > 0)
                 {
                     b.IsChecked = true;
                 }
@@ -103,6 +112,7 @@ namespace AllItEbooksCrawler
             model.LoadList(list);
             model.Sortings.Add("PostId");
             model.SortList("PostId");
+            Notify($"Books loaded ok. {(syncNotDownloaded > 0 ? syncNotDownloaded.ToString() + @"books to synchronize." : @"")}");
         }
 
         public void MakeDir(string path)
