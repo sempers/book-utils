@@ -332,26 +332,35 @@ namespace AllItEbooksCrawler
                 return;
             if (e.Key == Key.Space)
             {
-                var item = listView.SelectedItem as Book;
-                if (item == null)
-                    return;
-                item.IsChecked = !item.IsChecked;
+                var items = listView.SelectedItems;
+                foreach (Book item in items)
+                {
+                    if (item == null)
+                        return;
+                    item.IsChecked = !item.IsChecked;
+                }
             }
             if (e.Key == Key.Return)
             {
-                var item = listView.SelectedItem as Book;
-                if (item == null)
-                    return;
-                item.Suggested = false; item.Approved = 1;
-                crawler.ChangeCategory(item.Id, item.Category);
+                var items = listView.SelectedItems;
+                foreach (Book item in items)
+                {
+                    if (item == null)
+                        return;
+                    item.Suggested = false; item.Approved = 1;
+                    crawler.ChangeCategory(item.Id, item.Category);
+                }
             }
             if (e.Key == Key.Back)
             {
-                var item = listView.SelectedItem as Book;
-                if (item == null)
-                    return;
-                item.Suggested = false; item.Approved = 1; item.Category = item.OldCategory;
-                crawler.ChangeCategory(item.Id, item.Category);
+                var items = listView.SelectedItems;
+                foreach (Book item in items)
+                {
+                    if (item == null)
+                        return;
+                    item.Suggested = false; item.Approved = 1; item.Category = item.OldCategory;
+                    crawler.ChangeCategory(item.Id, item.Category);
+                }
             }
         }
 
@@ -372,6 +381,7 @@ namespace AllItEbooksCrawler
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             listView.SelectedIndex = -1;
+            model.FilterMode = true;
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
