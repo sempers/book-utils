@@ -96,5 +96,16 @@ namespace AllItEbooksCrawler
                 return Path.Combine(ROOT, FirstCategory.Replace("/","\\"), PdfFileName);
             }
         }
+
+        public bool IsDownloaded
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(LocalPath))
+                    return false;
+                else
+                    return File.Exists(LocalPath);
+            }
+        }
     }
 }

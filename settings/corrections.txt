@@ -16,3 +16,4 @@ networking/cloud-computing=administration/cloud-virtualization
 networking/network-administration=administration/network-administration
 networking=administration/network-administration
 programming/net=programming/dot-net
+web/xml=programming/xml

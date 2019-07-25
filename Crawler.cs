@@ -192,12 +192,12 @@ namespace AllItEbooksCrawler
             
         }
 
-        internal void SyncBook(int id)
+        internal void SyncBook(int id, int value = 1)
         {
             var book = db.Books.Find(id);
             if (book != null)
             {
-                book.Sync = 1;
+                book.Sync = value;
                 db.SaveChanges();
             }
         }

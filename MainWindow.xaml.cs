@@ -91,28 +91,31 @@ namespace AllItEbooksCrawler
         {
             var list = crawler.GetFromDb();
             LoadHidden();
-            int count = list.RemoveAll(b => HiddenIncludes(b));
+            int count = list.RemoveAll(book => HiddenIncludes(book));
             int syncNotDownloaded = 0;
-            list.ForEach(b =>
+            int downloaded = 0;
+            list.ForEach(book =>
             {
-                if (File.Exists(b.LocalPath))
+                if (book.IsDownloaded)
                 {
-                    b.IsChecked = true;
-                    if (b.Sync == 0)
+                    book.IsChecked = true;
+                    downloaded++;
+                    if (book.Sync == 0)
                     {
-                        crawler.SyncBook(b.Id);
+                        crawler.SyncBook(book.Id);
                         syncNotDownloaded++;
                     }
-                } else if (b.Sync > 0)
+                }
+                else if (book.Sync > 0)
                 {
-                    b.IsChecked = true;
+                    book.IsChecked = true;
                 }
             });
             model.Books = list;
             model.LoadList(list);
             model.Sortings.Add("PostId");
             model.SortList("PostId");
-            Notify($"Books loaded ok. {(syncNotDownloaded > 0 ? syncNotDownloaded.ToString() + @"books to synchronize." : @"")}");
+            Notify($"Books loaded ok. Total {downloaded} books downloaded. {(syncNotDownloaded > 0 ? $"{syncNotDownloaded} books to synchronize." : "")}");
         }
 
         public void MakeDir(string path)
@@ -173,7 +176,7 @@ namespace AllItEbooksCrawler
                     var split = line.Split('=');
                     dict.Add(split[0], split[1]);
                 }
-                foreach (var book in model.ShownBooks.Where(b => b.Approved == 0))
+                foreach (var book in model.ShownBooks.Where(book => book.Approved == 0))
                 {
                     var titleWords = book.Title.Replace(",", "").Split(' ').ToList();
                     foreach (var kvPair in dict)
@@ -200,25 +203,26 @@ namespace AllItEbooksCrawler
 
         private async Task DownloadCheckedAsync()
         {
-            var subset = model.ShownBooks.Where(b => b.IsChecked && !string.IsNullOrEmpty(b.DownloadUrl) && !File.Exists(b.LocalPath)).ToList();
-            if (subset.Count == 0)
+            var booksToDownload = model.ShownBooks.Where(book => book.IsChecked && !string.IsNullOrEmpty(book.DownloadUrl) && !book.IsDownloaded).ToList();
+            if (booksToDownload.Count == 0)
                 return;
             Notify("Downloads initialized...");
-
-            int c = 0; int total = subset.Count;
-            foreach (var book in subset)
+            int count = 0;
+            int total = booksToDownload.Count;
+            foreach (var book in booksToDownload)
             {
-                c++;
-                Notify($"Downloading book {c}/{total}");
+                count++;
+                if (book.Sync == 0)
+                    crawler.SyncBook(book.Id);
+                Notify($"Downloading book {count}/{total}");
                 using (var wc = new WebClient())
                 {
-                    var path = book.LocalPath;
-                    MakeDir(Path.GetDirectoryName(path));
-                    if (path != null && !File.Exists(path))
-                        await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), path);
+                    MakeDir(Path.GetDirectoryName(book.LocalPath));
+                    if (!book.IsDownloaded)
+                        await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
                 }
             }
-            Application.Current.Dispatcher.Invoke(() => { model.Message = "Downloads finished."; });
+            Application.Current.Dispatcher.Invoke(() => { model.Message = $"Downloads finished. Total {model.Books.Count(book => book.IsDownloaded)} books downloaded."; });
         }
 
 
@@ -272,6 +276,7 @@ namespace AllItEbooksCrawler
             DeleteEmptyFolders();
             LoadBooksFromDb();
             ListCategories();
+            Notify("Corrections made. Books reloaded.");
         }
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -285,11 +290,6 @@ namespace AllItEbooksCrawler
             {
                 model.FilterMode = true;
             }
-        }
-
-        private void ListView_Click(object sender, RoutedEventArgs e)
-        {
-            var x = 1;
         }
 
         private void ListView_Click_1(object sender, RoutedEventArgs e)
@@ -417,7 +417,7 @@ namespace AllItEbooksCrawler
             }
         }
 
-        private void Button_Click_5(object sender, RoutedEventArgs e)
+        private void AddCategory()
         {
             if (!string.IsNullOrEmpty(catListBox.Text) && !model.Categories.Contains(catListBox.Text))
             {
@@ -425,21 +425,42 @@ namespace AllItEbooksCrawler
                 model.Categories.Add(newCategory);
                 UpdateCategories();
                 var item = listView.SelectedItem as Book;
-                if (item!=null && string.IsNullOrEmpty(item.Category))
+                if (item != null && string.IsNullOrEmpty(item.Category))
                 {
-                    item.Category = newCategory; 
+                    item.Category = newCategory;
                 }
             }
         }
 
-        private void catListBox_TextInput(object sender, TextCompositionEventArgs e)
+        private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-
+            AddCategory();
         }
-
+        
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
             ListCategories();
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            var book = (e.OriginalSource as CheckBox).DataContext as Book;
+            if (book != null && !book.IsChecked && book.IsDownloaded)
+            {
+                if (MessageBox.Show($"Do you really want to unsync '{book.Title}' and delete the file?", "Warning", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    crawler.SyncBook(book.Id, 0);
+                    try
+                    {
+                        File.Delete(book.LocalPath);
+                    }
+                    catch
+                    {
+                        
+                    }
+                    Notify($"Unsynced ok. Total {model.Books.Count(b => b.IsDownloaded)} books downloaded.");
+                }
+            }
         }
     }
 }
