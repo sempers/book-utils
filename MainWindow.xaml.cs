@@ -93,6 +93,7 @@ namespace AllItEbooksCrawler
             LoadHidden();
             int count = list.RemoveAll(book => HiddenIncludes(book));
             int syncNotDownloaded = 0;
+            int downloadedNotSynced = 0;
             int downloaded = 0;
             list.ForEach(book =>
             {
@@ -100,15 +101,16 @@ namespace AllItEbooksCrawler
                 {
                     book.IsChecked = true;
                     downloaded++;
-                    if (book.Sync == 0)
+                    if (book.Sync == 0)     //downloaded but not synced
                     {
                         crawler.SyncBook(book.Id);
-                        syncNotDownloaded++;
+                        downloadedNotSynced++;
                     }
                 }
                 else if (book.Sync > 0)
                 {
                     book.IsChecked = true;
+                    syncNotDownloaded++;
                 }
             });
             model.Books = list;
@@ -201,7 +203,7 @@ namespace AllItEbooksCrawler
             Application.Current.Dispatcher.Invoke(() => { model.Message = message; });
         }
 
-        private async Task DownloadCheckedAsync()
+        private async Task DownloadBooksAsync()
         {
             var booksToDownload = model.ShownBooks.Where(book => book.IsChecked && !string.IsNullOrEmpty(book.DownloadUrl) && !book.IsDownloaded).ToList();
             if (booksToDownload.Count == 0)
@@ -266,7 +268,7 @@ namespace AllItEbooksCrawler
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            DownloadCheckedAsync();
+            DownloadBooksAsync();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)
