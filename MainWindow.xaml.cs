@@ -167,7 +167,7 @@ namespace AllItEbooksCrawler
                     book.Category = book.OldCategory;
                 }
             }
-            Notify("Suggestions unfiled.")
+            Notify("Suggestions unfiled.");
         }
 
         public void SuggestCategories()
@@ -321,20 +321,14 @@ namespace AllItEbooksCrawler
                     continue;
                 else
                 {
+                    var oldPath = item.IsDownloaded ? item.LocalPath : null;
                     item.Category = catListBox.SelectedItem.ToString();
                     if (item.Approved == 0) item.Approved = 1;
                     if (item.Suggested) item.Suggested = false;
-                    var oldPath = item.LocalPath;
                     crawler.ChangeCategory(item.Id, item.Category);
-                    if (File.Exists(oldPath))
+                    if (oldPath != null && oldPath != item.LocalPath)
                     {
-                        var newPath = item.LocalPath;
-                        MakeDir(Path.GetDirectoryName(newPath));
-                        try
-                        {
-                            File.Move(oldPath, newPath);
-                        }
-                        catch { }
+                        item.AutoMove(oldPath);
                     }
                 }
             }

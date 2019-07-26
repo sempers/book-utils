@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AllItEbooksCrawler
 {
-    public class Book: INotifyPropertyChanged
+    public class Book : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -43,7 +43,7 @@ namespace AllItEbooksCrawler
         public int Approved { get { return _approved; } set { _approved = value; OnPropertyChanged("Approved"); } }
 
         public bool _suggested;
-        public bool Suggested { get { return _suggested; } set { _suggested = value; OnPropertyChanged("Suggested");  } }
+        public bool Suggested { get { return _suggested; } set { _suggested = value; OnPropertyChanged("Suggested"); } }
 
         private bool _isChecked;
         public bool IsChecked { get { return _isChecked; } set { _isChecked = value; OnPropertyChanged("IsChecked"); } }
@@ -93,7 +93,7 @@ namespace AllItEbooksCrawler
         {
             get
             {
-                return Path.Combine(ROOT, FirstCategory.Replace("/","\\"), PdfFileName);
+                return Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), PdfFileName);
             }
         }
 
@@ -107,5 +107,22 @@ namespace AllItEbooksCrawler
                     return File.Exists(LocalPath);
             }
         }
+
+        public void AutoMove(string oldPath)
+        {
+            if (oldPath == null)
+                return;
+            try
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(LocalPath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(LocalPath));
+                File.Move(oldPath, LocalPath);
+            }
+            catch
+            {
+
+            }
+        }
     }
 }
+
