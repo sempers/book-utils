@@ -264,8 +264,8 @@ namespace AllItEbooksCrawler
 
         private void ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var item = ((FrameworkElement)e.OriginalSource).DataContext as Book;
-            Process.Start(item.Url);
+            var book = ((FrameworkElement)e.OriginalSource).DataContext as Book;
+            Process.Start(book.Url);
         }
 
         private async void Button_Click_1(object sender, RoutedEventArgs e)
@@ -285,10 +285,10 @@ namespace AllItEbooksCrawler
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Book item = listView.SelectedItem as Book;
-            if (item != null)
+            Book book = listView.SelectedItem as Book;
+            if (book != null)
             {
-                catListBox.SelectedValue = item.FirstCategory;
+                catListBox.SelectedValue = book.FirstCategory;
                 model.FilterMode = false;
             } else
             {
@@ -306,29 +306,29 @@ namespace AllItEbooksCrawler
 
         private void catListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var items = listView.SelectedItems;
+            var books = listView.SelectedItems;
             // Фильтр по категории
-            if (items.Count == 0)
+            if (books.Count == 0)
             {
                 if (catListBox.SelectedItem != null)
                     model.FilterListByCategory(catListBox.SelectedItem.ToString());
                 return;
             }
             //Присвоение категории
-            foreach (Book item in items)
+            foreach (Book book in books)
             {
-                if (catListBox.SelectedItem == null || item.FirstCategory == catListBox.SelectedItem.ToString())
+                if (catListBox.SelectedItem == null || book.FirstCategory == catListBox.SelectedItem.ToString())
                     continue;
                 else
                 {
-                    var oldPath = item.IsDownloaded ? item.LocalPath : null;
-                    item.Category = catListBox.SelectedItem.ToString();
-                    if (item.Approved == 0) item.Approved = 1;
-                    if (item.Suggested) item.Suggested = false;
-                    crawler.ChangeCategory(item.Id, item.Category);
-                    if (oldPath != null && oldPath != item.LocalPath)
+                    var oldPath = book.IsDownloaded ? book.LocalPath : null;
+                    book.Category = catListBox.SelectedItem.ToString();
+                    if (book.Approved == 0) book.Approved = 1;
+                    if (book.Suggested) book.Suggested = false;
+                    crawler.ChangeCategory(book.Id, book.Category);
+                    if (oldPath != null && oldPath != book.LocalPath)
                     {
-                        item.AutoMove(oldPath);
+                        book.AutoMove(oldPath);
                     }
                 }
             }
@@ -340,34 +340,34 @@ namespace AllItEbooksCrawler
                 return;
             if (e.Key == Key.Space)
             {
-                var items = listView.SelectedItems;
-                foreach (Book item in items)
+                var books = listView.SelectedItems;
+                foreach (Book book in books)
                 {
-                    if (item == null)
+                    if (book == null)
                         return;
-                    item.IsChecked = !item.IsChecked;
+                    book.IsChecked = !book.IsChecked;
                 }
             }
             if (e.Key == Key.Return)
             {
-                var items = listView.SelectedItems;
-                foreach (Book item in items)
+                var books = listView.SelectedItems;
+                foreach (Book book in books)
                 {
-                    if (item == null)
+                    if (book == null)
                         return;
-                    item.Suggested = false; item.Approved = 1;
-                    crawler.ChangeCategory(item.Id, item.Category);
+                    book.Suggested = false; book.Approved = 1;
+                    crawler.ChangeCategory(book.Id, book.Category);
                 }
             }
             if (e.Key == Key.Back)
             {
-                var items = listView.SelectedItems;
-                foreach (Book item in items)
+                var books = listView.SelectedItems;
+                foreach (Book book in books)
                 {
-                    if (item == null)
+                    if (book == null)
                         return;
-                    item.Suggested = false; item.Approved = 1; item.Category = item.OldCategory;
-                    crawler.ChangeCategory(item.Id, item.Category);
+                    book.Suggested = false; book.Approved = 1; book.Category = book.OldCategory;
+                    crawler.ChangeCategory(book.Id, book.Category);
                 }
             }
         }
@@ -422,10 +422,10 @@ namespace AllItEbooksCrawler
                 var newCategory = catListBox.Text;
                 model.Categories.Add(newCategory);
                 UpdateCategories();
-                var item = listView.SelectedItem as Book;
-                if (item != null && string.IsNullOrEmpty(item.Category))
+                var book = listView.SelectedItem as Book;
+                if (book != null && string.IsNullOrEmpty(book.Category))
                 {
-                    item.Category = newCategory;
+                    book.Category = newCategory;
                 }
             }
         }
