@@ -167,6 +167,7 @@ namespace AllItEbooksCrawler
                     book.Category = book.OldCategory;
                 }
             }
+            Notify("Suggestions unfiled.")
         }
 
         public void SuggestCategories()
@@ -195,6 +196,7 @@ namespace AllItEbooksCrawler
                         }
                     }
                 }
+                Notify("Suggestions for current list filed.");
             }
         }
 
@@ -216,7 +218,7 @@ namespace AllItEbooksCrawler
                 count++;
                 if (book.Sync == 0)
                     crawler.SyncBook(book.Id);
-                Notify($"Downloading book {count}/{total}");
+                Notify($"Downloading book {count}/{total}: {book.Title}");
                 using (var wc = new WebClient())
                 {
                     MakeDir(Path.GetDirectoryName(book.LocalPath));
@@ -266,9 +268,9 @@ namespace AllItEbooksCrawler
             Process.Start(item.Url);
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            DownloadBooksAsync();
+            await DownloadBooksAsync();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)

@@ -65,10 +65,12 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="36"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel HorizontalAlignment="Left" Height="40" Grid.Row="0" Orientation="Horizontal" Margin="125,0,0,0">
-            <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click"></Button>
+        <StackPanel HorizontalAlignment="Left" Height="40" Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,0">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Width="325">
+            <Button Content="Update from web"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click"></Button>
             <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_1"></Button>
-            <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_2"></Button>            
+            <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_2"></Button>
+            </StackPanel>
             <TextBox VerticalContentAlignment="Center" Width="500" Margin="5" Text="{Binding SearchTitle}" TextChanged="TextBox_TextChanged_1"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="Button_Click_5"></Button>
             <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged"></ComboBox>
