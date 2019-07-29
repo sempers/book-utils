@@ -216,15 +216,23 @@ namespace AllItEbooksCrawler
             int total = booksToDownload.Count;
             foreach (var book in booksToDownload)
             {
-                count++;
-                if (book.Sync == 0)
-                    crawler.SyncBook(book.Id);
-                Notify($"Downloading book {count}/{total}: {book.Title}");
-                using (var wc = new WebClient())
+                try
                 {
-                    MakeDir(Path.GetDirectoryName(book.LocalPath));
-                    if (!book.IsDownloaded)
-                        await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
+                    count++;
+                    if (book.Sync == 0)
+                        crawler.SyncBook(book.Id);
+                    Notify($"Downloading book {count}/{total}: {book.Title}");
+                    using (var wc = new WebClient())
+                    {
+                        MakeDir(Path.GetDirectoryName(book.LocalPath));
+                        if (!book.IsDownloaded)
+                            await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"Exception while downloading {book.DownloadUrl}: {e.Message}");
+                    continue;
                 }
             }
             Application.Current.Dispatcher.Invoke(() => { model.Message = $"Downloads finished. Total {model.Books.Count(book => book.IsDownloaded)} books downloaded."; });
