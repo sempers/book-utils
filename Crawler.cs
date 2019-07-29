@@ -39,6 +39,27 @@ namespace AllItEbooksCrawler
         public event NotifyHandler Notify;
 
         private AppDbContext db;
+
+        public void AddBook(Book model)
+        {
+            db.Books.Add(model);
+            db.SaveChanges();
+        }
+
+        public void SaveBook(Book model)
+        {
+            db.SaveChanges();
+        }
+
+        public int GetCustomPostId()
+        {
+            var min = db.Books.Min(b => b.PostId);
+            if (min > 0)
+                return -1;
+            else
+                return min - 1;
+        }
+
         public Crawler()
         {
             db = new AppDbContext();
@@ -87,13 +108,10 @@ namespace AllItEbooksCrawler
                 book.Approved = 1;
                 db.SaveChanges();
             }
-
         }
 
-        public async Task UpdateDbFromWeb(Dictionary<string, string> corrections)
+        public async Task<int> UpdateDbFromWeb(Dictionary<string, string> corrections)
         {
-
-
             Notify("Updating all from web...");
             HtmlDocument listPage = null;
             HtmlWeb web = new HtmlWeb();
@@ -105,6 +123,7 @@ namespace AllItEbooksCrawler
             var pagination = listPage.DocumentNode.SelectNodes("//div[@class='pagination clearfix']/a");
             PAGES_NUM = int.Parse(pagination.Last().InnerText);
             var alreadyThereCounter = 0;
+            int booksAdded = 0;
             for (var page = 1; page <= PAGES_NUM; page++)
             {
                 var list = new List<Book>();
@@ -185,7 +204,10 @@ namespace AllItEbooksCrawler
                     foreach (var b in list)
                     {
                         if (!db.Books.Any(_b => _b.PostId == b.PostId))
+                        {
                             db.Books.Add(b);
+                            booksAdded++;
+                        }
                     }
                     await db.SaveChangesAsync();
                     File.AppendAllLines("log.txt", errUrls.ToArray());
@@ -196,8 +218,8 @@ namespace AllItEbooksCrawler
                 if (alreadyThereCounter > 10)
                     break;
             }
-            Notify("Updating all finished.");
-
+            Notify($"Updating all finished. Added {booksAdded} new books.");
+            return booksAdded;
         }
 
         internal void SyncBook(int id, int value = 1)

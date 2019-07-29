@@ -1,0 +1,46 @@
+﻿<Window x:Class="AllItEbooksCrawler.BookWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AllItEbooksCrawler"
+        mc:Ignorable="d"
+        Title="Book details" Height="381.413" Width="544.907" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" >
+    <Window.Resources>
+        <local:Book x:Key="book"/>
+    </Window.Resources>
+    <StackPanel Margin="0,10,0,0" VerticalAlignment="Top">
+        <StackPanel  Orientation="Horizontal" Height="40">
+            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">PostId</Label>
+            <TextBox Text="{Binding PostId}" IsEnabled="False" Width="95" Margin="5" VerticalContentAlignment="Center"></TextBox>
+        </StackPanel>
+        <StackPanel  Orientation="Horizontal" Height="40">
+            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Authors</Label>
+            <TextBox Text="{Binding Authors}" Width="335" Margin="5" VerticalContentAlignment="Center"></TextBox>
+        </StackPanel>
+        <StackPanel  Orientation="Horizontal" Height="40">
+            <Label Width="160" HorizontalAlignment="Center" Margin="5" >Title</Label>
+            <TextBox Text="{Binding Title}" Width="335" Margin="5" VerticalContentAlignment="Center"></TextBox>
+        </StackPanel>
+        <StackPanel  Orientation="Horizontal" Height="40">
+            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Year</Label>
+            <TextBox Text="{Binding Year}" Width="95" Margin="5" VerticalContentAlignment="Center"></TextBox>
+        </StackPanel>
+        <StackPanel  Orientation="Horizontal" Height="40">
+            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Summary</Label>
+            <TextBox Text="{Binding Summary}" Width="335" Margin="5" VerticalContentAlignment="Center"></TextBox>
+        </StackPanel>
+        <StackPanel  Orientation="Horizontal" Height="40">
+            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Category</Label>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" SelectedValue="{Binding Category}" Width="335" Margin="5,5,5,5"></ComboBox>
+        </StackPanel>
+        <StackPanel  Orientation="Horizontal" Height="40">
+            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Download Url</Label>
+            <TextBox Text="{Binding DownloadUrl}" Width="335" Margin="5" VerticalContentAlignment="Center"></TextBox>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Height="45" Margin="5">
+            <Button Content="OK" Margin="5" Padding="5" Width="100" Click="Button_Click_1"/>
+            <Button Content="Cancel" Margin="5" Padding="5" Width="100" Click="Button_Click_2"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

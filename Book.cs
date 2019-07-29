@@ -22,14 +22,20 @@ namespace AllItEbooksCrawler
 
         public int Id { get; set; }
         public int PostId { get; set; }
-        public string Title { get; set; }
-        public int Year { get; set; }
+        private string _title;
+        public string Title { get { return _title; } set { _title = value; OnPropertyChanged("Title"); } }
+        private int _year;
+        public int Year { get { return _year; } set { _year = value; OnPropertyChanged("Year"); } }
         public string Url { get; set; }
         public string DownloadUrl { get; set; }
         public string Authors { get; set; }
         public string Summary { get; set; }
         private string _category { get; set; }
         public string Category { get { return _category; } set { _category = value; OnPropertyChanged("Category"); } }
+        private int _approved;
+        public int Approved { get { return _approved; } set { _approved = value; OnPropertyChanged("Approved"); } }
+        public bool _suggested;
+        public bool Suggested { get { return _suggested; } set { _suggested = value; OnPropertyChanged("Suggested"); } }
 
         public static ObservableCollection<string> Categories { get; set; } = new ObservableCollection<string>();
 
@@ -37,13 +43,7 @@ namespace AllItEbooksCrawler
         public string ISBN { get; set; }
         public int Pages { get; set; }
 
-        public int Sync { get; set; }
-
-        private int _approved;
-        public int Approved { get { return _approved; } set { _approved = value; OnPropertyChanged("Approved"); } }
-
-        public bool _suggested;
-        public bool Suggested { get { return _suggested; } set { _suggested = value; OnPropertyChanged("Suggested"); } }
+        public int Sync { get; set; }        
 
         private bool _isChecked;
         public bool IsChecked { get { return _isChecked; } set { _isChecked = value; OnPropertyChanged("IsChecked"); } }

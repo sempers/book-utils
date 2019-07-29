@@ -130,7 +130,5 @@ D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csprojAssem
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.CoreCompileInputs.cache
 D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\AllItEbooksCrawler.csproj.CopyComplete
 D:\prj\AllItEbookCrawler\obj\Debug\GeneratedInternalTypeHelper.g.cs
-D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\settings\categories.txt
-D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\settings\corrections.txt
-D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\settings\hidden.txt
-D:\projects\CS\AllItEbookCrawler (2019)\bin\Debug\settings\suggestions.txt
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\BookWindow.g.cs
+D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\BookWindow.baml

@@ -19,6 +19,7 @@
             </Style.Resources>
             <Setter Property="MaxWidth" Value="500" />
         </Style>
+        <local:Book x:Key="book"/>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <DataTemplate x:Key="postIdTmpl" DataType="{x:Type local:Book}">
             <DockPanel>
@@ -73,10 +74,11 @@
             </StackPanel>
             <TextBox VerticalContentAlignment="Center" Width="500" Margin="5" Text="{Binding SearchTitle}" TextChanged="TextBox_TextChanged_1"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="Button_Click_5"></Button>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged"></ComboBox>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged"></ComboBox>
             <Button Content="Filter mode" Margin="5" Padding="5" Click="Button_Click_3"></Button>
             <Button Content="Suggest" Margin="5" Padding="5" Click="Button_Click_4"></Button>
             <Button Content="Update" Margin="5" Padding="5" Click="Button_Click_6"></Button>
+            <Button Content="Add custom book" Margin="5" Padding="5" Click="Button_Click_7"></Button>
         </StackPanel>
         <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=ShownBooks, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1" >
             <ListView.Resources>

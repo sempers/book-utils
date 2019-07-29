@@ -20,15 +20,10 @@ namespace AllItEbooksCrawler
         private string _message;
         public string Message { get { return _message; } set { _message = value; OnPropertyChanged("Message"); } }
 
-        private string _searchTitle;
-        public string SearchTitle { get { return _searchTitle; } set { _searchTitle = value; OnPropertyChanged("SearchTitle"); } }
-
         private bool _filterMode;
         public bool FilterMode { get { return _filterMode; } set { _filterMode = value; OnPropertyChanged("FilterMode"); } }
 
         public ObservableCollection<Book> ShownBooks { get; set; }
-
-        public ObservableCollection<string> Categories { get; set; }
 
         public HashSet<string> Sortings = new HashSet<string>();
 
@@ -38,7 +33,6 @@ namespace AllItEbooksCrawler
         {
             ShownBooks = new ObservableCollection<Book>();
             Books = new List<Book>();
-            Categories = new ObservableCollection<string>();
             FilterMode = true;
         }
 

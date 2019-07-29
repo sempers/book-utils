@@ -43,7 +43,6 @@ namespace AllItEbooksCrawler
 
         public Dictionary<string, string> TxtCorrections { get; set; }
         public List<string> TxtHidden { get; set; }
-
         
         public MainWindow()
         {
@@ -63,6 +62,8 @@ namespace AllItEbooksCrawler
                 TxtCorrections = new Dictionary<string, string>();
                 foreach (var line in File.ReadAllLines("../../settings/corrections.txt"))
                 {
+                    if (!line.Contains("="))
+                        continue;
                     var split = line.Split('=');
                     TxtCorrections.Add(split[0], split[1]);
                 }
@@ -128,7 +129,7 @@ namespace AllItEbooksCrawler
 
         public void ListCategories()
         {
-            Dictionary<string, int> dict = new Dictionary<string, int>();
+            var dict = new Dictionary<string, int>();
             foreach (var book in model.ShownBooks)
             {
                 var firstCat = book.FirstCategory;
@@ -143,17 +144,17 @@ namespace AllItEbooksCrawler
                 if (!string.IsNullOrEmpty(add) && !dict.ContainsKey(add))
                     dict.Add(add, 0);
             }
-            List<string> list = new List<string>();
+            var list = new List<string>();
             foreach (var kv in dict)
             {
                 list.Add($"{kv.Key}");
             }
             list.Add("(no category)");
             list.Sort();
-            model.Categories.Clear();
+            Book.Categories.Clear();
             foreach (var cat in list)
             {
-                model.Categories.Add(cat);
+                Book.Categories.Add(cat);
             }
         }
 
@@ -258,14 +259,21 @@ namespace AllItEbooksCrawler
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            await crawler.UpdateDbFromWeb(TxtCorrections);
+            int booksAdded = await crawler.UpdateDbFromWeb(TxtCorrections);
             LoadBooksFromDb();
+            Notify($"Books updated from the web, added {booksAdded} new books.");
         }
 
         private void ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            
             var book = ((FrameworkElement)e.OriginalSource).DataContext as Book;
-            Process.Start(book.Url);
+            if (book.Url != null)
+            {
+                var bookWindow = new BookWindow(book, crawler, "EDIT");
+                bookWindow.Owner = this;
+                var result = bookWindow.ShowDialog();
+            }
         }
 
         private async void Button_Click_1(object sender, RoutedEventArgs e)
@@ -336,9 +344,9 @@ namespace AllItEbooksCrawler
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back)
+            if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back && e.Key != Key.F1 && e.Key != Key.F2)
                 return;
-            if (e.Key == Key.Space)
+            if (e.Key == Key.Space)                     //Make Checked and Synchronized
             {
                 var books = listView.SelectedItems;
                 foreach (Book book in books)
@@ -348,7 +356,7 @@ namespace AllItEbooksCrawler
                     book.IsChecked = !book.IsChecked;
                 }
             }
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return)                    //Make Approved
             {
                 var books = listView.SelectedItems;
                 foreach (Book book in books)
@@ -359,7 +367,7 @@ namespace AllItEbooksCrawler
                     crawler.ChangeCategory(book.Id, book.Category);
                 }
             }
-            if (e.Key == Key.Back)
+            if (e.Key == Key.Back)                     //Unsuggest
             {
                 var books = listView.SelectedItems;
                 foreach (Book book in books)
@@ -368,6 +376,22 @@ namespace AllItEbooksCrawler
                         return;
                     book.Suggested = false; book.Approved = 1; book.Category = book.OldCategory;
                     crawler.ChangeCategory(book.Id, book.Category);
+                }
+            }
+            if (e.Key == Key.F1)                    //Old dblclick, now go to url
+            {    
+                var book = listView.SelectedItem as Book;
+                if (book != null && book.Url != null)
+                {
+                    Process.Start(book.Url);
+                }
+            }
+            if (e.Key == Key.F2)            //Open the file
+            {
+                var book = listView.SelectedItem as Book;
+                if (book!=null && book.IsDownloaded)
+                {
+                    Process.Start(book.LocalPath);
                 }
             }
         }
@@ -407,20 +431,20 @@ namespace AllItEbooksCrawler
 
         private void UpdateCategories()
         {
-            var sorted = model.Categories.OrderBy(x => x).ToList();
-            model.Categories.Clear();
+            var sorted = Book.Categories.OrderBy(x => x).ToList();
+            Book.Categories.Clear();
             foreach (var s in sorted)
             {
-                model.Categories.Add(s);
+                Book.Categories.Add(s);
             }
         }
 
         private void AddCategory()
         {
-            if (!string.IsNullOrEmpty(catListBox.Text) && !model.Categories.Contains(catListBox.Text))
+            if (!string.IsNullOrEmpty(catListBox.Text) && !Book.Categories.Contains(catListBox.Text))
             {
                 var newCategory = catListBox.Text;
-                model.Categories.Add(newCategory);
+                Book.Categories.Add(newCategory);
                 UpdateCategories();
                 var book = listView.SelectedItem as Book;
                 if (book != null && string.IsNullOrEmpty(book.Category))
@@ -458,6 +482,22 @@ namespace AllItEbooksCrawler
                     }
                     Notify($"Unsynced ok. Total {model.Books.Count(b => b.IsDownloaded)} books downloaded.");
                 }
+            }
+        }
+
+        private void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+            Book newBook = new Book
+            {
+                PostId = crawler.GetCustomPostId(),
+                Title = "New title"
+            };
+            BookWindow bookWindow = new BookWindow(newBook, crawler);
+            bookWindow.Owner = this;
+            var result = bookWindow.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                LoadBooksFromDb();
             }
         }
     }
