@@ -1,0 +1,9 @@
+D:\projects\cs\BookUtils (2019)\FB2Library\bin\Debug\netstandard1.0\FB2Library.deps.json
+D:\projects\cs\BookUtils (2019)\FB2Library\bin\Debug\netstandard1.0\FB2Library.dll
+D:\projects\cs\BookUtils (2019)\FB2Library\bin\Debug\netstandard1.0\FB2Library.pdb
+D:\projects\cs\BookUtils (2019)\FB2Library\obj\Debug\netstandard1.0\FB2Library.csprojAssemblyReference.cache
+D:\projects\cs\BookUtils (2019)\FB2Library\obj\Debug\netstandard1.0\FB2Library.csproj.CoreCompileInputs.cache
+D:\projects\cs\BookUtils (2019)\FB2Library\obj\Debug\netstandard1.0\FB2Library.AssemblyInfoInputs.cache
+D:\projects\cs\BookUtils (2019)\FB2Library\obj\Debug\netstandard1.0\FB2Library.AssemblyInfo.cs
+D:\projects\cs\BookUtils (2019)\FB2Library\obj\Debug\netstandard1.0\FB2Library.dll
+D:\projects\cs\BookUtils (2019)\FB2Library\obj\Debug\netstandard1.0\FB2Library.pdb

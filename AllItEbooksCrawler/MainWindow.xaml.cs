@@ -37,7 +37,7 @@ namespace AllItEbooksCrawler
 
         MainWindowModel model = new MainWindowModel();
 
-        public const string ROOT = @"D:\it-ebooks";
+        public const string ROOT = @"D:\books\it";
 
         public bool Suggested { get; set; } = false;   
 

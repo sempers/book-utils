@@ -1,0 +1,8 @@
+D:\projects\cs\BookUtils (2019)\EpubSharp\bin\Debug\net451\EpubSharp.dll
+D:\projects\cs\BookUtils (2019)\EpubSharp\bin\Debug\net451\EpubSharp.pdb
+D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\net451\EpubSharp.csprojAssemblyReference.cache
+D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\net451\EpubSharp.csproj.CoreCompileInputs.cache
+D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\net451\EpubSharp.AssemblyInfoInputs.cache
+D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\net451\EpubSharp.AssemblyInfo.cs
+D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\net451\EpubSharp.dll
+D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\net451\EpubSharp.pdb

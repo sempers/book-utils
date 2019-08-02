@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v1.1",
+    "signature": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v1.1": {
+      "EpubSharp/1.1.5.13": {
+        "runtime": {
+          "EpubSharp.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EpubSharp/1.1.5.13": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
