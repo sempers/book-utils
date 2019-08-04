@@ -1,0 +1,12 @@
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\bin\Debug\Fb2EpubRenamer.exe.config
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\bin\Debug\Fb2EpubRenamer.exe
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\bin\Debug\Fb2EpubRenamer.pdb
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\bin\Debug\EpubSharp.dll
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\bin\Debug\FB2Library.dll
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\bin\Debug\EpubSharp.pdb
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\bin\Debug\FB2Library.pdb
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\obj\Debug\Fb2EpubRenamer.csprojAssemblyReference.cache
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\obj\Debug\Fb2EpubRenamer.csproj.CoreCompileInputs.cache
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\obj\Debug\Fb2EpubRenamer.csproj.CopyComplete
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\obj\Debug\Fb2EpubRenamer.exe
+D:\projects\cs\BookUtils (2019)\Fb2EpubRenamer\obj\Debug\Fb2EpubRenamer.pdb

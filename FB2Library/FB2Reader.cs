@@ -49,5 +49,12 @@ namespace FB2Library
 				return file;
 			});
 		}
+
+        public FB2File ReadFromFile(string path)
+        {
+            var file = new FB2File();
+            file.Load(XDocument.Load(path), false);
+            return file;
+        }
 	}
 }

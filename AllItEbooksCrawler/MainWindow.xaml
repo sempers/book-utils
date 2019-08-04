@@ -1,11 +1,11 @@
-﻿<Window x:Class="AllItEbooksCrawler.MainWindow"
+﻿<Window x:Class="BookUtils.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AllItEbooksCrawler"
+        xmlns:local="clr-namespace:BookUtils"
         mc:Ignorable="d"
-        Title="MainWindow" Height="788" Width="1800" KeyUp="Window_KeyUp">
+        Title="BookUtils.AllItEbooksCrawler" Height="788" Width="1800" KeyUp="Window_KeyUp">
     <Window.Resources>
         <Style TargetType="ToolTip">
             <Style.Resources>
@@ -68,7 +68,9 @@
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Left" Height="40" Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Width="325">
-            <Button Content="Update from web"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click"></Button>
+                <Button Content="▲ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="UploadDB" Foreground="Red" ToolTip="Backup db to bookserv" ></Button>
+                <Button Content="▼ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="DownloadDB" Foreground="Green" ToolTip="Download db from bookserv"></Button>
+            <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click"></Button>
             <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_1"></Button>
             <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_2"></Button>
             </StackPanel>

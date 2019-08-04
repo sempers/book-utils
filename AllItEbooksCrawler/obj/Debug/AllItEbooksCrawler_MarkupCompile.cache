@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\projects\CS\AllItEbookCrawler (2019)\obj\Debug\
+D:\projects\cs\BookUtils (2019)\AllItEbooksCrawler\obj\Debug\
 AllItEbooksCrawler
 none
 false
 DEBUG;TRACE
-D:\projects\CS\AllItEbookCrawler (2019)\App.xaml
+D:\projects\cs\BookUtils (2019)\AllItEbooksCrawler\App.xaml
 21973990348
 82108669282
 101650289667
-21815036989
+21-393281839
 BookWindow.xaml;MainWindow.xaml;
 
 False

@@ -9,7 +9,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using AllItEbooksCrawler;
+using BookUtils;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -32,7 +32,7 @@ using System.Windows.Shapes;
 using System.Windows.Shell;
 
 
-namespace AllItEbooksCrawler {
+namespace BookUtils {
     
     
     /// <summary>
@@ -61,7 +61,7 @@ namespace AllItEbooksCrawler {
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         public static void Main() {
-            AllItEbooksCrawler.App app = new AllItEbooksCrawler.App();
+            BookUtils.App app = new BookUtils.App();
             app.InitializeComponent();
             app.Run();
         }

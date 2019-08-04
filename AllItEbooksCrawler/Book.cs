@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AllItEbooksCrawler
+namespace BookUtils
 {
     public class Book : INotifyPropertyChanged
     {

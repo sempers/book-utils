@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace AllItEbooksCrawler
+namespace BookUtils
 {
     public class AppDbContext: DbContext
     {

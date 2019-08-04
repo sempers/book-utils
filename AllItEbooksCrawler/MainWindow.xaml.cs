@@ -20,7 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using HtmlAgilityPack;
 
-namespace AllItEbooksCrawler
+namespace BookUtils
 {
     public class BookCategory
     {
@@ -48,6 +48,11 @@ namespace AllItEbooksCrawler
         {
             InitializeComponent();
             Book.ROOT = ROOT;
+            InitList();
+        }
+
+        private void InitList()
+        {
             crawler = new Crawler();
             crawler.Notify += Crawler_Notified;
             DataContext = model;
@@ -506,6 +511,47 @@ namespace AllItEbooksCrawler
             if (result.HasValue && result.Value)
             {
                 LoadBooksFromDb();
+            }
+        }
+
+        private void UploadDB(object sender, RoutedEventArgs e)
+        {
+            var url = new Uri("https://spbookserv.herokuapp.com/api/update-db");
+            var file = @"..\..\data\books.db";
+            var filename = "books.db";
+            var contentType = "application/octet";
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+                    string boundary = "------------------------" + DateTime.Now.Ticks.ToString("x");
+                    webClient.Headers.Add("Content-Type", "multipart/form-data; boundary=" + boundary);
+                    var fileData = webClient.Encoding.GetString(File.ReadAllBytes(file));
+                    var package = string.Format("--{0}\r\nContent-Disposition: form-data; name=\"db\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n{3}\r\n--{0}--\r\n", boundary, filename, contentType, fileData);
+
+                    var nfile = webClient.Encoding.GetBytes(package);
+
+                    webClient.UploadDataAsync(url, "POST", nfile);
+                    Notify("DB updated.");
+                }
+                catch (Exception err) {
+                    MessageBox.Show($"DB Backup error: {err.Message}");
+                }                
+            }
+        }
+
+        private void ClearList()
+        {
+            model.Books.Clear();
+        }
+
+        private void DownloadDB(object sender, RoutedEventArgs e)
+        {
+            ClearList();
+            using (var wc = new WebClient())
+            {
+                wc.DownloadFile("http://spbookserv.herokuapp.com/itdb/books.db", @"..\..\data\books.db");
+                InitList();                
             }
         }
     }

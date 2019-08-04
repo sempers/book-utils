@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AllItEbooksCrawler.Properties
+namespace BookUtils.Properties
 {
 
 
