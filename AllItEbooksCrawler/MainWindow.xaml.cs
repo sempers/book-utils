@@ -514,7 +514,7 @@ namespace BookUtils
             }
         }
 
-        private void UploadDB(object sender, RoutedEventArgs e)
+        private async void UploadDB(object sender, RoutedEventArgs e)
         {
             var url = new Uri("https://spbookserv.herokuapp.com/api/update-db");
             var file = @"..\..\data\books.db";
@@ -531,8 +531,8 @@ namespace BookUtils
 
                     var nfile = webClient.Encoding.GetBytes(package);
 
-                    webClient.UploadDataAsync(url, "POST", nfile);
-                    Notify("DB updated.");
+                    byte[] resp = await webClient.UploadDataTaskAsync(url, "POST", nfile);
+                    Notify("DB backed up.");
                 }
                 catch (Exception err) {
                     MessageBox.Show($"DB Backup error: {err.Message}");
@@ -543,14 +543,21 @@ namespace BookUtils
         private void ClearList()
         {
             model.Books.Clear();
+            model.ShownBooks.Clear();
         }
 
         private void DownloadDB(object sender, RoutedEventArgs e)
         {
             ClearList();
+            crawler.ClearFile();
+            DownloadDBAsync();
+        }
+
+        private async void DownloadDBAsync()
+        {
             using (var wc = new WebClient())
             {
-                wc.DownloadFile("http://spbookserv.herokuapp.com/itdb/books.db", @"..\..\data\books.db");
+                await wc.DownloadFileTaskAsync("http://spbookserv.herokuapp.com/itdb/books.db", @"..\..\data\books.db");
                 InitList();                
             }
         }

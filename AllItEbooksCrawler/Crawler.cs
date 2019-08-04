@@ -46,6 +46,14 @@ namespace BookUtils
             db.SaveChanges();
         }
 
+        public void ClearFile()
+        {
+            db.SaveChanges();
+            db.Dispose();
+            db = null;
+            File.Delete(@"..\..\books.db");
+        }
+
         public void SaveBook(Book model)
         {
             db.SaveChanges();
