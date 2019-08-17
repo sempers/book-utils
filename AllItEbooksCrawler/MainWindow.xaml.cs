@@ -47,7 +47,7 @@ namespace BookUtils
         public MainWindow()
         {
             InitializeComponent();
-            Book.ROOT = ROOT;
+            Book.root = ROOT;
             InitList();
         }
 
@@ -272,6 +272,7 @@ namespace BookUtils
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
+            LoadCorrections();
             int booksAdded = await crawler.UpdateDbFromWeb(TxtCorrections);
             LoadBooksFromDb();
             Notify($"Books updated from the web, added {booksAdded} new books.");

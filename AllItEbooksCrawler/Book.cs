@@ -13,7 +13,7 @@ namespace BookUtils
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public static string ROOT = null;
+        public static string root = null;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -22,18 +22,24 @@ namespace BookUtils
 
         public int Id { get; set; }
         public int PostId { get; set; }
+
         private string _title;
         public string Title { get { return _title; } set { _title = value; OnPropertyChanged("Title"); } }
+
         private int _year;
         public int Year { get { return _year; } set { _year = value; OnPropertyChanged("Year"); } }
+
         public string Url { get; set; }
         public string DownloadUrl { get; set; }
         public string Authors { get; set; }
         public string Summary { get; set; }
+
         private string _category { get; set; }
         public string Category { get { return _category; } set { _category = value; OnPropertyChanged("Category"); } }
+
         private int _approved;
         public int Approved { get { return _approved; } set { _approved = value; OnPropertyChanged("Approved"); } }
+
         public bool _suggested;
         public bool Suggested { get { return _suggested; } set { _suggested = value; OnPropertyChanged("Suggested"); } }
 
@@ -47,16 +53,22 @@ namespace BookUtils
 
         private bool _isChecked;
         public bool IsChecked { get { return _isChecked; } set { _isChecked = value; OnPropertyChanged("IsChecked"); } }
+
         public override string ToString()
         {
-            return $"[{Year}] {Authors}. {Title}";
+            return $"[{Year}] {ClearTitle} - {ClearAuthors}";
+        }
+
+        private static string ClearString(string s)
+        {
+            return s.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ").Replace("?", "");
         }
 
         public string ClearAuthors
         {
             get
             {
-                var src = Authors.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ");
+                var src = ClearString(Authors);
                 var split = src.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
                 if (split.Length > 2)
                     return $"{split[0]}, {split[1]} et al";
@@ -69,8 +81,7 @@ namespace BookUtils
         {
             get
             {
-                var src = Title.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ");
-                return src;
+                return ClearString(Title);
             }
         }
 
@@ -93,7 +104,7 @@ namespace BookUtils
         {
             get
             {
-                return Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), PdfFileName);
+                return Path.Combine(root, FirstCategory.Replace("/", "\\"), PdfFileName);
             }
         }
 
