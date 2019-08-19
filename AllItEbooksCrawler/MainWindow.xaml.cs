@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -28,12 +29,32 @@ namespace BookUtils
         public int Num { get; set;  }
     }
 
+    public class RatingToEmojiConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            switch (value.ToString())
+            {
+                case "0": return " ";
+                case "1": return " *";
+                case "2": return "❤️";
+                case "3": return "💩";
+                default: return " ";
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        Crawler crawler;
+        AppDbCrawler crawler;
 
         MainWindowModel model = new MainWindowModel();
 
@@ -53,7 +74,7 @@ namespace BookUtils
 
         private void InitList()
         {
-            crawler = new Crawler();
+            crawler = new AppDbCrawler();
             crawler.Notify += Crawler_Notified;
             DataContext = model;
             LoadBooksFromDb();
@@ -109,7 +130,8 @@ namespace BookUtils
                     downloaded++;
                     if (book.Sync == 0)     //downloaded but not synced
                     {
-                        crawler.SyncBook(book.Id);
+                        book.Sync = 1;
+                        crawler.Save();
                         downloadedNotSynced++;
                     }
                 }
@@ -225,7 +247,11 @@ namespace BookUtils
                 {
                     count++;
                     if (book.Sync == 0)
-                        crawler.SyncBook(book.Id);
+                    {
+                        book.Sync = 1;
+                        crawler.Save();
+                    }
+                        
                     Notify($"Downloading book {count}/{total}: {book.Title}");
                     using (var wc = new WebClient())
                     {
@@ -307,7 +333,7 @@ namespace BookUtils
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Book book = listView.SelectedItem as Book;
+            var book = listView.SelectedItem as Book;
             if (book != null)
             {
                 catListBox.SelectedValue = book.FirstCategory;
@@ -347,7 +373,7 @@ namespace BookUtils
                     book.Category = catListBox.SelectedItem.ToString();
                     if (book.Approved == 0) book.Approved = 1;
                     if (book.Suggested) book.Suggested = false;
-                    crawler.ChangeCategory(book.Id, book.Category);
+                    //crawler.UpdateCategory(book.Id, book.Category);
                     if (oldPath != null && oldPath != book.LocalPath)
                     {
                         book.AutoMove(oldPath);
@@ -378,7 +404,8 @@ namespace BookUtils
                     if (book == null)
                         return;
                     book.Suggested = false; book.Approved = 1;
-                    crawler.ChangeCategory(book.Id, book.Category);
+                    //crawler.UpdateCategory(book.Id, book.Category);
+                    crawler.Save();
                 }
             }
             if (e.Key == Key.Back)                     //Unsuggest
@@ -389,7 +416,8 @@ namespace BookUtils
                     if (book == null)
                         return;
                     book.Suggested = false; book.Approved = 1; book.Category = book.OldCategory;
-                    crawler.ChangeCategory(book.Id, book.Category);
+                    crawler.Save();
+                    //crawler.UpdateCategory(book.Id, book.Category);
                 }
             }
             if (e.Key == Key.F1)                    //Old dblclick, now go to url
@@ -485,7 +513,8 @@ namespace BookUtils
             {
                 if (MessageBox.Show($"Do you really want to unsync '{book.Title}' and delete the file?", "Warning", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                 {
-                    crawler.SyncBook(book.Id, 0);
+                    book.Sync = 0;
+                    crawler.Save();
                     try
                     {
                         File.Delete(book.LocalPath);
@@ -501,12 +530,12 @@ namespace BookUtils
 
         private void Button_Click_7(object sender, RoutedEventArgs e)
         {
-            Book newBook = new Book
+            var newBook = new Book
             {
                 PostId = crawler.GetCustomPostId(),
                 Title = "New title"
             };
-            BookWindow bookWindow = new BookWindow(newBook, crawler);
+            var bookWindow = new BookWindow(newBook, crawler);
             bookWindow.Owner = this;
             var result = bookWindow.ShowDialog();
             if (result.HasValue && result.Value)
@@ -560,6 +589,19 @@ namespace BookUtils
             {
                 await wc.DownloadFileTaskAsync("http://spbookserv.herokuapp.com/itdb/books.db", @"..\..\data\books.db");
                 InitList();                
+            }
+        }
+
+        private void TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var book = (sender as TextBlock).DataContext as Book;
+            if (book != null)
+            {
+                if (book.Rating == 3)
+                    book.Rating = 0;
+                else
+                    book.Rating++;
+                crawler.Save();
             }
         }
     }

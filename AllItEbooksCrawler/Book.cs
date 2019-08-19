@@ -24,10 +24,10 @@ namespace BookUtils
         public int PostId { get; set; }
 
         private string _title;
-        public string Title { get { return _title; } set { _title = value; OnPropertyChanged("Title"); } }
+        public string Title { get => _title; set { _title = value; OnPropertyChanged("Title"); } }
 
         private int _year;
-        public int Year { get { return _year; } set { _year = value; OnPropertyChanged("Year"); } }
+        public int Year { get => _year; set { _year = value; OnPropertyChanged("Year"); } }
 
         public string Url { get; set; }
         public string DownloadUrl { get; set; }
@@ -35,13 +35,16 @@ namespace BookUtils
         public string Summary { get; set; }
 
         private string _category { get; set; }
-        public string Category { get { return _category; } set { _category = value; OnPropertyChanged("Category"); } }
+        public string Category { get => _category; set { _category = value; OnPropertyChanged("Category"); } }
 
         private int _approved;
-        public int Approved { get { return _approved; } set { _approved = value; OnPropertyChanged("Approved"); } }
+        public int Approved { get => _approved; set { _approved = value; OnPropertyChanged("Approved"); } }
 
         public bool _suggested;
-        public bool Suggested { get { return _suggested; } set { _suggested = value; OnPropertyChanged("Suggested"); } }
+        public bool Suggested { get => _suggested; set { _suggested = value; OnPropertyChanged("Suggested"); } }
+
+        public int _rating;
+        public int Rating { get => _rating; set { _rating = value; OnPropertyChanged("Rating"); } }
 
         public static ObservableCollection<string> Categories { get; set; } = new ObservableCollection<string>();
 
@@ -52,7 +55,7 @@ namespace BookUtils
         public int Sync { get; set; }        
 
         private bool _isChecked;
-        public bool IsChecked { get { return _isChecked; } set { _isChecked = value; OnPropertyChanged("IsChecked"); } }
+        public bool IsChecked { get => _isChecked; set { _isChecked = value; OnPropertyChanged("IsChecked"); } }
 
         public override string ToString()
         {

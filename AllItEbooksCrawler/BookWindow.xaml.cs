@@ -19,11 +19,11 @@ namespace BookUtils
     /// </summary>
     public partial class BookWindow : Window
     {
-        Crawler _crawler;
+        AppDbCrawler _crawler;
         Book model;
         string _action;
 
-        public BookWindow(Book modelBook, Crawler crawler, string action = "NEW")
+        public BookWindow(Book modelBook, AppDbCrawler crawler, string action = "NEW")
         {
             InitializeComponent();
             model = modelBook;

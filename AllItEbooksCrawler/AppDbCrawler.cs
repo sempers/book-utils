@@ -11,26 +11,7 @@ namespace BookUtils
 {
     public delegate void NotifyHandler(string message);
 
-    public class PostIdComparer : IEqualityComparer<Book>
-    {
-        public bool Equals(Book a, Book b)
-        {
-            if (a == null || b == null)
-                return false;
-
-            return (a.PostId == b.PostId);
-
-        }
-
-        public int GetHashCode(Book book)
-        {
-            if (ReferenceEquals(book, null)) return 0;
-
-            return book.PostId;
-        }
-    }
-
-    public class Crawler : IDisposable
+    public class AppDbCrawler : IDisposable
     {
         public static int PAGES_NUM = 50;
 
@@ -68,7 +49,7 @@ namespace BookUtils
                 return min - 1;
         }
 
-        public Crawler()
+        public AppDbCrawler()
         {
             db = new AppDbContext();
         }
@@ -104,7 +85,7 @@ namespace BookUtils
             Notify("Correction finished.");
         }
 
-        public void ChangeCategory(int id, string category)
+        /*public void UpdateCategory(int id, string category)
         {
 
             var book = db.Books.Find(id);
@@ -114,6 +95,32 @@ namespace BookUtils
                 book.Approved = 1;
                 db.SaveChanges();
             }
+        }
+
+        public void UpdateRating(int id, int rating)
+        {
+
+            var book = db.Books.Find(id);
+            if (book != null)
+            {
+                book.Rating = rating;
+                db.SaveChanges();
+            }
+        }
+        internal void SyncBook(int id, int value = 1)
+        {
+            var book = db.Books.Find(id);
+            if (book != null)
+            {
+                book.Sync = value;
+                db.SaveChanges();
+            }
+        }
+             */
+
+        public void Save()
+        {
+            db.SaveChanges();
         }
 
         public async Task<int> UpdateDbFromWeb(Dictionary<string, string> corrections)
@@ -232,15 +239,7 @@ namespace BookUtils
             return booksAdded;
         }
 
-        internal void SyncBook(int id, int value = 1)
-        {
-            var book = db.Books.Find(id);
-            if (book != null)
-            {
-                book.Sync = value;
-                db.SaveChanges();
-            }
-        }
+        /**/
 
         public void Dispose()
         {

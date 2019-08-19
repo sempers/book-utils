@@ -102,8 +102,8 @@
     <Compile Include="BookWindow.xaml.cs">
       <DependentUpon>BookWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Crawler.cs" />
-    <Compile Include="DbContext.cs" />
+    <Compile Include="AppDbCrawler.cs" />
+    <Compile Include="AppDbContext.cs" />
     <Compile Include="Book.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

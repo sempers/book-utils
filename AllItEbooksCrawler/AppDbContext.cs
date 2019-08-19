@@ -35,6 +35,7 @@ namespace BookUtils
             modelBuilder.Entity<Book>().Property(x => x.ISBN).HasColumnName("ISBN");
             modelBuilder.Entity<Book>().Property(x => x.Approved).HasColumnName("Approved");
             modelBuilder.Entity<Book>().Property(x => x.Sync).HasColumnName("Sync");
+            modelBuilder.Entity<Book>().Property(x => x.Rating).HasColumnName("Rating");
             modelBuilder.Entity<Book>().Ignore(x => x.Suggested);
             modelBuilder.Entity<Book>().Ignore(x => x.OldCategory);
             base.OnModelCreating(modelBuilder);            
