@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 2,
   "targets": {
     ".NETStandard,Version=v1.0": {
       "Microsoft.NETCore.Platforms/1.1.0": {
@@ -1892,41 +1892,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\rookie\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\BobchenkovAV\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.3.0",
     "restore": {
-      "projectUniqueName": "D:\\projects\\cs\\BookUtils (2019)\\FB2Library\\FB2Library.csproj",
+      "projectUniqueName": "D:\\prj\\book-utils\\FB2Library\\FB2Library.csproj",
       "projectName": "FB2Library",
-      "projectPath": "D:\\projects\\cs\\BookUtils (2019)\\FB2Library\\FB2Library.csproj",
-      "packagesPath": "C:\\Users\\rookie\\.nuget\\packages\\",
-      "outputPath": "D:\\projects\\cs\\BookUtils (2019)\\FB2Library\\obj\\",
+      "projectPath": "D:\\prj\\book-utils\\FB2Library\\FB2Library.csproj",
+      "outputPath": "D:\\prj\\book-utils\\FB2Library\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
-      "configFilePaths": [
-        "C:\\Users\\rookie\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-      ],
       "originalTargetFrameworks": [
         "netstandard1.0"
       ],
-      "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
-      },
       "frameworks": {
         "netstandard1.0": {
           "projectReferences": {}
         }
-      },
-      "warningProperties": {
-        "warnAsError": [
-          "NU1605"
-        ]
       }
     },
     "frameworks": {
@@ -1934,7 +1916,7 @@
         "dependencies": {
           "NETStandard.Library": {
             "target": "Package",
-            "version": "[1.6.1, )",
+            "version": "1.6.1",
             "autoReferenced": true
           }
         }

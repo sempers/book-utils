@@ -60,6 +60,8 @@ namespace BookUtils
 
         public const string ROOT = @"D:\books\it";
 
+        public const string DB_PATH = @"..\..\data\books.db";
+
         public bool Suggested { get; set; } = false;   
 
         public Dictionary<string, string> TxtCorrections { get; set; }
@@ -69,7 +71,11 @@ namespace BookUtils
         {
             InitializeComponent();
             Book.root = ROOT;
-            InitList();
+            if (!File.Exists(DB_PATH)) {
+                DownloadDBAsync();
+            } else {
+                InitList();
+            }
         }
 
         private void InitList()
@@ -547,7 +553,7 @@ namespace BookUtils
         private async void UploadDB(object sender, RoutedEventArgs e)
         {
             var url = new Uri("https://spbookserv.herokuapp.com/api/update-db");
-            var file = @"..\..\data\books.db";
+            var file = DB_PATH;
             var filename = "books.db";
             var contentType = "application/octet";
             using (var webClient = new WebClient())
@@ -587,7 +593,7 @@ namespace BookUtils
         {
             using (var wc = new WebClient())
             {
-                await wc.DownloadFileTaskAsync("http://spbookserv.herokuapp.com/itdb/books.db", @"..\..\data\books.db");
+                await wc.DownloadFileTaskAsync("http://spbookserv.herokuapp.com/itdb/books.db", DB_PATH);
                 InitList();                
             }
         }
