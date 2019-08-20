@@ -552,7 +552,7 @@ namespace BookUtils
 
         private async void UploadDB(object sender, RoutedEventArgs e)
         {
-            var url = new Uri("https://spbookserv.herokuapp.com/api/update-db");
+            /* var url = new Uri("https://spbookserv.herokuapp.com/api/update-db");
             var file = DB_PATH;
             var filename = "books.db";
             var contentType = "application/octet";
@@ -574,6 +574,17 @@ namespace BookUtils
                     MessageBox.Show($"DB Backup error: {err.Message}");
                 }                
             }
+            */
+            const FTP = "ftp://sempers:huibhean1@host2.bakop.com/";
+            using (var webClient = new WebClient()) {
+                try {
+                var resp = await webClient.UploadFileTaskAsync($"{FTP}/books.db", DB_PATH);
+                Notify("DB backed up.");
+                }
+                catch (Exception e) {
+                    MessageBox.Show($"DB Backup error: {err.Message}");
+                }
+            }
         }
 
         private void ClearList()
@@ -591,10 +602,15 @@ namespace BookUtils
 
         private async void DownloadDBAsync()
         {
-            using (var wc = new WebClient())
+            /*using (var wc = new WebClient())
             {
                 await wc.DownloadFileTaskAsync("http://spbookserv.herokuapp.com/itdb/books.db", DB_PATH);
                 InitList();                
+            }*/
+            using (var wc = new WebClient())
+            {
+                await wc.DownloadFileTaskAsync("ftp://sempers:huibhean1@host2.bakop.com/books.db", DB_PATH);
+                InitList();
             }
         }
 
