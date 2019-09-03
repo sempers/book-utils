@@ -1,9 +1,0 @@
-D:\projects\cs\BookUtils (2019)\EpubSharp\bin\Debug\netstandard1.3\EpubSharp.deps.json
-D:\projects\cs\BookUtils (2019)\EpubSharp\bin\Debug\netstandard1.3\EpubSharp.dll
-D:\projects\cs\BookUtils (2019)\EpubSharp\bin\Debug\netstandard1.3\EpubSharp.pdb
-D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\netstandard1.3\EpubSharp.csprojAssemblyReference.cache
-D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\netstandard1.3\EpubSharp.csproj.CoreCompileInputs.cache
-D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\netstandard1.3\EpubSharp.AssemblyInfoInputs.cache
-D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\netstandard1.3\EpubSharp.AssemblyInfo.cs
-D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\netstandard1.3\EpubSharp.dll
-D:\projects\cs\BookUtils (2019)\EpubSharp\obj\Debug\netstandard1.3\EpubSharp.pdb

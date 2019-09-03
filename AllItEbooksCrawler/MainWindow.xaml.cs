@@ -58,7 +58,9 @@ namespace BookUtils
 
         MainWindowModel model = new MainWindowModel();
 
-        public const string ROOT = @"D:\books\it";
+        public const string BOOKS_ROOT = @"D:\books\it";
+
+        public const string GOOGLE_DRIVE_DB_PATH = @"D:\books\google_drive\itdb\books.db";
 
         public const string DB_PATH = @"..\..\data\books.db";
 
@@ -70,7 +72,7 @@ namespace BookUtils
         public MainWindow()
         {
             InitializeComponent();
-            Book.root = ROOT;
+            Book.root = BOOKS_ROOT;
             if (!File.Exists(DB_PATH)) {
                 DownloadDBAsync();
             } else {
@@ -278,7 +280,7 @@ namespace BookUtils
 
         private void DeleteEmptyFolders(string folder = null)
         {
-            folder = folder ?? ROOT;
+            folder = folder ?? BOOKS_ROOT;
             foreach (var dir in Directory.GetDirectories(folder))
             {
                 DeleteEmptyFolders(dir);
@@ -575,7 +577,7 @@ namespace BookUtils
                 }                
             }
             */
-            const FTP = "ftp://sempers:huibhean1@host2.bakop.com/";
+            /*const FTP = "ftp://sempers:huibhean1@host2.bakop.com/";
             using (var webClient = new WebClient()) {
                 try {
                 var resp = await webClient.UploadFileTaskAsync($"{FTP}/books.db", DB_PATH);
@@ -584,7 +586,9 @@ namespace BookUtils
                 catch (Exception e) {
                     MessageBox.Show($"DB Backup error: {err.Message}");
                 }
-            }
+            }*/
+            File.Copy(DB_PATH, GOOGLE_DRIVE_DB_PATH, true);
+            Notify("DB backed up");
         }
 
         private void ClearList()
@@ -597,7 +601,9 @@ namespace BookUtils
         {
             ClearList();
             crawler.ClearFile();
-            DownloadDBAsync();
+            File.Copy(GOOGLE_DRIVE_DB_PATH, DB_PATH, true);
+            InitList();
+            //DownloadDBAsync();
         }
 
         private async void DownloadDBAsync()
@@ -607,11 +613,11 @@ namespace BookUtils
                 await wc.DownloadFileTaskAsync("http://spbookserv.herokuapp.com/itdb/books.db", DB_PATH);
                 InitList();                
             }*/
-            using (var wc = new WebClient())
+            /*using (var wc = new WebClient())
             {
                 await wc.DownloadFileTaskAsync("ftp://sempers:huibhean1@host2.bakop.com/books.db", DB_PATH);
                 InitList();
-            }
+            }*/
         }
 
         private void TextBlock_MouseUp(object sender, MouseButtonEventArgs e)

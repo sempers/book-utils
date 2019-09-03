@@ -1,9 +1,8 @@
 .idea/
 *.db
-
 AllItEbooksCrawler/data/books.db
-
-
+**/obj/Debug/**
+.vs/**
 
 #################
 ## Eclipse
