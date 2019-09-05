@@ -24,8 +24,8 @@
         <local:RatingToEmojiConverter x:Key="RatingToEmojiConverter"/>
         <DataTemplate x:Key="postIdTmpl" DataType="{x:Type local:Book}">
             <DockPanel>
-                <CheckBox IsChecked="{Binding IsChecked}" Width="15" Click="CheckBox_Click" ></CheckBox>
-                <TextBlock Width="15" Text="{Binding Rating, Converter={StaticResource RatingToEmojiConverter}}" Margin="0" MouseUp="TextBlock_MouseUp"></TextBlock>
+                <CheckBox IsChecked="{Binding IsChecked}" Width="15" Click="_checkBox_Click" ></CheckBox>
+                <TextBlock Width="15" Text="{Binding Rating, Converter={StaticResource RatingToEmojiConverter}}" Margin="0" MouseUp="_TextBlock_MouseUp"></TextBlock>
                 <TextBlock Text="{Binding PostId}"></TextBlock>                
             </DockPanel>
             <DataTemplate.Triggers>
@@ -78,21 +78,21 @@
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Left" Height="40" Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,0">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Width="325">
-                <Button Content="▲ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="UploadDB" Foreground="Red" ToolTip="Backup db to bookserv" ></Button>
-                <Button Content="▼ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="DownloadDB" Foreground="Green" ToolTip="Download db from bookserv"></Button>
-            <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click"></Button>
-            <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_1"></Button>
-            <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="Button_Click_2"></Button>
+                <Button Content="▲ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="BackupDB" Foreground="Red" ToolTip="Backup db to bookserv" ></Button>
+                <Button Content="▼ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="RestoreDB" Foreground="Green" ToolTip="Download db from bookserv"></Button>
+            <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnUpdate_Click"></Button>
+            <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnDownload_Click"></Button>
+            <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnCorrect_Click"></Button>
             </StackPanel>
-            <TextBox VerticalContentAlignment="Center" Width="500" Margin="5" Text="{Binding SearchTitle}" TextChanged="TextBox_TextChanged_1"/>
-            <Button Content="+ cat" Margin="5" Padding="5" Click="Button_Click_5"></Button>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged"></ComboBox>
-            <Button Content="Filter mode" Margin="5" Padding="5" Click="Button_Click_3"></Button>
-            <Button Content="Suggest" Margin="5" Padding="5" Click="Button_Click_4"></Button>
-            <Button Content="Update" Margin="5" Padding="5" Click="Button_Click_6"></Button>
-            <Button Content="Add custom book" Margin="5" Padding="5" Click="Button_Click_7"></Button>
+            <TextBox VerticalContentAlignment="Center" Width="500" Margin="5" Text="{Binding SearchTitle}" TextChanged="_TextBox_TextChanged_1"/>
+            <Button Content="+ cat" Margin="5" Padding="5" Click="_btnAddCategory_Click"></Button>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="_catListBox_SelectionChanged"></ComboBox>
+            <Button Content="Filter mode" Margin="5" Padding="5" Click="_btnFilterMode_Click"></Button>
+            <Button Content="Suggest" Margin="5" Padding="5" Click="_btnSuggest_Click"></Button>
+            <Button Content="Update" Margin="5" Padding="5" Click="_btnListCategories"></Button>
+            <Button Content="Add custom book" Margin="5" Padding="5" Click="_btnAddBook_Click"></Button>
         </StackPanel>
-        <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=ShownBooks, Mode=OneWay}" MouseDoubleClick="ListView_MouseDoubleClick" SelectionChanged="ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="ListView_Click_1">
+        <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=ShownBooks, Mode=OneWay}" MouseDoubleClick="_ListView_MouseDoubleClick" SelectionChanged="_ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="_ListView_Click_1">
             <ListView.Resources>
                 <Style  TargetType="{x:Type ListView}">
                     <Style.Triggers>

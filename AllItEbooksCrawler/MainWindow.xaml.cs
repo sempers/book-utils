@@ -26,7 +26,7 @@ namespace BookUtils
     public class BookCategory
     {
         public string Value { get; set; }
-        public int Num { get; set;  }
+        public int Num { get; set; }
     }
 
     public class RatingToEmojiConverter : IValueConverter
@@ -49,6 +49,8 @@ namespace BookUtils
         }
     }
 
+    
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -64,18 +66,19 @@ namespace BookUtils
 
         public const string DB_PATH = @"..\..\data\books.db";
 
-        public bool Suggested { get; set; } = false;   
+        public bool Suggested { get; set; } = false;
 
-        public Dictionary<string, string> TxtCorrections { get; set; }
-        public List<string> TxtHidden { get; set; }
-        
+       
         public MainWindow()
         {
             InitializeComponent();
             Book.root = BOOKS_ROOT;
-            if (!File.Exists(DB_PATH)) {
+            if (!File.Exists(DB_PATH))
+            {
                 DownloadDBAsync();
-            } else {
+            }
+            else
+            {
                 InitList();
             }
         }
@@ -83,50 +86,17 @@ namespace BookUtils
         private void InitList()
         {
             crawler = new AppDbCrawler();
-            crawler.Notify += Crawler_Notified;
+            crawler.Notify += _crawler_Notified;
             DataContext = model;
             LoadBooksFromDb();
-            ListCategories();
-        }
-
-        public void LoadCorrections()
-        {
-            if (File.Exists("../../settings/corrections.txt"))
-            {
-                TxtCorrections = new Dictionary<string, string>();
-                foreach (var line in File.ReadAllLines("../../settings/corrections.txt"))
-                {
-                    if (!line.Contains("="))
-                        continue;
-                    var split = line.Split('=');
-                    TxtCorrections.Add(split[0], split[1]);
-                }
-            }
-        }
-
-        public void LoadHidden()
-        {
-            if (File.Exists("../../settings/hidden.txt"))
-            {
-                TxtHidden = File.ReadAllLines("../../settings/hidden.txt").ToList();
-            }
-        }
-
-        private bool HiddenIncludes(Book b)
-        {
-            foreach (var line in TxtHidden)
-            {
-                if (line.Contains("*") && b.FirstCategory.Contains(line.Replace("*", "")) || b.FirstCategory == line)
-                    return true;
-            }
-            return false;
+            model.ListCategories();
         }
 
         private void LoadBooksFromDb()
         {
             var list = crawler.GetFromDb();
-            LoadHidden();
-            int count = list.RemoveAll(book => HiddenIncludes(book));
+            model.LoadHidden();
+            int count = list.RemoveAll(book => model.HiddenIncludes(book));
             int syncNotDownloaded = 0;
             int downloadedNotSynced = 0;
             int downloaded = 0;
@@ -162,80 +132,6 @@ namespace BookUtils
                 Directory.CreateDirectory(path);
         }
 
-        public void ListCategories()
-        {
-            var dict = new Dictionary<string, int>();
-            foreach (var book in model.ShownBooks)
-            {
-                var firstCat = book.FirstCategory;
-                if (!string.IsNullOrEmpty(firstCat))
-                    if (!dict.ContainsKey(firstCat))
-                        dict.Add(firstCat, 1);
-                    else
-                        dict[firstCat]++;
-            }
-            foreach (var add in File.ReadAllLines("../../settings/categories.txt"))
-            {
-                if (!string.IsNullOrEmpty(add) && !dict.ContainsKey(add))
-                    dict.Add(add, 0);
-            }
-            var list = new List<string>();
-            foreach (var kv in dict)
-            {
-                list.Add($"{kv.Key}");
-            }
-            list.Add("(no category)");
-            list.Sort();
-            Book.Categories.Clear();
-            foreach (var cat in list)
-            {
-                Book.Categories.Add(cat);
-            }
-        }
-
-        public void UnsuggestCategories()
-        {
-            foreach (var book in model.ShownBooks)
-            {
-                if (book.Suggested)
-                {
-                    book.Suggested = false;
-                    book.Category = book.OldCategory;
-                }
-            }
-            Notify("Suggestions unfiled.");
-        }
-
-        public void SuggestCategories()
-        {
-            if (File.Exists("../../settings/suggestions.txt")) {
-                var dict = new Dictionary<string, string>();
-                foreach (var line in File.ReadAllLines("../../settings/suggestions.txt"))
-                {
-                    var split = line.Split('=');
-                    dict.Add(split[0], split[1]);
-                }
-                foreach (var book in model.ShownBooks.Where(book => book.Approved == 0))
-                {
-                    var titleWords = book.Title.Replace(",", "").Split(' ').ToList();
-                    foreach (var kvPair in dict)
-                    {
-                        var keys = kvPair.Key.Split('|');
-                        foreach (var key in keys)
-                        {
-                            if (!book.Suggested && titleWords.Contains(key) && !book.Category.Contains(kvPair.Value))
-                            {
-                                book.OldCategory = book.Category;
-                                book.Category = kvPair.Value;
-                                book.Suggested = true;
-                            }
-                        }
-                    }
-                }
-                Notify("Suggestions for current list filed.");
-            }
-        }
-
         private void Notify(string message)
         {
             Application.Current.Dispatcher.Invoke(() => { model.Message = message; });
@@ -259,14 +155,27 @@ namespace BookUtils
                         book.Sync = 1;
                         crawler.Save();
                     }
-                        
+
                     Notify($"Downloading book {count}/{total}: {book.Title}");
-                    using (var wc = new WebClient())
+                    if (book.DownloadUrl.StartsWith("http"))
                     {
-                        MakeDir(Path.GetDirectoryName(book.LocalPath));
-                        if (!book.IsDownloaded)
-                            await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
+                        using (var wc = new WebClient())
+                        {
+                            MakeDir(Path.GetDirectoryName(book.LocalPath));
+                            if (!book.IsDownloaded)
+                                await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
+                        }
                     }
+                    else
+                    {
+                        if (File.Exists(book.DownloadUrl))
+                        {
+                            MakeDir(Path.GetDirectoryName(book.LocalPath));
+                            if (!book.IsDownloaded)
+                                File.Copy(book.DownloadUrl, book.LocalPath);
+                        }
+                    }
+
                 }
                 catch (Exception e)
                 {
@@ -274,7 +183,7 @@ namespace BookUtils
                     continue;
                 }
             }
-            Application.Current.Dispatcher.Invoke(() => { model.Message = $"Downloads finished. Total {model.Books.Count(book => book.IsDownloaded)} books downloaded."; });
+            Notify($"Downloads finished. Total {model.Books.Count(book => book.IsDownloaded)} books downloaded.");
         }
 
 
@@ -293,30 +202,23 @@ namespace BookUtils
             }
         }
 
-        private string ClearNumberInCategory(string category)
-        {
-            var re = new Regex(@"\(\d+\)");
-            return re.Replace(category, "");
-        }
-
-        private void Crawler_Notified(string message)
+        private void _crawler_Notified(string message)
         {
             Application.Current.Dispatcher.Invoke(() => { model.Message = message; });
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void _btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            LoadCorrections();
-            int booksAdded = await crawler.UpdateDbFromWeb(TxtCorrections);
+            model.LoadCorrections();
+            int booksAdded = await crawler.UpdateDbFromWeb(model.TxtCorrections);
             LoadBooksFromDb();
             Notify($"Books updated from the web, added {booksAdded} new books.");
         }
 
-        private void ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void _ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            
             var book = ((FrameworkElement)e.OriginalSource).DataContext as Book;
-            if (book.Url != null)
+            if (book != null)
             {
                 var bookWindow = new BookWindow(book, crawler, "EDIT");
                 bookWindow.Owner = this;
@@ -324,35 +226,36 @@ namespace BookUtils
             }
         }
 
-        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        private async void _btnDownload_Click(object sender, RoutedEventArgs e)
         {
             await DownloadBooksAsync();
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void _btnCorrect_Click(object sender, RoutedEventArgs e)
         {
-            LoadCorrections();
-            crawler.Correct(TxtCorrections);
+            model.LoadCorrections();
+            crawler.Correct(model.TxtCorrections);
             DeleteEmptyFolders();
             LoadBooksFromDb();
-            ListCategories();
+            model.ListCategories();
             Notify("Corrections made. Books reloaded.");
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void _ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var book = listView.SelectedItem as Book;
             if (book != null)
             {
                 catListBox.SelectedValue = book.FirstCategory;
                 model.FilterMode = false;
-            } else
+            }
+            else
             {
                 model.FilterMode = true;
             }
         }
 
-        private void ListView_Click_1(object sender, RoutedEventArgs e)
+        private void _ListView_Click_1(object sender, RoutedEventArgs e)
         {
             if (e.OriginalSource as GridViewColumnHeader == null)
                 return;
@@ -360,7 +263,7 @@ namespace BookUtils
             model.SortList(column);
         }
 
-        private void catListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void _catListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var books = listView.SelectedItems;
             // Фильтр по категории
@@ -423,13 +326,14 @@ namespace BookUtils
                 {
                     if (book == null)
                         return;
-                    book.Suggested = false; book.Approved = 1; book.Category = book.OldCategory;
+                    book.Suggested = false;
+                    book.Approved = 1;
+                    book.Category = book.OldCategory;
                     crawler.Save();
-                    //crawler.UpdateCategory(book.Id, book.Category);
                 }
             }
             if (e.Key == Key.F1)                    //Old dblclick, now go to url
-            {    
+            {
                 var book = listView.SelectedItem as Book;
                 if (book != null && book.Url != null)
                 {
@@ -439,42 +343,48 @@ namespace BookUtils
             if (e.Key == Key.F2)            //Open the file
             {
                 var book = listView.SelectedItem as Book;
-                if (book!=null && book.IsDownloaded)
+                if (book != null && book.IsDownloaded)
                 {
                     Process.Start(book.LocalPath);
                 }
             }
         }
 
-        private void TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
+        private void _TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
         {
             var search = ((TextBox)e.Source).Text;
             if (!string.IsNullOrEmpty(search))
             {
                 if (search.Length >= 3)
+                {
                     model.FilterListByTitle(search);
+                    model.Filter.Title = search;
+                }
             }
             else
             {
                 model.FilterListByTitle("");
+                model.Filter.Title = "";
             }
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        private void _btnFilterMode_Click(object sender, RoutedEventArgs e)
         {
             listView.SelectedIndex = -1;
             model.FilterMode = true;
         }
 
-        private void Button_Click_4(object sender, RoutedEventArgs e)
+        private void _btnSuggest_Click(object sender, RoutedEventArgs e)
         {
             if (Suggested)
             {
-                UnsuggestCategories();
+                if (model.UnsuggestCategories())
+                    Notify("Suggestions unfiled.");
             }
             else
             {
-                SuggestCategories();
+                if (model.SuggestCategories())
+                    Notify("Suggestions for current list filed.");
             }
             Suggested = !Suggested;
         }
@@ -504,17 +414,8 @@ namespace BookUtils
             }
         }
 
-        private void Button_Click_5(object sender, RoutedEventArgs e)
-        {
-            AddCategory();
-        }
-        
-        private void Button_Click_6(object sender, RoutedEventArgs e)
-        {
-            ListCategories();
-        }
 
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        private void _checkBox_Click(object sender, RoutedEventArgs e)
         {
             var book = (e.OriginalSource as CheckBox).DataContext as Book;
             if (book != null && !book.IsChecked && book.IsDownloaded)
@@ -529,19 +430,25 @@ namespace BookUtils
                     }
                     catch
                     {
-                        
+
                     }
                     Notify($"Unsynced ok. Total {model.Books.Count(b => b.IsDownloaded)} books downloaded.");
                 }
             }
         }
 
-        private void Button_Click_7(object sender, RoutedEventArgs e)
+        private void _btnAddBook_Click(object sender, RoutedEventArgs e)
+        {
+            AddBook(); 
+        }
+
+        private void AddBook()
         {
             var newBook = new Book
             {
                 PostId = crawler.GetCustomPostId(),
-                Title = "New title"
+                Title = "",
+                DownloadUrl = @"D:\books\google_drive\itdb\extra_books\"
             };
             var bookWindow = new BookWindow(newBook, crawler);
             bookWindow.Owner = this;
@@ -549,10 +456,11 @@ namespace BookUtils
             if (result.HasValue && result.Value)
             {
                 LoadBooksFromDb();
+                model.ApplyFilter();
             }
         }
 
-        private async void UploadDB(object sender, RoutedEventArgs e)
+        private void BackupDB(object sender, RoutedEventArgs e)
         {
             /* var url = new Uri("https://spbookserv.herokuapp.com/api/update-db");
             var file = DB_PATH;
@@ -597,16 +505,15 @@ namespace BookUtils
             model.ShownBooks.Clear();
         }
 
-        private void DownloadDB(object sender, RoutedEventArgs e)
+        private void RestoreDB(object sender, RoutedEventArgs e)
         {
             ClearList();
             crawler.ClearFile();
             File.Copy(GOOGLE_DRIVE_DB_PATH, DB_PATH, true);
             InitList();
-            //DownloadDBAsync();
         }
 
-        private async void DownloadDBAsync()
+        private void DownloadDBAsync()
         {
             /*using (var wc = new WebClient())
             {
@@ -620,7 +527,7 @@ namespace BookUtils
             }*/
         }
 
-        private void TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
+        private void _TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
             var book = (sender as TextBlock).DataContext as Book;
             if (book != null)
@@ -631,6 +538,16 @@ namespace BookUtils
                     book.Rating++;
                 crawler.Save();
             }
+        }
+
+        private void _btnListCategories(object sender, RoutedEventArgs e)
+        {
+            model.ListCategories();
+        }
+
+        private void _btnAddCategory_Click(object sender, RoutedEventArgs e)
+        {
+            AddCategory();
         }
     }
 }
