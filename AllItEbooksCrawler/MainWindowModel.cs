@@ -30,7 +30,7 @@ namespace BookUtils
         private bool _filterMode;
         public bool FilterMode { get { return _filterMode; } set { _filterMode = value; OnPropertyChanged("FilterMode"); } }
 
-        public BookFilter Filter = new BookFilter();
+        public BookFilter Filter = new BookFilter { Title = "", Category = "" };
 
         public ObservableCollection<Book> ShownBooks { get; set; }
 

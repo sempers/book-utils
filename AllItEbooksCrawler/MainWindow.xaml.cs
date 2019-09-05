@@ -270,7 +270,10 @@ namespace BookUtils
             if (books.Count == 0)
             {
                 if (catListBox.SelectedItem != null)
+                {
+                    model.Filter.Category = catListBox.SelectedItem.ToString();
                     model.FilterListByCategory(catListBox.SelectedItem.ToString());
+                }
                 return;
             }
             //Присвоение категории
@@ -448,6 +451,7 @@ namespace BookUtils
             {
                 PostId = crawler.GetCustomPostId(),
                 Title = "",
+                Category=model.Filter.Category,
                 DownloadUrl = @"D:\books\google_drive\itdb\extra_books\"
             };
             var bookWindow = new BookWindow(newBook, crawler);
