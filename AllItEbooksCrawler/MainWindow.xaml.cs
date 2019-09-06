@@ -92,7 +92,7 @@ namespace BookUtils
             model.ListCategories();
         }
 
-        private void LoadBooksFromDb()
+        private void LoadBooksFromDb(bool applyFilter = false)
         {
             var list = crawler.GetFromDb();
             model.LoadHidden();
@@ -121,6 +121,8 @@ namespace BookUtils
             });
             model.Books = list;
             model.LoadList(list);
+            if (applyFilter)
+                model.ApplyFilter();
             model.Sortings.Add("PostId");
             model.SortList("PostId");
             Notify($"Books loaded ok. Total {downloaded} books downloaded. {(syncNotDownloaded > 0 ? $"{syncNotDownloaded} books to synchronize." : "")}");
@@ -139,10 +141,24 @@ namespace BookUtils
 
         private async Task DownloadBooksAsync()
         {
-            var booksToDownload = model.ShownBooks.Where(book => book.IsChecked && !string.IsNullOrEmpty(book.DownloadUrl) && !book.IsDownloaded).ToList();
+            bool inSelection = listView.SelectedItems.Count > 0;
+            List<Book> booksToDownload;
+            if (!inSelection)
+            {
+                booksToDownload = model.ShownBooks.Where(book => book.IsChecked && !string.IsNullOrEmpty(book.DownloadUrl) && !book.IsDownloaded).ToList();
+            } else
+            {
+                List<Book> selected = new List<Book>();
+                foreach (Book b in listView.SelectedItems)
+                {
+                    selected.Add(b);
+                }
+                booksToDownload = selected.Where(book => book.IsChecked && !string.IsNullOrEmpty(book.DownloadUrl) && !book.IsDownloaded).ToList();
+            }
             if (booksToDownload.Count == 0)
                 return;
-            Notify("Downloads initialized...");
+            
+            Notify(inSelection ? "Downloads in selection initialized..." : "Downloads initialized");
             int count = 0;
             int total = booksToDownload.Count;
             foreach (var book in booksToDownload)
@@ -223,6 +239,10 @@ namespace BookUtils
                 var bookWindow = new BookWindow(book, crawler, "EDIT");
                 bookWindow.Owner = this;
                 var result = bookWindow.ShowDialog();
+                if (result == true && crawler.LastAction == "REMOVE")
+                {
+                    LoadBooksFromDb(applyFilter: true);
+                }
             }
         }
 
@@ -318,7 +338,6 @@ namespace BookUtils
                     if (book == null)
                         return;
                     book.Suggested = false; book.Approved = 1;
-                    //crawler.UpdateCategory(book.Id, book.Category);
                     crawler.Save();
                 }
             }
@@ -459,8 +478,7 @@ namespace BookUtils
             var result = bookWindow.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                LoadBooksFromDb();
-                model.ApplyFilter();
+                LoadBooksFromDb(applyFilter: true);
             }
         }
 

@@ -5,42 +5,49 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookUtils"
         mc:Ignorable="d"
-        Title="Book details" Height="381.413" Width="544.907" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" >
+        Title="Book details" Height="381.413" Width="536.907" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" >
     <Window.Resources>
         <local:Book x:Key="book"/>
     </Window.Resources>
     <StackPanel Margin="0,10,0,0" VerticalAlignment="Top">
         <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">PostId</Label>
+            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">PostId</Label>
             <TextBox Text="{Binding PostId}" IsEnabled="False" Width="95" Margin="5" VerticalContentAlignment="Center"></TextBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Authors</Label>
-            <TextBox Text="{Binding Authors}" Width="335" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Authors</Label>
+            <TextBox Text="{Binding Authors}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="160" HorizontalAlignment="Center" Margin="5" >Title</Label>
-            <TextBox Text="{Binding Title}" Width="335" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            <Label Width="100" HorizontalAlignment="Center" Margin="5" >Title</Label>
+            <TextBox Text="{Binding Title}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Year</Label>
+            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Year</Label>
             <TextBox Text="{Binding Year}" Width="95" Margin="5" VerticalContentAlignment="Center"></TextBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Summary</Label>
-            <TextBox Text="{Binding Summary}" Width="335" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Summary</Label>
+            <TextBox Text="{Binding Summary}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Category</Label>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" SelectedValue="{Binding Category}" Width="335" Margin="5,5,5,5"></ComboBox>
+            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Category</Label>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" SelectedValue="{Binding Category}" Width="400" Margin="5,5,5,5"></ComboBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="160" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Download Url</Label>
-            <TextBox Text="{Binding DownloadUrl}" Width="335" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Download Url</Label>
+            <TextBox Text="{Binding DownloadUrl}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Height="45" Margin="5">
-            <Button Content="OK" Margin="5" Padding="5" Width="100" Click="Button_Click_1"/>
-            <Button Content="Cancel" Margin="5" Padding="5" Width="100" Click="Button_Click_2"/>
+        <StackPanel Orientation="Horizontal" >
+            <StackPanel Orientation="Horizontal" Height="45" Margin="5" Width="395">
+                <Button Content="OK" Margin="5" Padding="5" Width="100" Click="_btnOK_Click"/>
+                <Button Content="Cancel" Margin="5" Padding="5" Width="100" Click="_btnCancel_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Height="45" Margin="5"  HorizontalAlignment="Right">
+                <Button Name="btnRemove" Content="[x] Remove" Foreground="Red" Margin="5" Padding="5" Width="100" Click="_btnRemove_Click"/>
+            </StackPanel>
         </StackPanel>
+        
+        
     </StackPanel>
 </Window>

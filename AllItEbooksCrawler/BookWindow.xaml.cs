@@ -30,23 +30,37 @@ namespace BookUtils
             DataContext = model;
             _crawler = crawler;
             _action = action;
+            if (_action == "NEW")
+            {
+                btnRemove.Visibility = Visibility.Hidden;
+            }
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void _btnOK_Click(object sender, RoutedEventArgs e)
         {
             switch (_action)
             {
                 case "NEW": _crawler.AddBook(model); break;
-                case "EDIT": _crawler.SaveBook(model); break;
+                case "EDIT": _crawler.Save(); break;
             }
             DialogResult = true;
             Close();
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void _btnCancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
             Close();
+        }
+
+        private void _btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Do you really want to delete the book?", "Delete book", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                _crawler.RemoveBook(model);
+                DialogResult = true; //special
+                Close();
+            }
         }
     }
 }

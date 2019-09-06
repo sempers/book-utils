@@ -21,10 +21,21 @@ namespace BookUtils
 
         private AppDbContext db;
 
+        public string LastAction { get; set; }
+
         public void AddBook(Book model)
         {
             db.Books.Add(model);
             db.SaveChanges();
+            LastAction = "ADD";
+        }
+
+        public void RemoveBook(Book model)
+        {
+            db.Books.Remove(model);
+            db.SaveChanges();
+            LastAction = "REMOVE";
+
         }
 
         public void ClearFile()
@@ -33,11 +44,7 @@ namespace BookUtils
             db.Dispose();
             db = null;
             File.Delete(@"..\..\books.db");
-        }
-
-        public void SaveBook(Book model)
-        {
-            db.SaveChanges();
+            LastAction = "CLEAR";
         }
 
         public int GetCustomPostId()
@@ -82,45 +89,14 @@ namespace BookUtils
                 book.Summary = book.Summary.Replace("&#8230;", "...");
             }
             db.SaveChanges();
+            LastAction = "CORRECT";
             Notify("Correction finished.");
         }
-
-        /*public void UpdateCategory(int id, string category)
-        {
-
-            var book = db.Books.Find(id);
-            if (book != null)
-            {
-                book.Category = category;
-                book.Approved = 1;
-                db.SaveChanges();
-            }
-        }
-
-        public void UpdateRating(int id, int rating)
-        {
-
-            var book = db.Books.Find(id);
-            if (book != null)
-            {
-                book.Rating = rating;
-                db.SaveChanges();
-            }
-        }
-        internal void SyncBook(int id, int value = 1)
-        {
-            var book = db.Books.Find(id);
-            if (book != null)
-            {
-                book.Sync = value;
-                db.SaveChanges();
-            }
-        }
-             */
 
         public void Save()
         {
             db.SaveChanges();
+            LastAction = "SAVE";
         }
 
         public async Task<int> UpdateDbFromWeb(Dictionary<string, string> corrections)
@@ -236,6 +212,7 @@ namespace BookUtils
                     break;
             }
             Notify($"Updating all finished. Added {booksAdded} new books.");
+            LastAction = "UPDATE";
             return booksAdded;
         }
 
