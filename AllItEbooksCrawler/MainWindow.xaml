@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookUtils"
         mc:Ignorable="d"
-        Title="BookUtils.AllItEbooksCrawler" Height="788" Width="1800" KeyUp="Window_KeyUp">
+        Title="BookUtils.AllItEbooksCrawler" Height="788" Width="1555" KeyUp="Window_KeyUp">
     <Window.Resources>
         <Style TargetType="ToolTip">
             <Style.Resources>
@@ -84,7 +84,7 @@
             <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnDownload_Click"></Button>
             <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnCorrect_Click"></Button>
             </StackPanel>
-            <TextBox VerticalContentAlignment="Center" Width="500" Margin="5" Text="{Binding SearchTitle}" TextChanged="_TextBox_TextChanged_1"/>
+            <TextBox VerticalContentAlignment="Center" Width="331" Margin="5" Text="{Binding SearchTitle}" TextChanged="_TextBox_TextChanged_1"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="_btnAddCategory_Click"></Button>
             <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="_catListBox_SelectionChanged"></ComboBox>
             <Button Content="Filter mode" Margin="5" Padding="5" Click="_btnFilterMode_Click"></Button>
@@ -105,9 +105,9 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="PostId" Width="75" CellTemplate="{StaticResource postIdTmpl}"></GridViewColumn>
-                    <GridViewColumn Header="Authors" Width="250" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
-                    <GridViewColumn Header="Title" Width="500" CellTemplate="{StaticResource titleTmpl}"></GridViewColumn>
-                    <GridViewColumn Header="Year" Width="50" CellTemplate="{StaticResource yearTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Authors" Width="254" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
+                    <GridViewColumn Header="Title" Width="330" CellTemplate="{StaticResource titleTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Year" Width="60" CellTemplate="{StaticResource yearTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Category" Width="250" CellTemplate="{StaticResource categoryTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Link" Width="Auto" CellTemplate="{StaticResource linkTmpl}"></GridViewColumn>
                 </GridView>

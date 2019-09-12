@@ -1,6 +1,7 @@
 .idea/
 *.db
 AllItEbooksCrawler/data/books.db
+**/obj/**
 **/obj/Debug/**
 .vs/**
 

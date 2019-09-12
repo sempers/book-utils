@@ -484,39 +484,6 @@ namespace BookUtils
 
         private void BackupDB(object sender, RoutedEventArgs e)
         {
-            /* var url = new Uri("https://spbookserv.herokuapp.com/api/update-db");
-            var file = DB_PATH;
-            var filename = "books.db";
-            var contentType = "application/octet";
-            using (var webClient = new WebClient())
-            {
-                try
-                {
-                    string boundary = "------------------------" + DateTime.Now.Ticks.ToString("x");
-                    webClient.Headers.Add("Content-Type", "multipart/form-data; boundary=" + boundary);
-                    var fileData = webClient.Encoding.GetString(File.ReadAllBytes(file));
-                    var package = string.Format("--{0}\r\nContent-Disposition: form-data; name=\"db\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n{3}\r\n--{0}--\r\n", boundary, filename, contentType, fileData);
-
-                    var nfile = webClient.Encoding.GetBytes(package);
-
-                    byte[] resp = await webClient.UploadDataTaskAsync(url, "POST", nfile);
-                    Notify("DB backed up.");
-                }
-                catch (Exception err) {
-                    MessageBox.Show($"DB Backup error: {err.Message}");
-                }                
-            }
-            */
-            /*const FTP = "ftp://sempers:huibhean1@host2.bakop.com/";
-            using (var webClient = new WebClient()) {
-                try {
-                var resp = await webClient.UploadFileTaskAsync($"{FTP}/books.db", DB_PATH);
-                Notify("DB backed up.");
-                }
-                catch (Exception e) {
-                    MessageBox.Show($"DB Backup error: {err.Message}");
-                }
-            }*/
             File.Copy(DB_PATH, GOOGLE_DRIVE_DB_PATH, true);
             Notify("DB backed up");
         }
@@ -530,23 +497,17 @@ namespace BookUtils
         private void RestoreDB(object sender, RoutedEventArgs e)
         {
             ClearList();
-            crawler.ClearFile();
-            File.Copy(GOOGLE_DRIVE_DB_PATH, DB_PATH, true);
-            InitList();
+            if (crawler != null)
+                crawler.ClearFile();
+            if (File.Exists(GOOGLE_DRIVE_DB_PATH))
+            {
+                File.Copy(GOOGLE_DRIVE_DB_PATH, DB_PATH, true);
+                InitList();
+            }
         }
 
         private void DownloadDBAsync()
         {
-            /*using (var wc = new WebClient())
-            {
-                await wc.DownloadFileTaskAsync("http://spbookserv.herokuapp.com/itdb/books.db", DB_PATH);
-                InitList();                
-            }*/
-            /*using (var wc = new WebClient())
-            {
-                await wc.DownloadFileTaskAsync("ftp://sempers:huibhean1@host2.bakop.com/books.db", DB_PATH);
-                InitList();
-            }*/
         }
 
         private void _TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
