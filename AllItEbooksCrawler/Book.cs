@@ -35,10 +35,15 @@ namespace BookUtils
         public string Summary { get; set; }
 
         private string _category { get; set; }
-        public string Category { get => _category; set {
-                _category = value;         
+        public string Category
+        {
+            get => _category; set
+            {
+                _category = value;
 
-                OnPropertyChanged("Category"); } }
+                OnPropertyChanged("Category");
+            }
+        }
 
         private int _approved;
         public int Approved { get => _approved; set { _approved = value; OnPropertyChanged("Approved"); } }
@@ -51,11 +56,11 @@ namespace BookUtils
 
         public static ObservableCollection<string> Categories { get; set; } = new ObservableCollection<string>();
 
-        public void ApproveCategory(string category)
+        public void SetCategory(string category, bool approve = false)
         {
             Category = category;
             var oldPath = IsDownloaded ? LocalPath : null;
-            if (Approved == 0)
+            if (Approved == 0 && approve)
             {
                 Approved = 1;
             }
@@ -78,13 +83,13 @@ namespace BookUtils
             {
                 Book.Categories.Add(s);
             }
-        }       
+        }
 
         public string OldCategory { get; set; }
         public string ISBN { get; set; }
         public int Pages { get; set; }
 
-        public int Sync { get; set; }        
+        public int Sync { get; set; }
 
         private bool _isChecked;
         public bool IsChecked { get => _isChecked; set { _isChecked = value; OnPropertyChanged("IsChecked"); } }

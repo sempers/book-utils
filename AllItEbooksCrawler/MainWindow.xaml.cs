@@ -50,7 +50,7 @@ namespace BookUtils
     /// </summary>
     public partial class MainWindow : Window
     {
-        AppDbCrawler crawler;
+        AppDbCrawler db;
 
         MainWindowModel model = new MainWindowModel();
 
@@ -91,8 +91,8 @@ namespace BookUtils
 
         private void InitList()
         {
-            crawler = new AppDbCrawler();
-            crawler.Notify += _crawler_Notified;
+            db = new AppDbCrawler();
+            db.Notify += _crawler_Notified;
             DataContext = model;
             LoadBooksFromDb();
             model.ListCategories();
@@ -100,7 +100,7 @@ namespace BookUtils
 
         private void LoadBooksFromDb(bool applyFilter = false)
         {
-            var list = crawler.LoadBooksFromDb();
+            var list = db.LoadBooksFromDb();
             model.LoadHidden();
             int count = list.RemoveAll(book => model.HiddenIncludes(book));
             int syncNotDownloaded = 0;
@@ -115,7 +115,7 @@ namespace BookUtils
                     if (book.Sync == 0)     //downloaded but not synced
                     {
                         book.Sync = 1;
-                        crawler.Save();
+                        db.Save();
                         downloadedNotSynced++;
                     }
                 }
@@ -175,7 +175,7 @@ namespace BookUtils
                     if (book.Sync == 0)
                     {
                         book.Sync = 1;
-                        crawler.Save();
+                        db.Save();
                     }
 
                     Notify($"Downloading book {count}/{total}: {book.Title}");
@@ -206,20 +206,17 @@ namespace BookUtils
                 }
             }
             Notify($"Downloads finished. Total {model.Books.Count(book => book.IsDownloaded)} books downloaded.");
-        }
-
-
-        
+        }        
 
         private void _crawler_Notified(string message)
         {
-            Application.Current.Dispatcher.Invoke(() => { model.Message = message; });
+            Notify(message);
         }
 
         private async void _btnUpdate_Click(object sender, RoutedEventArgs e)
         {
             model.LoadCorrections();
-            int booksAdded = await crawler.UpdateDbFromWeb(model.TxtCorrections);
+            int booksAdded = await db.UpdateDbFromWeb(model.TxtCorrections);
             LoadBooksFromDb();
             Notify($"Books updated from the web, added {booksAdded} new books.");
         }
@@ -229,10 +226,10 @@ namespace BookUtils
             var book = ((FrameworkElement)e.OriginalSource).DataContext as Book;
             if (book != null)
             {
-                var bookWindow = new BookWindow(book, crawler, "EDIT");
+                var bookWindow = new BookWindow(book, db, "EDIT");
                 bookWindow.Owner = this;
                 var result = bookWindow.ShowDialog();
-                if (result == true && crawler.LastAction == "REMOVE")
+                if (result == true && db.LastAction == "REMOVE")
                 {
                     LoadBooksFromDb(applyFilter: true);
                 }
@@ -247,7 +244,7 @@ namespace BookUtils
         private void _btnCorrect_Click(object sender, RoutedEventArgs e)
         {
             model.LoadCorrections();
-            crawler.Correct(model.TxtCorrections);
+            db.Correct(model.TxtCorrections);
             model.DeleteEmptyFolders(BOOKS_ROOT);
             LoadBooksFromDb();
             model.ListCategories();
@@ -292,11 +289,11 @@ namespace BookUtils
             //Присвоение категории
             foreach (Book book in books)
             {
-                if (catListBox.SelectedItem == null)//|| book.FirstCategory == catListBox.SelectedItem.ToString())
+                if (catListBox.SelectedItem == null || book.FirstCategory == catListBox.SelectedItem.ToString())
                     continue;
-                else
+                else //approve category
                 {
-                    book.ApproveCategory(catListBox.SelectedItem.ToString());
+                    book.SetCategory(catListBox.SelectedItem.ToString(), approve:true);
                 }
             }
         }
@@ -315,31 +312,35 @@ namespace BookUtils
                     book.IsChecked = !book.IsChecked;
                 }
             }
-            if (e.Key == Key.Return)                    //Make Approved
+            if (e.Key == Key.Return)                    //Make Approved/Open File
+            {
+                var books = listView.SelectedItems;
+                foreach (Book _book in books)
+                {
+                    if (_book == null)
+                        return;
+                    _book.Suggested = false;
+                    _book.Approved = 1;
+                    db.Save();
+                }
+                var book = listView.SelectedItem as Book;
+                if (book != null && book.IsDownloaded)
+                {
+                    Process.Start(book.LocalPath);
+                }
+            }
+            if (e.Key == Key.Back)           //Unsuggest and approve initial value
             {
                 var books = listView.SelectedItems;
                 foreach (Book book in books)
                 {
                     if (book == null)
                         return;
-                    book.Suggested = false; book.Approved = 1;
-                    crawler.Save();
+                    book.SetCategory(book.OldCategory, approve: true);
+                    db.Save();
                 }
             }
-            if (e.Key == Key.Back)                     //Unsuggest
-            {
-                var books = listView.SelectedItems;
-                foreach (Book book in books)
-                {
-                    if (book == null)
-                        return;
-                    book.Suggested = false;
-                    book.Approved = 1;
-                    book.Category = book.OldCategory;
-                    crawler.Save();
-                }
-            }
-            if (e.Key == Key.F1)                    //Old dblclick, now go to url
+            if (e.Key == Key.F1)              //Old dblclick, now go to url
             {
                 var book = listView.SelectedItem as Book;
                 if (book != null && book.Url != null)
@@ -406,7 +407,7 @@ namespace BookUtils
                 var book = listView.SelectedItem as Book;
                 if (book != null)
                 {
-                    book.ApproveCategory(newCategory); //setter logic
+                    book.SetCategory(newCategory, approve: true); //setter logic
                 }
             }
         }
@@ -420,7 +421,7 @@ namespace BookUtils
                 if (MessageBox.Show($"Do you really want to unsync '{book.Title}' and delete the file?", "Warning", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                 {
                     book.Sync = 0;
-                    crawler.Save();
+                    db.Save();
                     try
                     {
                         File.Delete(book.LocalPath);
@@ -443,12 +444,12 @@ namespace BookUtils
         {
             var newBook = new Book
             {
-                PostId = crawler.GetCustomPostId(),
+                PostId = db.GetCustomPostId(),
                 Title = "",
                 Category=model.Filter.Category,
                 DownloadUrl = @"D:\books\google_drive\itdb\extra_books\"
             };
-            var bookWindow = new BookWindow(newBook, crawler);
+            var bookWindow = new BookWindow(newBook, db);
             bookWindow.Owner = this;
             var result = bookWindow.ShowDialog();
             if (result.HasValue && result.Value)
@@ -473,8 +474,8 @@ namespace BookUtils
         {
             Notify("DB restoring...");
             ClearList();
-            if (crawler != null)
-                crawler.ClearFile();
+            if (db != null)
+                db.ClearFile();
             if (File.Exists(GOOGLE_DRIVE_DB_PATH))
             {
                 File.Copy(GOOGLE_DRIVE_DB_PATH, DB_PATH, true);
@@ -492,7 +493,7 @@ namespace BookUtils
                     book.Rating = 0;
                 else
                     book.Rating++;
-                crawler.Save();
+                db.Save();
             }
         }
 

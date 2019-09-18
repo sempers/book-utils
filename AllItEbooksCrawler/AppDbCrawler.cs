@@ -72,9 +72,8 @@ namespace BookUtils
             foreach (var book in db.Books)
             {
                 book.Title = book.Title.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
-                if (book.Category != null)
+                if (!string.IsNullOrEmpty(book.Category))
                 {
-                    var oldPath = book.IsDownloaded ? book.LocalPath: null;
                     var _category = book.Category;
                     foreach (var correction in corrections)
                     {
@@ -82,7 +81,7 @@ namespace BookUtils
                     }
                     if (_category.Contains(";"))
                        _category = _category.Split(';')[0];
-                    book.ApproveCategory(_category);
+                    book.SetCategory(_category); //no approving
                 }
                 book.Summary = book.Summary.Replace("&#8230;", "...");
             }

@@ -157,12 +157,12 @@ namespace BookUtils
             var dict = new Dictionary<string, int>();
             foreach (var book in ShownBooks)
             {
-                var firstCat = book.FirstCategory;
-                if (!string.IsNullOrEmpty(firstCat))
-                    if (!dict.ContainsKey(firstCat))
-                        dict.Add(firstCat, 1);
+                var cat = book.FirstCategory;
+                if (!string.IsNullOrEmpty(cat))
+                    if (!dict.ContainsKey(cat))
+                        dict.Add(cat, 1);
                     else
-                        dict[firstCat]++;
+                        dict[cat]++;
             }
             foreach (var add in File.ReadAllLines("../../settings/categories.txt"))
             {
@@ -172,7 +172,7 @@ namespace BookUtils
             var list = new List<string>();
             foreach (var kv in dict)
             {
-                list.Add($"{kv.Key}");
+                list.Add(kv.Key);
             }
             list.Add("(no category)");
             list.Sort();
