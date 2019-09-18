@@ -23,12 +23,6 @@ using HtmlAgilityPack;
 
 namespace BookUtils
 {
-    public class BookCategory
-    {
-        public string Value { get; set; }
-        public int Num { get; set; }
-    }
-
     public class RatingToEmojiConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -75,9 +69,21 @@ namespace BookUtils
             Book.root = BOOKS_ROOT;
             if (!File.Exists(DB_PATH))
             {
-                DownloadDBAsync();
+                RestoreDB(null, null);
             }
-            else
+            else if (File.Exists(GOOGLE_DRIVE_DB_PATH))
+            {
+                FileInfo fi_backup = new FileInfo(GOOGLE_DRIVE_DB_PATH);
+                var fi_db_path = new FileInfo(DB_PATH);
+                if (fi_backup.LastWriteTime.Ticks > fi_db_path.LastWriteTime.Ticks)
+                {
+                    RestoreDB(null, null);
+                }
+                else
+                {
+                    InitList();
+                }
+            } else
             {
                 InitList();
             }
@@ -496,6 +502,7 @@ namespace BookUtils
 
         private void RestoreDB(object sender, RoutedEventArgs e)
         {
+            Notify("DB restoring...");
             ClearList();
             if (crawler != null)
                 crawler.ClearFile();
@@ -506,9 +513,6 @@ namespace BookUtils
             }
         }
 
-        private void DownloadDBAsync()
-        {
-        }
 
         private void _TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -531,6 +535,11 @@ namespace BookUtils
         private void _btnAddCategory_Click(object sender, RoutedEventArgs e)
         {
             AddCategory();
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            BackupDB(null, null);
         }
     }
 }
