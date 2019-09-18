@@ -232,6 +232,20 @@ namespace BookUtils
             return was;
         }
 
+        public void DeleteEmptyFolders(string folder)
+        {
+            foreach (var dir in Directory.GetDirectories(folder))
+            {
+                DeleteEmptyFolders(dir);
+                var files = Directory.GetFiles(dir);
+                var dirs = Directory.GetDirectories(dir);
+                if (files.Length == 0 && dirs.Length == 0)
+                {
+                    Directory.Delete(dir);
+                }
+            }
+        }
+
         public bool SuggestCategories()
         {
             if (File.Exists("../../settings/suggestions.txt"))

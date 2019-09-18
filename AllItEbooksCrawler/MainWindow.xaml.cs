@@ -100,7 +100,7 @@ namespace BookUtils
 
         private void LoadBooksFromDb(bool applyFilter = false)
         {
-            var list = crawler.GetFromDb();
+            var list = crawler.LoadBooksFromDb();
             model.LoadHidden();
             int count = list.RemoveAll(book => model.HiddenIncludes(book));
             int syncNotDownloaded = 0;
@@ -209,20 +209,7 @@ namespace BookUtils
         }
 
 
-        private void DeleteEmptyFolders(string folder = null)
-        {
-            folder = folder ?? BOOKS_ROOT;
-            foreach (var dir in Directory.GetDirectories(folder))
-            {
-                DeleteEmptyFolders(dir);
-                var files = Directory.GetFiles(dir);
-                var dirs = Directory.GetDirectories(dir);
-                if (files.Length == 0 && dirs.Length == 0)
-                {
-                    Directory.Delete(dir);
-                }
-            }
-        }
+        
 
         private void _crawler_Notified(string message)
         {
@@ -261,7 +248,7 @@ namespace BookUtils
         {
             model.LoadCorrections();
             crawler.Correct(model.TxtCorrections);
-            DeleteEmptyFolders();
+            model.DeleteEmptyFolders(BOOKS_ROOT);
             LoadBooksFromDb();
             model.ListCategories();
             Notify("Corrections made. Books reloaded.");
@@ -272,7 +259,7 @@ namespace BookUtils
             var book = listView.SelectedItem as Book;
             if (book != null)
             {
-                catListBox.SelectedValue = book.FirstCategory;
+                catListBox.SelectedValue = book.Category; //select current book's category
                 model.FilterMode = false;
             }
             else
@@ -305,24 +292,16 @@ namespace BookUtils
             //Присвоение категории
             foreach (Book book in books)
             {
-                if (catListBox.SelectedItem == null || book.FirstCategory == catListBox.SelectedItem.ToString())
+                if (catListBox.SelectedItem == null)//|| book.FirstCategory == catListBox.SelectedItem.ToString())
                     continue;
                 else
                 {
-                    var oldPath = book.IsDownloaded ? book.LocalPath : null;
-                    book.Category = catListBox.SelectedItem.ToString();
-                    if (book.Approved == 0) book.Approved = 1;
-                    if (book.Suggested) book.Suggested = false;
-                    //crawler.UpdateCategory(book.Id, book.Category);
-                    if (oldPath != null && oldPath != book.LocalPath)
-                    {
-                        book.AutoMove(oldPath);
-                    }
+                    book.ApproveCategory(catListBox.SelectedItem.ToString());
                 }
             }
         }
 
-        private void Window_KeyUp(object sender, KeyEventArgs e)
+        private void _Window_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back && e.Key != Key.F1 && e.Key != Key.F2)
                 return;
@@ -417,27 +396,17 @@ namespace BookUtils
             Suggested = !Suggested;
         }
 
-        private void UpdateCategories()
-        {
-            var sorted = Book.Categories.OrderBy(x => x).ToList();
-            Book.Categories.Clear();
-            foreach (var s in sorted)
-            {
-                Book.Categories.Add(s);
-            }
-        }
 
         private void AddCategory()
         {
             if (!string.IsNullOrEmpty(catListBox.Text) && !Book.Categories.Contains(catListBox.Text))
             {
                 var newCategory = catListBox.Text;
-                Book.Categories.Add(newCategory);
-                UpdateCategories();
+                Book.AddCategory(newCategory);
                 var book = listView.SelectedItem as Book;
-                if (book != null && string.IsNullOrEmpty(book.Category))
+                if (book != null)
                 {
-                    book.Category = newCategory;
+                    book.ApproveCategory(newCategory); //setter logic
                 }
             }
         }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookUtils"
         mc:Ignorable="d"
-        Title="BookUtils.AllItEbooksCrawler" Height="788" Width="1555" KeyUp="Window_KeyUp" Closing="Window_Closing">
+        Title="BookUtils.AllItEbooksCrawler" Height="788" Width="1555" KeyUp="_Window_KeyUp" Closing="Window_Closing">
     <Window.Resources>
         <Style TargetType="ToolTip">
             <Style.Resources>

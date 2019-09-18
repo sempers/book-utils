@@ -61,7 +61,7 @@ namespace BookUtils
             db = new AppDbContext();
         }
 
-        public List<Book> GetFromDb()
+        public List<Book> LoadBooksFromDb()
         {
             return db.Books.ToList();
         }
@@ -75,16 +75,14 @@ namespace BookUtils
                 if (book.Category != null)
                 {
                     var oldPath = book.IsDownloaded ? book.LocalPath: null;
+                    var _category = book.Category;
                     foreach (var correction in corrections)
                     {
-                        book.Category = book.Category.Replace(correction.Key.Trim(), correction.Value.Trim());
+                        _category = _category.Replace(correction.Key.Trim(), correction.Value.Trim());
                     }
-                    book.Category = book.FirstCategory;
-
-                    if (oldPath != null && book.LocalPath != oldPath)
-                    {
-                        book.AutoMove(oldPath);
-                    }
+                    if (_category.Contains(";"))
+                       _category = _category.Split(';')[0];
+                    book.ApproveCategory(_category);
                 }
                 book.Summary = book.Summary.Replace("&#8230;", "...");
             }
@@ -155,19 +153,19 @@ namespace BookUtils
                                 book.Year = int.Parse(ddNodes[i].InnerText);
                             if (dtNodes[i].InnerText == "Category:")
                             {
-                                var s = "";
+                                var _category = "";
                                 foreach (var anode in ddNodes[i].SelectNodes("a"))
                                 {
-                                    s += anode.Attributes["href"].Value.Replace("http://www.allitebooks.org/", "").TrimEnd('/') + ";";
+                                    _category += anode.Attributes["href"].Value.Replace("http://www.allitebooks.org/", "").TrimEnd('/') + ";";
                                 }
-                                s = s.Substring(0, s.Length - 1);
-                                book.Category = s;
-
+                                _category = _category.Substring(0, _category.Length - 1);
                                 foreach (var correction in corrections)
                                 {
-                                    book.Category = book.Category.Replace(correction.Key.Trim(), correction.Value.Trim());
+                                    _category = _category.Replace(correction.Key.Trim(), correction.Value.Trim());
                                 }
-                                book.Category = book.FirstCategory;
+                                if (_category.Contains(";"))
+                                    _category = _category.Split(';')[0];
+                                book.Category = _category;
                             }
 
                             if (dtNodes[i].InnerText == "Pages:")

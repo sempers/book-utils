@@ -35,7 +35,10 @@ namespace BookUtils
         public string Summary { get; set; }
 
         private string _category { get; set; }
-        public string Category { get => _category; set { _category = value; OnPropertyChanged("Category"); } }
+        public string Category { get => _category; set {
+                _category = value;         
+
+                OnPropertyChanged("Category"); } }
 
         private int _approved;
         public int Approved { get => _approved; set { _approved = value; OnPropertyChanged("Approved"); } }
@@ -47,6 +50,35 @@ namespace BookUtils
         public int Rating { get => _rating; set { _rating = value; OnPropertyChanged("Rating"); } }
 
         public static ObservableCollection<string> Categories { get; set; } = new ObservableCollection<string>();
+
+        public void ApproveCategory(string category)
+        {
+            Category = category;
+            var oldPath = IsDownloaded ? LocalPath : null;
+            if (Approved == 0)
+            {
+                Approved = 1;
+            }
+            if (Suggested)
+            {
+                Suggested = false;
+            }
+            if (oldPath != null && oldPath != LocalPath)
+            {
+                AutoMove(oldPath);
+            }
+        }
+
+        public static void AddCategory(string category)
+        {
+            Categories.Add(category);
+            var sorted = Book.Categories.OrderBy(x => x).ToList();
+            Book.Categories.Clear();
+            foreach (var s in sorted)
+            {
+                Book.Categories.Add(s);
+            }
+        }       
 
         public string OldCategory { get; set; }
         public string ISBN { get; set; }
@@ -80,49 +112,17 @@ namespace BookUtils
             }
         }
 
-        public string ClearTitle
-        {
-            get
-            {
-                return ClearString(Title);
-            }
-        }
+        public string ClearTitle => ClearString(Title);
 
-        public string PdfFileName
-        {
-            get { return $"[{Year}] {ClearTitle} - {ClearAuthors}.pdf"; }
-        }
+        public string PdfFileName => $"[{Year}] {ClearTitle} - {ClearAuthors}.pdf";
 
-        public string FirstCategory
-        {
-            get
-            {
-                if (Category == null)
-                    return "";
-                return Category.Split(';')[0];
-            }
-        }
+        public string FirstCategory => Category == null ? "" : Category.Contains(";") ? Category.Split(';')[0] : Category;
 
-        public string LocalPath
-        {
-            get
-            {
-                return Path.Combine(root, FirstCategory.Replace("/", "\\"), PdfFileName);
-            }
-        }
+        public string LocalPath => Path.Combine(root, FirstCategory.Replace("/", "\\"), PdfFileName);
 
-        public bool IsDownloaded
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(LocalPath))
-                    return false;
-                else
-                    return File.Exists(LocalPath);
-            }
-        }
+        public bool IsDownloaded => string.IsNullOrEmpty(LocalPath) ? false : File.Exists(LocalPath);
 
-        public void AutoMove(string oldPath)
+        private void AutoMove(string oldPath)
         {
             if (oldPath == null)
                 return;
