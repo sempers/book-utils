@@ -246,8 +246,9 @@ namespace BookUtils
             }
         }
 
-        public bool SuggestCategories()
+        public int SuggestCategories()
         {
+            var result = 0;
             if (File.Exists("../../settings/suggestions.txt"))
             {
                 var dict = new Dictionary<string, string>();
@@ -269,13 +270,13 @@ namespace BookUtils
                                 book.OldCategory = book.Category;
                                 book.Category = kvPair.Value;
                                 book.Suggested = true;
+                                result++;
                             }
                         }
                     }
                 }
-                return true;
             }
-            return false;
+            return result;
         }
     }
 }

@@ -88,7 +88,7 @@
             <Button Content="+ cat" Margin="5" Padding="5" Click="_btnAddCategory_Click"></Button>
             <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" Width="240" Margin="5,5,5,5" SelectionChanged="_catListBox_SelectionChanged"></ComboBox>
             <Button Content="Filter mode" Margin="5" Padding="5" Click="_btnFilterMode_Click"></Button>
-            <Button Content="Suggest" Margin="5" Padding="5" Click="_btnSuggest_Click"></Button>
+            <Button Name="btnSuggest" Content="Suggest" Margin="5" Padding="5" Click="_btnSuggest_Click"></Button>
             <Button Content="Update" Margin="5" Padding="5" Click="_btnListCategories"></Button>
             <Button Content="Add custom book" Margin="5" Padding="5" Click="_btnAddBook_Click"></Button>
         </StackPanel>

@@ -60,7 +60,7 @@ namespace BookUtils
 
         public const string DB_PATH = @"..\..\data\books.db";
 
-        public bool Suggested { get; set; } = false;
+        public bool SuggestedFlag { get; set; } = false;
 
        
         public MainWindow()
@@ -385,17 +385,25 @@ namespace BookUtils
 
         private void _btnSuggest_Click(object sender, RoutedEventArgs e)
         {
-            if (Suggested)
+            if (SuggestedFlag)
             {
                 if (model.UnsuggestCategories())
+                {
                     Notify("Suggestions unfiled.");
+                }
+                SuggestedFlag = false;
+                btnSuggest.Content = "Suggest";
             }
             else
             {
-                if (model.SuggestCategories())
-                    Notify("Suggestions for current list filed.");
+                var suggCount = model.SuggestCategories();
+                if (suggCount > 0)
+                {
+                    Notify($"{suggCount} suggestions for current list filed.");
+                    SuggestedFlag = true;
+                    btnSuggest.Content = "Unsuggest";
+                }
             }
-            Suggested = !Suggested;
         }
 
 
