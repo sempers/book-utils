@@ -35,7 +35,6 @@ namespace BookUtils
             db.Books.Remove(model);
             db.SaveChanges();
             LastAction = "REMOVE";
-
         }
 
         public void ClearFile()
@@ -50,10 +49,7 @@ namespace BookUtils
         public int GetCustomPostId()
         {
             var min = db.Books.Min(b => b.PostId);
-            if (min > 0)
-                return -1;
-            else
-                return min - 1;
+            return min > 0 ? -1 : min - 1;
         }
 
         public AppDbCrawler()

@@ -66,7 +66,7 @@ namespace BookUtils
         public MainWindow()
         {
             InitializeComponent();
-            Book.root = BOOKS_ROOT;
+            Book.ROOT = BOOKS_ROOT;
             if (!File.Exists(DB_PATH))
             {
                 RestoreDB(null, null);
@@ -131,7 +131,8 @@ namespace BookUtils
                 model.ApplyFilter();
             model.Sortings.Add("PostId");
             model.SortList("PostId");
-            Notify($"Books loaded ok. Total {downloaded} books downloaded. {(syncNotDownloaded > 0 ? $"{syncNotDownloaded} books to synchronize." : "")}");
+            var lastUpdate = (new FileInfo(DB_PATH)).LastWriteTime.ToString("dd.MM.yyyy HH:mm:ss");
+            Notify($"Books loaded ok. DB last updated {lastUpdate}. Total {downloaded} books downloaded. {(syncNotDownloaded > 0 ? $"{syncNotDownloaded} books to synchronize." : "")}");
         }
 
         public void MakeDir(string path)
@@ -482,7 +483,6 @@ namespace BookUtils
                 InitList();
             }
         }
-
 
         private void _TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {

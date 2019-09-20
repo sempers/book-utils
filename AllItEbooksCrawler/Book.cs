@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,13 +15,16 @@ namespace BookUtils
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public static string root = null;
+        public static string ROOT = null;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("Id")]
         public int Id { get; set; }
         public int PostId { get; set; }
 
@@ -40,7 +45,6 @@ namespace BookUtils
             get => _category; set
             {
                 _category = value;
-
                 OnPropertyChanged("Category");
             }
         }
@@ -49,6 +53,7 @@ namespace BookUtils
         public int Approved { get => _approved; set { _approved = value; OnPropertyChanged("Approved"); } }
 
         public bool _suggested;
+        [NotMapped]
         public bool Suggested { get => _suggested; set { _suggested = value; OnPropertyChanged("Suggested"); } }
 
         public int _rating;
@@ -85,13 +90,13 @@ namespace BookUtils
             }
         }
 
-        public string OldCategory { get; set; }
+        public string OldCategory;
         public string ISBN { get; set; }
         public int Pages { get; set; }
-
         public int Sync { get; set; }
 
         private bool _isChecked;
+        [NotMapped]
         public bool IsChecked { get => _isChecked; set { _isChecked = value; OnPropertyChanged("IsChecked"); } }
 
         public override string ToString()
@@ -123,7 +128,7 @@ namespace BookUtils
 
         public string FirstCategory => Category == null ? "" : Category.Contains(";") ? Category.Split(';')[0] : Category;
 
-        public string LocalPath => Path.Combine(root, FirstCategory.Replace("/", "\\"), PdfFileName);
+        public string LocalPath => Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), PdfFileName);
 
         public bool IsDownloaded => string.IsNullOrEmpty(LocalPath) ? false : File.Exists(LocalPath);
 
