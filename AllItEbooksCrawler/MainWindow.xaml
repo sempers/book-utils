@@ -29,6 +29,9 @@
                 <TextBlock Text="{Binding PostId}"></TextBlock>                
             </DockPanel>
             <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding DownloadedGUI}" Value="True">
+                    <Setter Property="CheckBox.FontWeight" Value="Bold"></Setter>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding Rating}" Value="2">
                     <Setter Property="TextBlock.Foreground" Value="Green"/>
                 </DataTrigger>
@@ -104,8 +107,8 @@
             </ListView.Resources>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="PostId" Width="75" CellTemplate="{StaticResource postIdTmpl}"></GridViewColumn>
-                    <GridViewColumn Header="Authors" Width="254" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
+                    <GridViewColumn Header="PostId" Width="85" CellTemplate="{StaticResource postIdTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Authors" Width="244" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
                     <GridViewColumn Header="Title" Width="330" CellTemplate="{StaticResource titleTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Year" Width="60" CellTemplate="{StaticResource yearTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Category" Width="250" CellTemplate="{StaticResource categoryTmpl}"></GridViewColumn>

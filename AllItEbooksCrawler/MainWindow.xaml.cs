@@ -186,16 +186,22 @@ namespace BookUtils
                         {
                             MakeDir(Path.GetDirectoryName(book.LocalPath));
                             if (!book.IsDownloaded)
+                            {
                                 await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
+                                book.DownloadedGUI = true;
+                            }
                         }
                     }
                     else
                     {
                         if (File.Exists(book.DownloadUrl))
                         {
-                            MakeDir(Path.GetDirectoryName(book.LocalPath));
                             if (!book.IsDownloaded)
+                            {
+                                MakeDir(Path.GetDirectoryName(book.LocalPath));
                                 File.Copy(book.DownloadUrl, book.LocalPath);
+                                book.DownloadedGUI = true;
+                            }
                         }
                     }
 

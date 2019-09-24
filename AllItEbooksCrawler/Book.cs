@@ -52,6 +52,7 @@ namespace BookUtils
         private int _approved;
         public int Approved { get => _approved; set { _approved = value; OnPropertyChanged("Approved"); } }
 
+
         public bool _suggested;
         [NotMapped]
         public bool Suggested { get => _suggested; set { _suggested = value; OnPropertyChanged("Suggested"); } }
@@ -98,6 +99,10 @@ namespace BookUtils
         private bool _isChecked;
         [NotMapped]
         public bool IsChecked { get => _isChecked; set { _isChecked = value; OnPropertyChanged("IsChecked"); } }
+
+        private bool _downloadedGUI;
+        [NotMapped]
+        public bool DownloadedGUI { get => _downloadedGUI; set { _downloadedGUI = value; OnPropertyChanged("DonwloadedGUI"); } }
 
         public override string ToString()
         {

@@ -51,6 +51,7 @@ namespace BookUtils
             foreach (var book in list)
             {
                 ShownBooks.Add(book);
+                book.DownloadedGUI = book.IsDownloaded;
             }
         }
 
