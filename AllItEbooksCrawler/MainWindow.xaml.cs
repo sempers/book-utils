@@ -30,9 +30,10 @@ namespace BookUtils
             switch (value.ToString())
             {
                 case "0": return " ";
-                case "1": return " *";
-                case "2": return "❤️";
-                case "3": return "💩";
+                case "1": return "💩";
+                case "2": return "😑";
+                case "3": return "👍";
+                case "4": return "❤️";
                 default: return " ";
             }
         }
@@ -503,7 +504,7 @@ namespace BookUtils
             var book = (sender as TextBlock).DataContext as Book;
             if (book != null)
             {
-                if (book.Rating == 3)
+                if (book.Rating == 4)
                     book.Rating = 0;
                 else
                     book.Rating++;

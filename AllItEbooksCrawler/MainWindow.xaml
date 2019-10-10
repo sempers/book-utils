@@ -25,17 +25,17 @@
         <DataTemplate x:Key="postIdTmpl" DataType="{x:Type local:Book}">
             <DockPanel>
                 <CheckBox IsChecked="{Binding IsChecked}" Width="15" Click="_checkBox_Click" ></CheckBox>
-                <TextBlock Width="15" Text="{Binding Rating, Converter={StaticResource RatingToEmojiConverter}}" Margin="0" MouseUp="_TextBlock_MouseUp"></TextBlock>
+                <TextBlock Width="16" Opacity="0.7" Text="{Binding Rating, Converter={StaticResource RatingToEmojiConverter}}" Margin="2,0,5,0" MouseUp="_TextBlock_MouseUp"></TextBlock>
                 <TextBlock Text="{Binding PostId}"></TextBlock>                
             </DockPanel>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding DownloadedGUI}" Value="True">
                     <Setter Property="CheckBox.FontWeight" Value="Bold"></Setter>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Rating}" Value="2">
+                <DataTrigger Binding="{Binding Rating}" Value="4">
                     <Setter Property="TextBlock.Foreground" Value="Green"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Rating}" Value="3">
+                <DataTrigger Binding="{Binding Rating}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="Red"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -107,8 +107,8 @@
             </ListView.Resources>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="PostId" Width="85" CellTemplate="{StaticResource postIdTmpl}"></GridViewColumn>
-                    <GridViewColumn Header="Authors" Width="244" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
+                    <GridViewColumn Header="PostId" Width="90" CellTemplate="{StaticResource postIdTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Authors" Width="239" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
                     <GridViewColumn Header="Title" Width="330" CellTemplate="{StaticResource titleTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Year" Width="60" CellTemplate="{StaticResource yearTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Category" Width="250" CellTemplate="{StaticResource categoryTmpl}"></GridViewColumn>

@@ -13,6 +13,8 @@
         <StackPanel  Orientation="Horizontal" Height="40">
             <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">PostId</Label>
             <TextBox Text="{Binding PostId}" IsEnabled="False" Width="95" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            <Label Width="45" HorizontalAlignment="Center" Margin="205,5,5,5" VerticalAlignment="Center">Rating</Label>
+            <TextBox Text="{Binding Rating}" Width="35" Margin="5" VerticalContentAlignment="Center"></TextBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
             <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Authors</Label>
