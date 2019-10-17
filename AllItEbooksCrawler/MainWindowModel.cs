@@ -24,6 +24,9 @@ namespace BookUtils
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private string _bookCount;
+        public string BookCount {  get { return _bookCount; } set { _bookCount = value; OnPropertyChanged("BookCount"); } }
+
         private string _message;
         public string Message { get { return _message; } set { _message = value; OnPropertyChanged("Message"); } }
 
@@ -53,6 +56,7 @@ namespace BookUtils
                 ShownBooks.Add(book);
                 book.DownloadedGUI = book.IsDownloaded;
             }
+            BookCount = $"Shown: {ShownBooks.Count}";
         }
 
         private int GetSorting(string column)
