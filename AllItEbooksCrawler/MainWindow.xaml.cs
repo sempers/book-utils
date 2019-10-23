@@ -476,6 +476,7 @@ namespace BookUtils
 
         private void BackupDB(object sender, RoutedEventArgs e)
         {
+            db.Save();
             File.Copy(DB_PATH, GOOGLE_DRIVE_DB_PATH, true);
             Notify("DB backed up");
         }

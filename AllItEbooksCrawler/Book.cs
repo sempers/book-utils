@@ -74,6 +74,7 @@ namespace BookUtils
             {
                 Suggested = false;
             }
+
             if (oldPath != null && oldPath != LocalPath)
             {
                 AutoMove(oldPath);
