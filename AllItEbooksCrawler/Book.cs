@@ -49,6 +49,8 @@ namespace BookUtils
             }
         }
 
+        public string Extension { get; set; }
+
         private int _approved;
         public int Approved { get => _approved; set { _approved = value; OnPropertyChanged("Approved"); } }
 
@@ -130,11 +132,11 @@ namespace BookUtils
 
         public string ClearTitle => ClearString(Title);
 
-        public string PdfFileName => $"[{Year}] {ClearTitle} - {ClearAuthors}.pdf";
+        public string ClearFileName => $"[{Year}] {ClearTitle} - {ClearAuthors}.{Extension}";
 
         public string FirstCategory => Category == null ? "" : Category.Contains(";") ? Category.Split(';')[0] : Category;
 
-        public string LocalPath => Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), PdfFileName);
+        public string LocalPath => Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), ClearFileName);
 
         public bool IsDownloaded => string.IsNullOrEmpty(LocalPath) ? false : File.Exists(LocalPath);
 

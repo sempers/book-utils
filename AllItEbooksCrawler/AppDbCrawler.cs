@@ -76,7 +76,7 @@ namespace BookUtils
                         _category = _category.Replace(correction.Key.Trim(), correction.Value.Trim());
                     }
                     if (_category.Contains(";"))
-                       _category = _category.Split(';')[0];
+                        _category = _category.Split(';')[0];
                     book.SetCategory(_category); //no approving
                 }
                 book.Summary = book.Summary.Replace("&#8230;", "...");
@@ -90,6 +90,38 @@ namespace BookUtils
         {
             db.SaveChanges();
             LastAction = "SAVE";
+        }
+
+        public async Task<int> UpdateEpubsFromWeb()
+        {
+            Notify("Updating epubs...");
+            var web = new HtmlWeb();
+            HtmlDocument detailPage = null;
+            var list = db.Books.Where(b => b.Extension == "epub").ToList();
+            var counter = 0;
+            foreach (var book in list)
+            {
+                Notify($"Updating epubs {++counter}/{list.Count}...");
+                detailPage = await web.LoadFromWebAsync(book.Url);
+                var downloadLinks = detailPage.DocumentNode.SelectNodes("//span[@class='download-links']/a");
+                foreach (var node in downloadLinks)
+                {
+                    var href = node.Attributes["href"].Value;
+                    if (href.Contains(".pdf"))
+                    {
+                        book.DownloadUrl = href;
+                        book.Extension = "pdf";
+                    }
+                    else
+                    {
+                        book.DownloadUrl = href;
+                        book.Extension = "epub";
+                    }
+                }
+            }
+            db.SaveChanges();
+            Notify("Updating completed...");
+            return counter;
         }
 
         public async Task<int> UpdateDbFromWeb(Dictionary<string, string> corrections)
@@ -174,7 +206,15 @@ namespace BookUtils
                         {
                             var href = node.Attributes["href"].Value;
                             if (href.Contains(".pdf"))
+                            {
                                 book.DownloadUrl = href;
+                                book.Extension = "pdf";
+                            }
+                            else
+                            {
+                                book.DownloadUrl = href;
+                                book.Extension = Path.GetExtension(href);
+                            }
                         }
                         book.Sync = 0;
                         Notify($"Loading page {page}...");
@@ -186,7 +226,7 @@ namespace BookUtils
                         var x = 1;
                     }
 
-                    LABEL_FINAL:
+                LABEL_FINAL:
                     foreach (var b in list)
                     {
                         if (!db.Books.Any(_b => _b.PostId == b.PostId))

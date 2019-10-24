@@ -527,5 +527,16 @@ namespace BookUtils
         {
             BackupDB(null, null);
         }
+
+        private void _cmdBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (_cmdText.Text.Length>0)
+            {
+                switch (_cmdText.Text){
+                    case "epubs":
+                        db.UpdateEpubsFromWeb(); break;
+                }
+            }
+        }
     }
 }
