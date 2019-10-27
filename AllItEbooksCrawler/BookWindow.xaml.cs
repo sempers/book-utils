@@ -62,5 +62,10 @@ namespace BookUtils
                 Close();
             }
         }
+
+        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            _crawler.UpdateBookFromWeb(model);
+        }
     }
 }

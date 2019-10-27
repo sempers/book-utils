@@ -111,6 +111,7 @@ namespace BookUtils
                     {
                         book.DownloadUrl = href;
                         book.Extension = "pdf";
+                        break;
                     }
                     else
                     {
@@ -122,6 +123,11 @@ namespace BookUtils
             db.SaveChanges();
             Notify("Updating completed...");
             return counter;
+        }
+
+        public async Task UpdateBookFromWeb(Book book)
+        {
+
         }
 
         public async Task<int> UpdateDbFromWeb(Dictionary<string, string> corrections)
@@ -170,6 +176,8 @@ namespace BookUtils
                         book.Title = book.Title.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
                         book.Url = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a").Attributes["href"].Value;
                         book.Summary = bookElement.SelectSingleNode("div/div[@class='entry-summary']/p").InnerText;
+                        book.Sync = 0;
+
                         detailPage = await web.LoadFromWebAsync(book.Url);
                         var detail = detailPage.DocumentNode.SelectSingleNode("//div[@class='book-detail']/dl");
                         var dtNodes = detail.SelectNodes("dt");
@@ -209,14 +217,15 @@ namespace BookUtils
                             {
                                 book.DownloadUrl = href;
                                 book.Extension = "pdf";
+                                break;
                             }
-                            else
+                            else if (href.Contains(".epub"))
                             {
                                 book.DownloadUrl = href;
-                                book.Extension = Path.GetExtension(href);
+                                book.Extension = "epub";
                             }
                         }
-                        book.Sync = 0;
+                        
                         Notify($"Loading page {page}...");
                         list.Add(book);
                     }

@@ -366,7 +366,7 @@ namespace BookUtils
             }
         }
 
-        private void _TextBox_TextChanged_1(object sender, TextChangedEventArgs e)
+        private void _txtTitle_TextChanged(object sender, TextChangedEventArgs e)
         {
             var search = ((TextBox)e.Source).Text;
             if (!string.IsNullOrEmpty(search))
@@ -375,6 +375,7 @@ namespace BookUtils
                 {
                     model.FilterListByTitle(search);
                     model.Filter.Title = search;
+                    model.Filter.Category = "";
                 }
             }
             else

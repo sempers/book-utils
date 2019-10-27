@@ -19,6 +19,8 @@ namespace BookUtils
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public const string NO_CATEGORY = "(no category)";
+
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -75,7 +77,7 @@ namespace BookUtils
 
         public void FilterListByCategory(string category)
         {
-            if (category == "(no category)" || string.IsNullOrEmpty(category))
+            if (category == NO_CATEGORY || string.IsNullOrEmpty(category))
             {
                 if (Books != null)
                 {
@@ -207,9 +209,9 @@ namespace BookUtils
                 break;
                 case "Year":
                 if (GetSorting("Year") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.Year).ToList();
+                    sortedList = ShownBooks.OrderByDescending(b => b.Year*1000000 + b.PostId).ToList();
                 else
-                    sortedList = ShownBooks.OrderBy(b => b.Year).ToList();
+                    sortedList = ShownBooks.OrderBy(b => b.Year*1000000 + b.PostId).ToList();
                 break;
                 case "Category":
                 if (GetSorting("Category") < 0)
