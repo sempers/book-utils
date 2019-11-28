@@ -129,7 +129,7 @@ namespace BookUtils
             model.Books = list;
             model.LoadList(list);
             if (applyFilter)
-                model.ApplyFilter();
+                model.ApplyFilter("");
             model.Sortings.Add("PostId");
             model.SortList("PostId");
             var lastUpdate = (new FileInfo(DB_PATH)).LastWriteTime.ToString("dd.MM.yyyy HH:mm:ss");
@@ -290,7 +290,8 @@ namespace BookUtils
                 if (catListBox.SelectedItem != null)
                 {
                     model.Filter.Category = catListBox.SelectedItem.ToString();
-                    model.FilterListByCategory(catListBox.SelectedItem.ToString());
+                    //model.FilterListByCategory(catListBox.SelectedItem.ToString());
+                    model.ApplyFilter("category");
                 }
                 return;
             }
@@ -373,15 +374,16 @@ namespace BookUtils
             {
                 if (search.Length >= 3)
                 {
-                    model.FilterListByTitle(search);
+                    //model.FilterListByTitle(search);
                     model.Filter.Title = search;
-                    model.Filter.Category = "";
+                    model.ApplyFilter("title");
                 }
             }
             else
             {
-                model.FilterListByTitle("");
+                //model.FilterListByTitle("");
                 model.Filter.Title = "";
+                model.ApplyFilter("title");
             }
         }
 

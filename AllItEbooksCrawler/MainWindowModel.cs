@@ -4,11 +4,86 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BookUtils
 {
+    public static class Extensions
+    {
+        public static bool ContainsEvery(this string s, string[] array)
+        {
+            bool result = true;
+            foreach (string str in array)
+            {
+                result = result && s.Contains(str);
+                if (!result)
+                    break;
+            }
+            return result;
+        }
+    }
+        
+    public class ObservableRangeCollection<T>: ObservableCollection<T>
+    {
+        /// <summary> 
+        /// Adds the elements of the specified collection to the end of the ObservableCollection(Of T). 
+        /// </summary> 
+        public void AddRange(IEnumerable<T> collection)
+        {
+            if (collection == null) throw new ArgumentNullException("collection");
+
+            foreach (var i in collection) Items.Add(i);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        /// <summary> 
+        /// Removes the first occurence of each item in the specified collection from ObservableCollection(Of T). 
+        /// </summary> 
+        public void RemoveRange(IEnumerable<T> collection)
+        {
+            if (collection == null) throw new ArgumentNullException("collection");
+
+            foreach (var i in collection) Items.Remove(i);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        /// <summary> 
+        /// Clears the current collection and replaces it with the specified item. 
+        /// </summary> 
+        public void Replace(T item)
+        {
+            ReplaceRange(new T[] { item });
+        }
+
+        /// <summary> 
+        /// Clears the current collection and replaces it with the specified collection. 
+        /// </summary> 
+        public void ReplaceRange(IEnumerable<T> collection)
+        {
+            if (collection == null) throw new ArgumentNullException("collection");
+
+            Items.Clear();
+            foreach (var i in collection) Items.Add(i);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        /// <summary> 
+        /// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class. 
+        /// </summary> 
+        public ObservableRangeCollection()
+            : base() { }
+
+        /// <summary> 
+        /// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class that contains elements copied from the specified collection. 
+        /// </summary> 
+        /// <param name="collection">collection: The collection from which the elements are copied.</param> 
+        /// <exception cref="System.ArgumentNullException">The collection parameter cannot be null.</exception> 
+        public ObservableRangeCollection(IEnumerable<T> collection)
+            : base(collection) { }
+    }
+
     public class BookFilter
     {
         public string Title { get; set; }
@@ -37,7 +112,7 @@ namespace BookUtils
 
         public BookFilter Filter = new BookFilter { Title = "", Category = "" };
 
-        public ObservableCollection<Book> ShownBooks { get; set; }
+        public ObservableRangeCollection<Book> ShownBooks { get; set; }
 
         public HashSet<string> Sortings = new HashSet<string>();
 
@@ -45,7 +120,7 @@ namespace BookUtils
 
         public MainWindowModel()
         {
-            ShownBooks = new ObservableCollection<Book>();
+            ShownBooks = new ObservableRangeCollection<Book>();
             Books = new List<Book>();
             FilterMode = true;
         }
@@ -53,11 +128,8 @@ namespace BookUtils
         public void LoadList(List<Book> list)
         {
             ShownBooks.Clear();
-            foreach (var book in list)
-            {
-                ShownBooks.Add(book);
-                book.DownloadedGUI = book.IsDownloaded;
-            }
+            list.ForEach(book => { book.DownloadedGUI = book.IsDownloaded; });
+            ShownBooks.AddRange(list);
             BookCount = $"Shown: {ShownBooks.Count}";
         }
 
@@ -75,56 +147,35 @@ namespace BookUtils
             }
         }
 
-        public void FilterListByCategory(string category)
+        //сначала по категории, затем по названию
+        public void ApplyFilter(string whatChanged)
         {
-            if (category == NO_CATEGORY || string.IsNullOrEmpty(category))
-            {
-                if (Books != null)
-                {
-                    LoadList(Books);
-                }
-            }
-            else
-            {
-                var filteredList = Books.FindAll(book => book.Category == category).ToList();
-                LoadList(filteredList);
-            }
-        }
+            var filteredList = new List<Book>();
+            filteredList = (whatChanged == "" || filteredList.Count == 0 ? Books : ShownBooks.ToList()) ;
 
-        public void ApplyFilter()
-        {
-            var filteredList = Books;
-            if (!string.IsNullOrEmpty(Filter.Category))
+            if (!string.IsNullOrEmpty(Filter.Category) && Filter.Category != NO_CATEGORY)
             {
                 filteredList = filteredList.FindAll(book => book.Category == Filter.Category).ToList();
             }
-            else
+            
             if (!string.IsNullOrEmpty(Filter.Title))
             {
-                filteredList = filteredList.FindAll(book => book.Title.ToUpper().Contains(Filter.Title.ToUpper())).ToList();
+                var titleWords = Filter.Title.ToLower().Split(' ');
+                filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsEvery(titleWords)).ToList();
             }
+
+           /* if (filteredList.Count == Books.Count)
+            {
+                Sortings.Add("PostId");
+                SortList("PostId", filteredList);
+            }*/
+
             LoadList(filteredList);
         }
 
-        public void FilterListByTitle(string search)
-        {
-            if (string.IsNullOrEmpty(search))
-            {
-                if (Books != null)
-                {
-                    LoadList(Books);
-                }
-            }
-            else
-            {
-                var filteredList = Books.FindAll(book => book.Title.ToUpper().Contains(search.ToUpper())).ToList();
-                LoadList(filteredList);
-            }
-        }
 
         public Dictionary<string, string> TxtCorrections { get; set; }
         public List<string> TxtHidden { get; set; }
-
 
         public void LoadCorrections()
         {
@@ -148,7 +199,6 @@ namespace BookUtils
                 TxtHidden = File.ReadAllLines("../../settings/hidden.txt").ToList();
             }
         }
-
         public bool HiddenIncludes(Book b)
         {
             foreach (var line in TxtHidden)
@@ -190,34 +240,35 @@ namespace BookUtils
             }
         }
 
-        public void SortList(string column)
+        public void SortList(string column, List<Book> _list = null)
         {
-            List<Book> sortedList = null;
+            var sortedList = _list ?? ShownBooks.ToList();
+            
             switch (column)
             {
                 case "PostId":
                 if (GetSorting("PostId") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.PostId).ToList();
+                    sortedList = sortedList.OrderByDescending(b => b.PostId).ToList();
                 else
-                    sortedList = ShownBooks.OrderBy(b => b.PostId).ToList();
+                    sortedList = sortedList.OrderBy(b => b.PostId).ToList();
                 break;
                 case "Title":
                 if (GetSorting("Title") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.Title).ToList();
+                    sortedList = sortedList.OrderByDescending(b => b.Title).ToList();
                 else
-                    sortedList = ShownBooks.OrderBy(b => b.Title).ToList();
+                    sortedList = sortedList.OrderBy(b => b.Title).ToList();
                 break;
                 case "Year":
                 if (GetSorting("Year") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.Year*1000000 + b.PostId).ToList();
+                    sortedList = sortedList.OrderByDescending(b => b.Year*1000000 + b.PostId).ToList();
                 else
-                    sortedList = ShownBooks.OrderBy(b => b.Year*1000000 + b.PostId).ToList();
+                    sortedList = sortedList.OrderBy(b => b.Year*1000000 + b.PostId).ToList();
                 break;
                 case "Category":
                 if (GetSorting("Category") < 0)
-                    sortedList = ShownBooks.OrderByDescending(b => b.Category).ToList();
+                    sortedList = sortedList.OrderByDescending(b => b.Category).ToList();
                 else
-                    sortedList = ShownBooks.OrderBy(b => b.Category).ToList();
+                    sortedList = sortedList.OrderBy(b => b.Category).ToList();
                 break;
             }
             if (sortedList != null)

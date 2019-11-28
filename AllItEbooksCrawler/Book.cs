@@ -138,7 +138,7 @@ namespace BookUtils
 
         public string LocalPath => Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), ClearFileName);
 
-        public bool IsDownloaded => string.IsNullOrEmpty(LocalPath) ? false : File.Exists(LocalPath);
+        public bool IsDownloaded { get { var val = string.IsNullOrEmpty(LocalPath) ? false : File.Exists(LocalPath); DownloadedGUI = val;  return val; } }
 
         private void AutoMove(string oldPath)
         {
