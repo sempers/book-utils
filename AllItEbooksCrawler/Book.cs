@@ -105,7 +105,7 @@ namespace BookUtils
 
         private bool _downloadedGUI;
         [NotMapped]
-        public bool DownloadedGUI { get => _downloadedGUI; set { _downloadedGUI = value; OnPropertyChanged("DonwloadedGUI"); } }
+        public bool DownloadedGUI { get => _downloadedGUI; set { _downloadedGUI = value; OnPropertyChanged("DownloadedGUI"); } }
 
         public override string ToString()
         {

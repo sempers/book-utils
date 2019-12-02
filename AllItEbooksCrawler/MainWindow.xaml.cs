@@ -42,9 +42,7 @@ namespace BookUtils
         {
             throw new NotImplementedException();
         }
-    }
-
-    
+    }    
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -145,7 +143,7 @@ namespace BookUtils
         private void Notify(string message)
         {
             Application.Current.Dispatcher.Invoke(() => { model.Message = message; });
-        }
+        }        
 
         private async Task DownloadBooksAsync()
         {
@@ -156,7 +154,7 @@ namespace BookUtils
                 booksToDownload = model.ShownBooks.Where(book => book.IsChecked && !string.IsNullOrEmpty(book.DownloadUrl) && !book.IsDownloaded).ToList();
             } else
             {
-                List<Book> selected = new List<Book>();
+                var selected = new List<Book>();
                 foreach (Book b in listView.SelectedItems)
                 {
                     selected.Add(b);
@@ -189,6 +187,7 @@ namespace BookUtils
                             if (!book.IsDownloaded)
                             {
                                 await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
+                                //Application.Current.Dispatcher.Invoke(() => { book.DownloadedGUI = true; });
                                 book.DownloadedGUI = true;
                             }
                         }
@@ -201,6 +200,7 @@ namespace BookUtils
                             {
                                 MakeDir(Path.GetDirectoryName(book.LocalPath));
                                 File.Copy(book.DownloadUrl, book.LocalPath);
+                                //Application.Current.Dispatcher.Invoke(() => { book.DownloadedGUI = true; });
                                 book.DownloadedGUI = true;
                             }
                         }
@@ -335,7 +335,7 @@ namespace BookUtils
                 var book = listView.SelectedItem as Book;
                 if (book != null && book.IsDownloaded)
                 {
-                    Process.Start(book.LocalPath);
+                    OpenBook(book.LocalPath);
                 }
             }
             if (e.Key == Key.Back)           //Unsuggest and approve initial value
@@ -354,7 +354,7 @@ namespace BookUtils
                 var book = listView.SelectedItem as Book;
                 if (book != null && book.Url != null)
                 {
-                    Process.Start(book.Url);
+                    OpenBook(book.Url);
                 }
             }
             if (e.Key == Key.F2)            //Open the file
@@ -362,8 +362,20 @@ namespace BookUtils
                 var book = listView.SelectedItem as Book;
                 if (book != null && book.IsDownloaded)
                 {
-                    Process.Start(book.LocalPath);
+                    OpenBook(book.LocalPath);
                 }
+            }
+        }
+
+        private void OpenBook(string uri)
+        {
+            try
+            {
+                Process.Start(uri);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
         }
 
@@ -431,23 +443,25 @@ namespace BookUtils
             }
         }
 
-
         private void _checkBox_Click(object sender, RoutedEventArgs e)
         {
             var book = (e.OriginalSource as CheckBox).DataContext as Book;
-            if (book != null && !book.IsChecked && book.IsDownloaded)
+            if (book != null && !book.IsChecked)
             {
                 if (MessageBox.Show($"Do you really want to unsync '{book.Title}' and delete the file?", "Warning", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                 {
                     book.Sync = 0;
                     db.Save();
-                    try
+                    if (book.IsDownloaded)
                     {
-                        File.Delete(book.LocalPath);
-                    }
-                    catch
-                    {
+                        try
+                        {
+                            File.Delete(book.LocalPath);
+                        }
+                        catch
+                        {
 
+                        }
                     }
                     Notify($"Unsynced ok. Total {model.Books.Count(b => b.IsDownloaded)} books downloaded.");
                 }
