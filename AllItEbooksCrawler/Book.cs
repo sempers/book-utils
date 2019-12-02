@@ -155,6 +155,11 @@ namespace BookUtils
 
             }
         }
+
+        public void ToggleCheck()
+        {
+            IsChecked = !IsChecked;
+        }
     }
 }
 

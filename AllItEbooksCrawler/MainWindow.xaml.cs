@@ -152,7 +152,8 @@ namespace BookUtils
             if (!inSelection)
             {
                 booksToDownload = model.ShownBooks.Where(book => book.IsChecked && !string.IsNullOrEmpty(book.DownloadUrl) && !book.IsDownloaded).ToList();
-            } else
+            }
+            else
             {
                 var selected = new List<Book>();
                 foreach (Book b in listView.SelectedItems)
@@ -187,7 +188,6 @@ namespace BookUtils
                             if (!book.IsDownloaded)
                             {
                                 await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
-                                //Application.Current.Dispatcher.Invoke(() => { book.DownloadedGUI = true; });
                                 book.DownloadedGUI = true;
                             }
                         }
@@ -200,7 +200,6 @@ namespace BookUtils
                             {
                                 MakeDir(Path.GetDirectoryName(book.LocalPath));
                                 File.Copy(book.DownloadUrl, book.LocalPath);
-                                //Application.Current.Dispatcher.Invoke(() => { book.DownloadedGUI = true; });
                                 book.DownloadedGUI = true;
                             }
                         }
@@ -290,7 +289,6 @@ namespace BookUtils
                 if (catListBox.SelectedItem != null)
                 {
                     model.Filter.Category = catListBox.SelectedItem.ToString();
-                    //model.FilterListByCategory(catListBox.SelectedItem.ToString());
                     model.ApplyFilter("category");
                 }
                 return;
@@ -298,11 +296,9 @@ namespace BookUtils
             //Присвоение категории
             foreach (Book book in books)
             {
-                if (catListBox.SelectedItem == null || book.FirstCategory == catListBox.SelectedItem.ToString())
-                    continue;
-                else //approve category
+                if (catListBox.SelectedItem != null && book.FirstCategory != catListBox.SelectedItem.ToString())
                 {
-                    book.SetCategory(catListBox.SelectedItem.ToString(), approve:true);
+                    book.SetCategory(catListBox.SelectedItem.ToString(), approve: true);
                 }
             }
         }
@@ -313,69 +309,65 @@ namespace BookUtils
                 return;
             if (e.Key == Key.Space)                     //Make Checked and Synchronized
             {
-                var books = listView.SelectedItems;
-                foreach (Book book in books)
+                foreach (Book book in listView.SelectedItems)
                 {
-                    if (book == null)
-                        return;
-                    book.IsChecked = !book.IsChecked;
+                    book?.ToggleCheck();
                 }
             }
             if (e.Key == Key.Return)                    //Make Approved/Open File
             {
-                var books = listView.SelectedItems;
-                foreach (Book _book in books)
+                foreach (Book _book in listView.SelectedItems)
                 {
-                    if (_book == null)
-                        return;
-                    _book.Suggested = false;
-                    _book.Approved = 1;
-                    db.Save();
+                    if (_book != null)
+                    {
+                        _book.Suggested = false;
+                        _book.Approved = 1;
+                        db.Save();
+                    }
                 }
                 var book = listView.SelectedItem as Book;
                 if (book != null && book.IsDownloaded)
                 {
-                    OpenBook(book.LocalPath);
+                    OpenProcess(book.LocalPath);
                 }
             }
             if (e.Key == Key.Back)           //Unsuggest and approve initial value
             {
-                var books = listView.SelectedItems;
-                foreach (Book book in books)
+                foreach (Book book in listView.SelectedItems)
                 {
-                    if (book == null)
-                        return;
-                    book.SetCategory(book.OldCategory, approve: true);
-                    db.Save();
+                    if (book != null)
+                    {
+                        book.SetCategory(book.OldCategory, approve: true);
+                        db.Save();
+                    }
                 }
             }
             if (e.Key == Key.F1)              //Old dblclick, now go to url
             {
                 var book = listView.SelectedItem as Book;
-                if (book != null && book.Url != null)
-                {
-                    OpenBook(book.Url);
-                }
+                OpenProcess(book?.Url);
             }
             if (e.Key == Key.F2)            //Open the file
             {
                 var book = listView.SelectedItem as Book;
                 if (book != null && book.IsDownloaded)
                 {
-                    OpenBook(book.LocalPath);
+                    OpenProcess(book.LocalPath);
                 }
             }
         }
 
-        private void OpenBook(string uri)
+        private void OpenProcess(string uri)
         {
+            if (uri == null)
+                return;
             try
             {
                 Process.Start(uri);
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show("Exception while opening " + e.Message);
             }
         }
 
@@ -386,14 +378,12 @@ namespace BookUtils
             {
                 if (search.Length >= 3)
                 {
-                    //model.FilterListByTitle(search);
                     model.Filter.Title = search;
                     model.ApplyFilter("title");
                 }
             }
             else
             {
-                //model.FilterListByTitle("");
                 model.Filter.Title = "";
                 model.ApplyFilter("title");
             }
@@ -428,18 +418,14 @@ namespace BookUtils
             }
         }
 
-
         private void AddCategory()
         {
-            if (!string.IsNullOrEmpty(catListBox.Text) && !Book.Categories.Contains(catListBox.Text))
+            var newCategory = catListBox.Text;
+            if (!string.IsNullOrEmpty(newCategory) && !Book.Categories.Contains(newCategory))
             {
-                var newCategory = catListBox.Text;
                 Book.AddCategory(newCategory);
                 var book = listView.SelectedItem as Book;
-                if (book != null)
-                {
-                    book.SetCategory(newCategory, approve: true); //setter logic
-                }
+                book?.SetCategory(newCategory, approve: true); //setter logic
             }
         }
 
@@ -508,8 +494,7 @@ namespace BookUtils
         {
             Notify("DB restoring...");
             ClearList();
-            if (db != null)
-                db.ClearFile();
+            db?.ClearFile();
             if (File.Exists(GOOGLE_DRIVE_DB_PATH))
             {
                 File.Copy(GOOGLE_DRIVE_DB_PATH, DB_PATH, true);
