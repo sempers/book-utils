@@ -23,27 +23,6 @@ using HtmlAgilityPack;
 
 namespace BookUtils
 {
-    public class RatingToEmojiConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            switch (value.ToString())
-            {
-                case "0": return " ";
-                case "1": return "💩";
-                case "2": return "😑";
-                case "3": return "👍";
-                case "4": return "❤️";
-                default: return " ";
-            }
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }    
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -57,9 +36,7 @@ namespace BookUtils
 
         public const string GOOGLE_DRIVE_DB_PATH = @"D:\books\google_drive\itdb\books.db";
 
-        public const string DB_PATH = @"..\..\data\books.db";
-
-        public bool SuggestedFlag { get; set; } = false;
+        public const string DB_PATH = @"..\..\data\books.db";      
 
        
         public MainWindow()
@@ -72,7 +49,7 @@ namespace BookUtils
             }
             else if (File.Exists(GOOGLE_DRIVE_DB_PATH))
             {
-                FileInfo fi_backup = new FileInfo(GOOGLE_DRIVE_DB_PATH);
+                var fi_backup = new FileInfo(GOOGLE_DRIVE_DB_PATH);
                 var fi_db_path = new FileInfo(DB_PATH);
                 if (fi_backup.LastWriteTime.Ticks > fi_db_path.LastWriteTime.Ticks)
                 {
@@ -88,15 +65,22 @@ namespace BookUtils
             }
         }
 
+        /// <summary>
+        /// Инициализация основного списка
+        /// </summary>
         private void InitList()
         {
             db = new AppDbCrawler();
-            db.Notify += _crawler_Notified;
+            db.Notify += Notify;
             DataContext = model;
             LoadBooksFromDb();
             model.ListCategories();
         }
 
+        /// <summary>
+        /// Процедура загрузки из БД
+        /// </summary>
+        /// <param name="applyFilter"></param>
         private void LoadBooksFromDb(bool applyFilter = false)
         {
             var list = db.LoadBooksFromDb();
@@ -215,11 +199,6 @@ namespace BookUtils
             Notify($"Downloads finished. Total {model.Books.Count(book => book.IsDownloaded)} books downloaded.");
         }        
 
-        private void _crawler_Notified(string message)
-        {
-            Notify(message);
-        }
-
         private async void _btnUpdate_Click(object sender, RoutedEventArgs e)
         {
             model.LoadCorrections();
@@ -329,6 +308,11 @@ namespace BookUtils
                 if (book != null && book.IsDownloaded)
                 {
                     OpenProcess(book.LocalPath);
+                    if (book.Rating == 0)
+                    {
+                        book.Rating = 2;
+                        db.Save();
+                    }
                 }
             }
             if (e.Key == Key.Back)           //Unsuggest and approve initial value
@@ -397,13 +381,13 @@ namespace BookUtils
 
         private void _btnSuggest_Click(object sender, RoutedEventArgs e)
         {
-            if (SuggestedFlag)
+            if (model.SuggestedFlag)
             {
                 if (model.UnsuggestCategories())
                 {
                     Notify("Suggestions unfiled.");
                 }
-                SuggestedFlag = false;
+                model.SuggestedFlag = false;
                 btnSuggest.Content = "Suggest";
             }
             else
@@ -412,12 +396,15 @@ namespace BookUtils
                 if (suggCount > 0)
                 {
                     Notify($"{suggCount} suggestions for current list filed.");
-                    SuggestedFlag = true;
+                    model.SuggestedFlag = true;
                     btnSuggest.Content = "Unsuggest";
                 }
             }
         }
 
+        /// <summary>
+        /// Добавляем категорию
+        /// </summary>
         private void AddCategory()
         {
             var newCategory = catListBox.Text;
@@ -434,23 +421,28 @@ namespace BookUtils
             var book = (e.OriginalSource as CheckBox).DataContext as Book;
             if (book != null && !book.IsChecked)
             {
-                if (MessageBox.Show($"Do you really want to unsync '{book.Title}' and delete the file?", "Warning", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                {
-                    book.Sync = 0;
-                    db.Save();
-                    if (book.IsDownloaded)
-                    {
-                        try
-                        {
-                            File.Delete(book.LocalPath);
-                        }
-                        catch
-                        {
+                UnsyncBook(book);
+            }
+        }
 
-                        }
+        private void UnsyncBook(Book book)
+        {
+            if (MessageBox.Show($"Do you really want to unsync '{book.Title}' and delete the file?", "Warning", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+            {
+                book.Sync = 0;
+                db.Save();
+                if (book.IsDownloaded)
+                {
+                    try
+                    {
+                        File.Delete(book.LocalPath);
                     }
-                    Notify($"Unsynced ok. Total {model.Books.Count(b => b.IsDownloaded)} books downloaded.");
+                    catch
+                    {
+
+                    }
                 }
+                Notify($"Unsynced ok. Total {model.Books.Count(b => b.IsDownloaded)} books downloaded.");
             }
         }
 
@@ -459,6 +451,9 @@ namespace BookUtils
             AddBook(); 
         }
 
+        /// <summary>
+        /// Добавление новой книги
+        /// </summary>
         private void AddBook()
         {
             var newBook = new Book

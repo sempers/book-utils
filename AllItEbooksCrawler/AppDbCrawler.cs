@@ -121,6 +121,7 @@ namespace BookUtils
                 }
             }
             db.SaveChanges();
+            LastAction = "UPDATE";
             Notify("Updating completed...");
             return counter;
         }

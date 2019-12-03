@@ -7,6 +7,8 @@ using System.Linq;
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
+using System.Globalization;
 
 namespace BookUtils
 {
@@ -24,7 +26,28 @@ namespace BookUtils
             return result;
         }
     }
-        
+
+    public class RatingToEmojiConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            switch (value.ToString())
+            {
+                case "0": return " ";
+                case "1": return "💩";
+                case "2": return "😑";
+                case "3": return "👍";
+                case "4": return "❤️";
+                default: return " ";
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class ObservableRangeCollection<T>: ObservableCollection<T>
     {
         /// <summary> 
@@ -92,6 +115,8 @@ namespace BookUtils
 
     public class MainWindowModel : INotifyPropertyChanged
     {
+        public bool SuggestedFlag { get; set; } = false;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public const string NO_CATEGORY = "(no category)";
