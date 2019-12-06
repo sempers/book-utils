@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using CodexMicroORM.Core.Collections;
 using HtmlAgilityPack;
 
 namespace BookUtils
@@ -109,11 +110,9 @@ namespace BookUtils
                 }
             });
             model.Books = list;
-            model.LoadList(list);
-            if (applyFilter)
-                model.ApplyFilter("");
-            model.Sortings.Add("PostId");
-            model.SortList("PostId");
+
+            model.Sortings.Add("PostId", 1);
+            model.ApplyFilterAndLoad("");
             var lastUpdate = (new FileInfo(DB_PATH)).LastWriteTime.ToString("dd.MM.yyyy HH:mm:ss");
             Notify($"Books loaded ok. DB last updated {lastUpdate}. Total {downloaded} books downloaded. {(syncNotDownloaded > 0 ? $"{syncNotDownloaded} books to synchronize." : "")}");
         }
@@ -268,7 +267,7 @@ namespace BookUtils
                 if (catListBox.SelectedItem != null)
                 {
                     model.Filter.Category = catListBox.SelectedItem.ToString();
-                    model.ApplyFilter("category");
+                    model.ApplyFilterAndLoad("category");
                 }
                 return;
             }
@@ -363,13 +362,13 @@ namespace BookUtils
                 if (search.Length >= 3)
                 {
                     model.Filter.Title = search;
-                    model.ApplyFilter("title");
+                    model.ApplyFilterAndLoad("title");
                 }
             }
             else
             {
                 model.Filter.Title = "";
-                model.ApplyFilter("title");
+                model.ApplyFilterAndLoad("title");
             }
         }
 

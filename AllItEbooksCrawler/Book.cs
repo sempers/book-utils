@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodexMicroORM.Core.Collections;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BookUtils
 {
-    public class Book : INotifyPropertyChanged
+    public class Book : INotifyPropertyChanged, ICEFIndexedListItem
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -159,6 +160,16 @@ namespace BookUtils
         public void ToggleCheck()
         {
             IsChecked = !IsChecked;
+        }
+
+        public object GetValue(string propName, bool unwrap)
+        {
+            switch (propName)
+            {
+                case "Category": return Category;
+                case "Title": return Title;
+                default: throw new Exception($"{propName} is not supported");
+            }
         }
     }
 }

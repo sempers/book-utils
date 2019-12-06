@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Globalization;
+using CodexMicroORM.Core.Collections;
 
 namespace BookUtils
 {
@@ -19,8 +20,24 @@ namespace BookUtils
             bool result = true;
             foreach (string str in array)
             {
-                result = result && s.Contains(str);
+                if (string.IsNullOrEmpty(str))
+                    continue;
+                result = result && s.Contains(str.Trim());
                 if (!result)
+                    break;
+            }
+            return result;
+        }
+
+        public static bool ContainsAny(this string s, string[] array)
+        {
+            bool result = false;
+            foreach (string str in array)
+            {
+                if (string.IsNullOrEmpty(str))
+                    continue;
+                result = result || s.Contains(str.Trim());
+                if (result)
                     break;
             }
             return result;
@@ -139,7 +156,7 @@ namespace BookUtils
 
         public ObservableRangeCollection<Book> ShownBooks { get; set; }
 
-        public HashSet<string> Sortings = new HashSet<string>();
+        public Dictionary<string, int> Sortings = new Dictionary<string, int>();
 
         public List<Book> Books;
 
@@ -160,40 +177,44 @@ namespace BookUtils
 
         private int GetSorting(string column)
         {
-            if (Sortings.Contains(column))
+            if (Sortings.ContainsKey(column))
             {
-                Sortings.Remove(column);
-                return -1;
+                Sortings[column] *= -1;                
             }
             else
             {
-                Sortings.Add(column);
-                return 1;
+                Sortings[column] = 1;               
             }
+            return Sortings[column];
         }
 
-        //сначала по категории, затем по названию
-        public void ApplyFilter(string whatChanged)
-        {
-            var filteredList = new List<Book>();
-            filteredList = (whatChanged == "" || filteredList.Count == 0 ? Books : ShownBooks.ToList()) ;
 
+
+        //сначала по категории, затем по названию
+        public void ApplyFilterAndLoad(string whatChanged)
+        {
+            var filteredList = Books;
+            //category
             if (!string.IsNullOrEmpty(Filter.Category) && Filter.Category != NO_CATEGORY)
             {
-                filteredList = filteredList.FindAll(book => book.Category == Filter.Category).ToList();
+                filteredList = filteredList.FindAll(book => book.Category != null && book.Category.StartsWith(Filter.Category));               
             }
-            
+            //title
             if (!string.IsNullOrEmpty(Filter.Title))
             {
-                var titleWords = Filter.Title.ToLower().Split(' ');
-                filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsEvery(titleWords)).ToList();
+                var title = Filter.Title.ToLower();
+                if (title.Contains("|"))
+                {
+                    var titleWords = title.Split('|');
+                    filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsAny(titleWords));
+                }
+                else
+                {
+                    var titleWords = Filter.Title.ToLower().Split(' ');
+                    filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsEvery(titleWords));
+                }
             }
-
-           /* if (filteredList.Count == Books.Count)
-            {
-                Sortings.Add("PostId");
-                SortList("PostId", filteredList);
-            }*/
+            //sort
 
             LoadList(filteredList);
         }
