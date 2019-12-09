@@ -111,7 +111,7 @@ namespace BookUtils
             });
             model.Books = list;
 
-            model.Sortings.Add("PostId", 1);
+            model.GetSorting("PostId");
             model.ApplyFilterAndLoad("");
             var lastUpdate = (new FileInfo(DB_PATH)).LastWriteTime.ToString("dd.MM.yyyy HH:mm:ss");
             Notify($"Books loaded ok. DB last updated {lastUpdate}. Total {downloaded} books downloaded. {(syncNotDownloaded > 0 ? $"{syncNotDownloaded} books to synchronize." : "")}");
@@ -378,7 +378,7 @@ namespace BookUtils
             model.FilterMode = true;
         }
 
-        private void _btnSuggest_Click(object sender, RoutedEventArgs e)
+        private void Suggest()
         {
             if (model.SuggestedFlag)
             {
@@ -387,7 +387,7 @@ namespace BookUtils
                     Notify("Suggestions unfiled.");
                 }
                 model.SuggestedFlag = false;
-                btnSuggest.Content = "Suggest";
+                //btnSuggest.Content = "Suggest";
             }
             else
             {
@@ -396,7 +396,7 @@ namespace BookUtils
                 {
                     Notify($"{suggCount} suggestions for current list filed.");
                     model.SuggestedFlag = true;
-                    btnSuggest.Content = "Unsuggest";
+                    //btnSuggest.Content = "Unsuggest";
                 }
             }
         }
@@ -531,8 +531,17 @@ namespace BookUtils
                 switch (_cmdText.Text){
                     case "epubs":
                         db.UpdateEpubsFromWeb(); break;
+                    case "suggest":
+                        Suggest(); break;
                 }
             }
+        }
+
+        private void _btnUnfilter_Click(object sender, RoutedEventArgs e)
+        {
+            model.Filter.Category = "";
+            model.Filter.Title = "";
+            model.ApplyFilterAndLoad("title");
         }
     }
 }

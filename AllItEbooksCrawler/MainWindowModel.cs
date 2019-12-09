@@ -175,7 +175,7 @@ namespace BookUtils
             BookCount = $"Shown: {ShownBooks.Count}";
         }
 
-        private int GetSorting(string column)
+        public int GetSorting(string column)
         {
             if (Sortings.ContainsKey(column))
             {
@@ -188,8 +188,6 @@ namespace BookUtils
             return Sortings[column];
         }
 
-
-
         //сначала по категории, затем по названию
         public void ApplyFilterAndLoad(string whatChanged)
         {
@@ -197,7 +195,7 @@ namespace BookUtils
             //category
             if (!string.IsNullOrEmpty(Filter.Category) && Filter.Category != NO_CATEGORY)
             {
-                filteredList = filteredList.FindAll(book => book.Category != null && book.Category.StartsWith(Filter.Category));               
+                filteredList = filteredList.FindAll(book => book.Category != null && book.Category.StartsWith(Filter.Category));
             }
             //title
             if (!string.IsNullOrEmpty(Filter.Title))
@@ -215,10 +213,16 @@ namespace BookUtils
                 }
             }
             //sort
-
+            switch (whatChanged) {
+                case "":
+                    filteredList = filteredList.OrderByDescending(book => book.PostId).ToList(); break;
+                case "title":
+                    filteredList = filteredList.OrderByDescending(book => book.PostId).ToList(); break;
+                case "category":
+                    filteredList = filteredList.OrderBy(book => book.Category).ThenByDescending(book => book.PostId).ToList(); break;
+            }
             LoadList(filteredList);
         }
-
 
         public Dictionary<string, string> TxtCorrections { get; set; }
         public List<string> TxtHidden { get; set; }

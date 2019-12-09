@@ -133,130 +133,140 @@ namespace BookUtils
 
         public async Task<int> UpdateDbFromWeb(Dictionary<string, string> corrections)
         {
-            Notify("Updating all from web...");
-            HtmlDocument pageHtml = null;
-            var web = new HtmlWeb();
-            HtmlDocument detailPage = null;
-
-            var postIDs = db.Books.Select(b => b.PostId).Distinct();
-
-            var URL = "http://www.allitebooks.org/page";
-
-            pageHtml = await web.LoadFromWebAsync("http://www.allitebooks.org");
-            var pagination = pageHtml.DocumentNode.SelectNodes("//div[@class='pagination clearfix']/a");
-            PAGES_NUM = int.Parse(pagination.Last().InnerText);
-            var alreadyThereCounter = 0;
-            int booksAdded = 0;
-            for (var page = 1; page <= PAGES_NUM; page++)
+            try
             {
-                var list = new List<Book>();
-                var errUrls = new List<string>();
-                pageHtml = await web.LoadFromWebAsync($"{URL}/{page}");
-                var pageBookNodes = pageHtml.DocumentNode.SelectNodes("//article");
+                Notify("Updating all from web...");
+                HtmlDocument pageHtml = null;
+                var web = new HtmlWeb();
+                HtmlDocument detailPage = null;
 
-                foreach (var bookElement in pageBookNodes)
+                var postIDs = db.Books.Select(b => b.PostId).Distinct();
+
+                var URL = "http://www.allitebooks.org/page";
+
+                pageHtml = await web.LoadFromWebAsync("http://www.allitebooks.org");
+                var pagination = pageHtml.DocumentNode.SelectNodes("//div[@class='pagination clearfix']/a");
+                PAGES_NUM = int.Parse(pagination.Last().InnerText);
+                var alreadyThereCounter = 0;
+                int booksAdded = 0;
+                for (var page = 1; page <= PAGES_NUM; page++)
                 {
-                    var book = new Book();
-                    try
+                    var list = new List<Book>();
+                    var errUrls = new List<string>();
+                    pageHtml = await web.LoadFromWebAsync($"{URL}/{page}");
+                    var pageBookNodes = pageHtml.DocumentNode.SelectNodes("//article");
+
+                    foreach (var bookElement in pageBookNodes)
                     {
-                        book.PostId = int.Parse(bookElement.Attributes["id"].Value.Substring(5));
-                        if (postIDs.Contains(book.PostId))
+                        var book = new Book();
+                        try
                         {
-                            alreadyThereCounter++;
-                            if (alreadyThereCounter > 10)
+                            book.PostId = int.Parse(bookElement.Attributes["id"].Value.Substring(5));
+                            if (postIDs.Contains(book.PostId))
                             {
-                                goto LABEL_FINAL;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-
-                        book.Title = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a").InnerText;
-                        book.Title = book.Title.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
-                        book.Url = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a").Attributes["href"].Value;
-                        book.Summary = bookElement.SelectSingleNode("div/div[@class='entry-summary']/p").InnerText;
-                        book.Sync = 0;
-
-                        detailPage = await web.LoadFromWebAsync(book.Url);
-                        var detail = detailPage.DocumentNode.SelectSingleNode("//div[@class='book-detail']/dl");
-                        var dtNodes = detail.SelectNodes("dt");
-                        var ddNodes = detail.SelectNodes("dd");
-                        for (var i = 0; i < dtNodes.Count; i++)
-                        {
-                            if (dtNodes[i].InnerText == "Year:")
-                                book.Year = int.Parse(ddNodes[i].InnerText);
-                            if (dtNodes[i].InnerText == "Category:")
-                            {
-                                var _category = "";
-                                foreach (var anode in ddNodes[i].SelectNodes("a"))
+                                alreadyThereCounter++;
+                                if (alreadyThereCounter > 10)
                                 {
-                                    _category += anode.Attributes["href"].Value.Replace("http://www.allitebooks.org/", "").TrimEnd('/') + ";";
+                                    goto LABEL_FINAL;
                                 }
-                                _category = _category.Substring(0, _category.Length - 1);
-                                foreach (var correction in corrections)
+                                else
                                 {
-                                    _category = _category.Replace(correction.Key.Trim(), correction.Value.Trim());
+                                    continue;
                                 }
-                                if (_category.Contains(";"))
-                                    _category = _category.Split(';')[0];
-                                book.Category = _category;
                             }
 
-                            if (dtNodes[i].InnerText == "Pages:")
-                                book.Pages = int.Parse(ddNodes[i].InnerText);
+                            book.Title = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a")?.InnerText;
+                            book.Title = book.Title?.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
+                            book.Url = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a")?.Attributes["href"]?.Value;
+                            book.Summary = bookElement.SelectSingleNode("div/div[@class='entry-summary']/p")?.InnerText;
+                            book.Sync = 0;
 
-                            if (dtNodes[i].InnerText.Contains("Author"))
-                                book.Authors = ddNodes[i].InnerText;
-                        }
-                        var downloadLinks = detailPage.DocumentNode.SelectNodes("//span[@class='download-links']/a");
-                        foreach (var node in downloadLinks)
-                        {
-                            var href = node.Attributes["href"].Value;
-                            if (href.Contains(".pdf"))
+                            detailPage = await web.LoadFromWebAsync(book.Url);
+                            var detail = detailPage.DocumentNode.SelectSingleNode("//div[@class='book-detail']/dl");
+                            var dtNodes = detail.SelectNodes("dt");
+                            var ddNodes = detail.SelectNodes("dd");
+                            for (var i = 0; i < dtNodes.Count; i++)
                             {
-                                book.DownloadUrl = href;
-                                book.Extension = "pdf";
-                                break;
+                                if (dtNodes[i].InnerText == "Year:")
+                                    book.Year = int.Parse(ddNodes[i].InnerText);
+                                if (dtNodes[i].InnerText == "Category:")
+                                {
+                                    var _category = "";
+                                    foreach (var anode in ddNodes[i].SelectNodes("a"))
+                                    {
+                                        _category += anode.Attributes["href"].Value.Replace("http://www.allitebooks.org/", "").TrimEnd('/') + ";";
+                                    }
+                                    _category = _category.Substring(0, _category.Length - 1);
+                                    foreach (var correction in corrections)
+                                    {
+                                        _category = _category.Replace(correction.Key.Trim(), correction.Value.Trim());
+                                    }
+                                    if (_category.Contains(";"))
+                                        _category = _category.Split(';')[0];
+                                    book.Category = _category;
+                                }
+
+                                if (dtNodes[i].InnerText == "Pages:")
+                                    book.Pages = int.Parse(ddNodes[i].InnerText);
+
+                                if (dtNodes[i].InnerText.Contains("Author"))
+                                    book.Authors = ddNodes[i].InnerText;
                             }
-                            else if (href.Contains(".epub"))
+                            var downloadLinks = detailPage.DocumentNode.SelectNodes("//span[@class='download-links']/a");
+                            foreach (var node in downloadLinks)
                             {
-                                book.DownloadUrl = href;
-                                book.Extension = "epub";
+                                var href = node.Attributes["href"].Value;
+                                if (href.Contains(".pdf"))
+                                {
+                                    book.DownloadUrl = href;
+                                    book.Extension = "pdf";
+                                    break;
+                                }
+                                else if (href.Contains(".epub"))
+                                {
+                                    book.DownloadUrl = href;
+                                    book.Extension = "epub";
+                                }
+                            }
+
+                            Notify($"Loading page {page}...");
+                            list.Add(book);
+                        }
+                        catch (Exception e)
+                        {
+                            errUrls.Add(book.Url);
+                            var x = 1;
+                        }
+
+                    LABEL_FINAL:
+                        foreach (var b in list)
+                        {
+                            if (!db.Books.Any(_b => _b.PostId == b.PostId))
+                            {
+                                db.Books.Add(b);
+                                booksAdded++;
                             }
                         }
-                        
-                        Notify($"Loading page {page}...");
-                        list.Add(book);
-                    }
-                    catch (Exception e)
-                    {
-                        errUrls.Add(book.Url);
-                        var x = 1;
+                        await db.SaveChangesAsync();
+                        File.AppendAllLines("log.txt", errUrls.ToArray());
+                        if (alreadyThereCounter > 10)
+                            break;
+                        Thread.Sleep(DELAY);
                     }
 
-                LABEL_FINAL:
-                    foreach (var b in list)
-                    {
-                        if (!db.Books.Any(_b => _b.PostId == b.PostId))
-                        {
-                            db.Books.Add(b);
-                            booksAdded++;
-                        }
-                    }
-                    await db.SaveChangesAsync();
-                    File.AppendAllLines("log.txt", errUrls.ToArray());
-                    Thread.Sleep(DELAY);
+                    Notify($"Page {page} saved.");
+                    if (alreadyThereCounter > 10)
+                        break;
                 }
-
-                Notify($"Page {page} saved.");
-                if (alreadyThereCounter > 10)
-                    break;
+                Notify($"Updating all finished. Added {booksAdded} new books.");
+                LastAction = "UPDATE";
+                return booksAdded;
             }
-            Notify($"Updating all finished. Added {booksAdded} new books.");
-            LastAction = "UPDATE";
-            return booksAdded;
+            catch (Exception e)
+            {
+                Notify($"Error while updating from web: {e.Message}");
+                return 0;
+            }
         }
 
         /**/
