@@ -134,6 +134,8 @@ namespace BookUtils
     {
         public bool SuggestedFlag { get; set; } = false;
 
+        public bool UnfilterFlag { get; set; } = false;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public const string NO_CATEGORY = "(no category)";
@@ -169,6 +171,8 @@ namespace BookUtils
 
         public void LoadList(List<Book> list)
         {
+            if (list == null)
+                return;
             ShownBooks.Clear();
             list.ForEach(book => { book.DownloadedGUI = book.IsDownloaded; });
             ShownBooks.AddRange(list);
@@ -192,36 +196,42 @@ namespace BookUtils
         public void ApplyFilterAndLoad(string whatChanged)
         {
             var filteredList = Books;
-            //category
-            if (!string.IsNullOrEmpty(Filter.Category) && Filter.Category != NO_CATEGORY)
+            if (!UnfilterFlag)
             {
-                filteredList = filteredList.FindAll(book => book.Category != null && book.Category.StartsWith(Filter.Category));
-            }
-            //title
-            if (!string.IsNullOrEmpty(Filter.Title))
+                //category
+                if (!string.IsNullOrEmpty(Filter.Category) && Filter.Category != NO_CATEGORY)
+                {
+                    filteredList = filteredList.FindAll(book => book.Category != null && book.Category.StartsWith(Filter.Category));
+                }
+                //title
+                if (!string.IsNullOrEmpty(Filter.Title))
+                {
+                    var title = Filter.Title.ToLower();
+                    if (title.Contains("|"))
+                    {
+                        var titleWords = title.Split('|');
+                        filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsAny(titleWords));
+                    }
+                    else
+                    {
+                        var titleWords = Filter.Title.ToLower().Split(' ');
+                        filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsEvery(titleWords));
+                    }
+                }
+            } else
             {
-                var title = Filter.Title.ToLower();
-                if (title.Contains("|"))
-                {
-                    var titleWords = title.Split('|');
-                    filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsAny(titleWords));
-                }
-                else
-                {
-                    var titleWords = Filter.Title.ToLower().Split(' ');
-                    filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsEvery(titleWords));
-                }
+                UnfilterFlag = false; 
             }
             //sort
+            IEnumerable<Book> sortedList = null;
             switch (whatChanged) {
-                case "":
-                    filteredList = filteredList.OrderByDescending(book => book.PostId).ToList(); break;
-                case "title":
-                    filteredList = filteredList.OrderByDescending(book => book.PostId).ToList(); break;
                 case "category":
-                    filteredList = filteredList.OrderBy(book => book.Category).ThenByDescending(book => book.PostId).ToList(); break;
+                    sortedList = filteredList.OrderBy(book => book.Category).ThenByDescending(book => book.PostId); break;
+                case "title":
+                case "":
+                    sortedList = filteredList.OrderByDescending(book => book.PostId); break;
             }
-            LoadList(filteredList);
+            LoadList(sortedList.ToList());
         }
 
         public Dictionary<string, string> TxtCorrections { get; set; }
@@ -261,68 +271,41 @@ namespace BookUtils
 
         public void ListCategories()
         {
-            var dict = new Dictionary<string, int>();
-            foreach (var book in ShownBooks)
-            {
-                var cat = book.FirstCategory;
-                if (!string.IsNullOrEmpty(cat))
-                    if (!dict.ContainsKey(cat))
-                        dict.Add(cat, 1);
-                    else
-                        dict[cat]++;
-            }
+            var set = new HashSet<string>();
+            Books.ForEach(b => { if (!set.Contains(b.FirstCategory)) { set.Add(b.FirstCategory); } });
+        
             foreach (var add in File.ReadAllLines("../../settings/categories.txt"))
             {
-                if (!string.IsNullOrEmpty(add) && !dict.ContainsKey(add))
-                    dict.Add(add, 0);
+                if (!string.IsNullOrEmpty(add) && !set.Contains(add))
+                    set.Add(add);
             }
-            var list = new List<string>();
-            foreach (var kv in dict)
-            {
-                list.Add(kv.Key);
-            }
-            list.Add("(no category)");
+            set.Add("(no category)");
+            var list = set.ToList();
             list.Sort();
             Book.Categories.Clear();
-            foreach (var cat in list)
-            {
-                Book.Categories.Add(cat);
-            }
+            Book.Categories.AddRange(list);
         }
 
-        public void SortList(string column, List<Book> _list = null)
+        public void SortList(string column, IEnumerable<Book> list = null)
         {
-            var sortedList = _list ?? ShownBooks.ToList();
+            var sortedList = list ?? ShownBooks;
             
             switch (column)
             {
                 case "PostId":
-                if (GetSorting("PostId") < 0)
-                    sortedList = sortedList.OrderByDescending(b => b.PostId).ToList();
-                else
-                    sortedList = sortedList.OrderBy(b => b.PostId).ToList();
-                break;
+                sortedList = GetSorting("PostId") < 0 ? sortedList.OrderByDescending(b => b.PostId) : sortedList.OrderBy(b => b.PostId);
+                    break;
                 case "Title":
-                if (GetSorting("Title") < 0)
-                    sortedList = sortedList.OrderByDescending(b => b.Title).ToList();
-                else
-                    sortedList = sortedList.OrderBy(b => b.Title).ToList();
-                break;
+                sortedList = GetSorting("Title") < 0 ? sortedList.OrderByDescending(b => b.Title) : sortedList.OrderBy(b => b.Title);
+                    break;
                 case "Year":
-                if (GetSorting("Year") < 0)
-                    sortedList = sortedList.OrderByDescending(b => b.Year*1000000 + b.PostId).ToList();
-                else
-                    sortedList = sortedList.OrderBy(b => b.Year*1000000 + b.PostId).ToList();
-                break;
+                sortedList = GetSorting("Year") < 0 ? sortedList.OrderByDescending(b => b.Year*1000000 + b.PostId) : sortedList.OrderBy(b => b.Year*1000000 + b.PostId);
+                    break;
                 case "Category":
-                if (GetSorting("Category") < 0)
-                    sortedList = sortedList.OrderByDescending(b => b.Category).ToList();
-                else
-                    sortedList = sortedList.OrderBy(b => b.Category).ToList();
-                break;
+                sortedList = GetSorting("Category") < 0 ? sortedList.OrderByDescending(b => b.Category) : sortedList.OrderBy(b => b.Category);
+                    break;
             }
-            if (sortedList != null)
-                LoadList(sortedList);
+            LoadList(sortedList.ToList());
         }
 
         public bool UnsuggestCategories()

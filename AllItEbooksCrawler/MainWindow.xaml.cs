@@ -260,6 +260,12 @@ namespace BookUtils
 
         private void _catListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (model.UnfilterFlag)
+            {
+                model.Filter.Category = "";
+                return;
+            }
+
             var books = listView.SelectedItems;
             // Фильтр по категории
             if (books.Count == 0)
@@ -356,6 +362,12 @@ namespace BookUtils
 
         private void _txtTitle_TextChanged(object sender, TextChangedEventArgs e)
         {
+            if (model.UnfilterFlag)
+            {
+                model.Filter.Title = "";
+                return;
+            }               
+
             var search = ((TextBox)e.Source).Text;
             if (!string.IsNullOrEmpty(search))
             {
@@ -387,7 +399,6 @@ namespace BookUtils
                     Notify("Suggestions unfiled.");
                 }
                 model.SuggestedFlag = false;
-                //btnSuggest.Content = "Suggest";
             }
             else
             {
@@ -396,7 +407,6 @@ namespace BookUtils
                 {
                     Notify($"{suggCount} suggestions for current list filed.");
                     model.SuggestedFlag = true;
-                    //btnSuggest.Content = "Unsuggest";
                 }
             }
         }
@@ -509,11 +519,6 @@ namespace BookUtils
             }
         }
 
-        private void _btnListCategories(object sender, RoutedEventArgs e)
-        {
-            model.ListCategories();
-        }
-
         private void _btnAddCategory_Click(object sender, RoutedEventArgs e)
         {
             AddCategory();
@@ -533,15 +538,18 @@ namespace BookUtils
                         db.UpdateEpubsFromWeb(); break;
                     case "suggest":
                         Suggest(); break;
+                    case "listcat":
+                        model.ListCategories(); break;
                 }
             }
         }
 
         private void _btnUnfilter_Click(object sender, RoutedEventArgs e)
         {
-            model.Filter.Category = "";
-            model.Filter.Title = "";
-            model.ApplyFilterAndLoad("title");
+            model.UnfilterFlag = true;
+            txtTitle.Text = "";
+            catListBox.SelectedItem = "(no category)";
+            model.ApplyFilterAndLoad("");            
         }
     }
 }

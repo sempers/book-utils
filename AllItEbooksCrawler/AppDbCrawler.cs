@@ -147,6 +147,7 @@ namespace BookUtils
                 pageHtml = await web.LoadFromWebAsync("http://www.allitebooks.org");
                 var pagination = pageHtml.DocumentNode.SelectNodes("//div[@class='pagination clearfix']/a");
                 PAGES_NUM = int.Parse(pagination.Last().InnerText);
+                int MAX_THERE = 20;
                 var alreadyThereCounter = 0;
                 int booksAdded = 0;
                 for (var page = 1; page <= PAGES_NUM; page++)
@@ -165,7 +166,7 @@ namespace BookUtils
                             if (postIDs.Contains(book.PostId))
                             {
                                 alreadyThereCounter++;
-                                if (alreadyThereCounter > 10)
+                                if (alreadyThereCounter > MAX_THERE)
                                 {
                                     goto LABEL_FINAL;
                                 }
@@ -249,13 +250,13 @@ namespace BookUtils
                         }
                         await db.SaveChangesAsync();
                         File.AppendAllLines("log.txt", errUrls.ToArray());
-                        if (alreadyThereCounter > 10)
+                        if (alreadyThereCounter > MAX_THERE)
                             break;
                         Thread.Sleep(DELAY);
                     }
 
                     Notify($"Page {page} saved.");
-                    if (alreadyThereCounter > 10)
+                    if (alreadyThereCounter > MAX_THERE)
                         break;
                 }
                 Notify($"Updating all finished. Added {booksAdded} new books.");

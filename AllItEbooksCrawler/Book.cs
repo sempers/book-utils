@@ -63,7 +63,7 @@ namespace BookUtils
         public int _rating;
         public int Rating { get => _rating; set { _rating = value; OnPropertyChanged("Rating"); } }
 
-        public static ObservableCollection<string> Categories { get; set; } = new ObservableCollection<string>();
+        public static ObservableRangeCollection<string> Categories { get; set; } = new ObservableRangeCollection<string>();
 
         public void SetCategory(string category, bool approve = false)
         {
@@ -87,12 +87,9 @@ namespace BookUtils
         public static void AddCategory(string category)
         {
             Categories.Add(category);
-            var sorted = Book.Categories.OrderBy(x => x).ToList();
-            Book.Categories.Clear();
-            foreach (var s in sorted)
-            {
-                Book.Categories.Add(s);
-            }
+            var sorted = Categories.OrderBy(x => x).ToList();
+            Categories.Clear();
+            Categories.AddRange(sorted);
         }
 
         public string OldCategory;

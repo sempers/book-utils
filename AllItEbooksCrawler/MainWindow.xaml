@@ -92,8 +92,7 @@
             <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" Width="250" Margin="8,5,5,5" SelectionChanged="_catListBox_SelectionChanged"></ComboBox>
             <Button Content="Unselect" Margin="5" Padding="5" Click="_btnFilterMode_Click"></Button>
             <Button Name="btnUnfilter" Content="Unfilter" Margin="5" Padding="5" Click="_btnUnfilter_Click"></Button>
-            <Button Content="Update" Margin="5" Padding="5" Click="_btnListCategories"></Button>
-            <Button Content="Add custom..." Margin="5" Padding="5" Click="_btnAddBook_Click"></Button>
+            <Button Content="+ Add book" Margin="5" Padding="5" Click="_btnAddBook_Click"></Button>
             <Button Content="Cmd:" Margin="5" Padding="5" Click="_cmdBtn_Click"></Button>
             <TextBox Name="_cmdText" Width="120" Margin="5" Padding="5"></TextBox>
         </StackPanel>
