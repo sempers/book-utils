@@ -79,7 +79,7 @@ namespace BookUtils
                         _category = _category.Split(';')[0];
                     book.SetCategory(_category); //no approving
                 }
-                book.Summary = book.Summary.Replace("&#8230;", "...");
+                book.Summary = book.Summary?.Replace("&#8230;", "...");
             }
             db.SaveChanges();
             LastAction = "CORRECT";

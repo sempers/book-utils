@@ -1,9 +1,9 @@
 ﻿datebases = databases
 angularjs = angular-js
 computers-technology/computer-science=programming/computer-science
-programming/elixir = programming/erlang
-networking-cloud-computing = networking
-web-development = web
+programming/elixir=programming/erlang
+networking-cloud-computing=networking
+web-development=web
 programming/c-sharp/unity = game-programming/unity
 web/ruby = programming/ruby
 web/python = programming/python
@@ -19,4 +19,6 @@ programming/net=programming/dot-net
 web/xml=programming/xml
 web-services/cloud=web/cloud-services
 web-services=web/services-apis
-
+marketing-seo=web/marketing-seo
+security=administration/security
+game-programming=programming/games

@@ -540,6 +540,8 @@ namespace BookUtils
                         Suggest(); break;
                     case "listcat":
                         model.ListCategories(); break;
+                    case "catreport":
+                        model.CatReport(); break;
                 }
             }
         }

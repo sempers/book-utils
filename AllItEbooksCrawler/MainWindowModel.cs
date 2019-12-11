@@ -15,6 +15,21 @@ namespace BookUtils
 {
     public static class Extensions
     {
+        public static string PadKey(this string key)
+        {
+            var num = key.Count(c => c == '/');
+            for (int i =0; i<num; i++ )
+            {
+                key = "   " + key;
+            }
+            return key.PadRight(60, '.');
+        }
+
+        public static bool StartsWithSlash(this string s, string pattern)
+        {
+            return s == pattern || s.StartsWith(pattern + "/");
+        }
+
         public static bool ContainsEvery(this string s, string[] array)
         {
             bool result = true;
@@ -201,7 +216,7 @@ namespace BookUtils
                 //category
                 if (!string.IsNullOrEmpty(Filter.Category) && Filter.Category != NO_CATEGORY)
                 {
-                    filteredList = filteredList.FindAll(book => book.Category != null && book.Category.StartsWith(Filter.Category));
+                    filteredList = filteredList.FindAll(book => book.Category != null && book.Category.StartsWithSlash(Filter.Category));
                 }
                 //title
                 if (!string.IsNullOrEmpty(Filter.Title))
@@ -252,6 +267,8 @@ namespace BookUtils
             }
         }
 
+        
+
         public void LoadHidden()
         {
             if (File.Exists("../../settings/hidden.txt"))
@@ -269,18 +286,36 @@ namespace BookUtils
             return false;
         }
 
+        private Dictionary<string, int> CategoriesStats = new Dictionary<string, int>();
+
+        public void CatReport()
+        {
+            ListCategories();
+            var list = CategoriesStats.OrderBy(kv => kv.Key).Select(kv => kv.Key.PadKey()+$"{kv.Value}".PadLeft(4,'.')).ToArray();
+            File.WriteAllLines("../../settings/catAZ.txt", list);
+            list = CategoriesStats.OrderByDescending(kv => kv.Value).Select(kv => kv.Key.PadKey() + $"{kv.Value}".PadLeft(4, '.')).ToArray();
+            File.WriteAllLines("../../settings/catMaxMin.txt", list);
+        }
+
         public void ListCategories()
         {
-            var set = new HashSet<string>();
-            Books.ForEach(b => { if (!set.Contains(b.FirstCategory)) { set.Add(b.FirstCategory); } });
+            var set = new Dictionary<string, int>();
+            foreach (var book in Books)
+            {
+                if (!set.ContainsKey(book.FirstCategory)) {
+                    var count = Books.Count(b => b.FirstCategory.StartsWithSlash(book.FirstCategory));
+                    set.Add(book.FirstCategory, count);
+                }
+            } 
         
             foreach (var add in File.ReadAllLines("../../settings/categories.txt"))
             {
-                if (!string.IsNullOrEmpty(add) && !set.Contains(add))
-                    set.Add(add);
+                if (!string.IsNullOrEmpty(add) && !set.ContainsKey(add))
+                    set.Add(add, 0);
             }
-            set.Add("(no category)");
-            var list = set.ToList();
+            CategoriesStats = set;
+            var list = set.Keys.ToList();
+            list.Add("(no category)");
             list.Sort();
             Book.Categories.Clear();
             Book.Categories.AddRange(list);
