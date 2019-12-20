@@ -310,13 +310,20 @@ namespace BookUtils
                     }
                 }
                 var book = listView.SelectedItem as Book;
-                if (book != null && book.IsDownloaded)
+                if (book != null)
                 {
-                    OpenProcess(book.LocalPath);
-                    if (book.Rating == 0)
+                    if (book.IsDownloaded)
                     {
-                        book.Rating = 2;
-                        db.Save();
+                        OpenProcess(book.LocalPath);
+                        if (book.Rating == 0)
+                        {
+                            book.Rating = 2;
+                            db.Save();
+                        }
+                    }
+                    else
+                    {
+                        DownloadBooksAsync();
                     }
                 }
             }
