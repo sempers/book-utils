@@ -282,7 +282,7 @@ namespace BookUtils
             {
                 if (catListBox.SelectedItem != null && book.FirstCategory != catListBox.SelectedItem.ToString())
                 {
-                    book.SetCategory(catListBox.SelectedItem.ToString(), approve: true);
+                    book?.SetCategory(catListBox.SelectedItem.ToString(), approve: true);
                 }
             }
         }

@@ -67,8 +67,10 @@ namespace BookUtils
 
         public void SetCategory(string category, bool approve = false)
         {
-            Category = category;
+            if (category == null)
+                return;
             var oldPath = IsDownloaded ? LocalPath : null;
+            Category = category;            
             if (Approved == 0 && approve)
             {
                 Approved = 1;
