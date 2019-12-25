@@ -73,7 +73,11 @@ namespace BookUtils
                     var _category = book.Category;
                     foreach (var correction in corrections)
                     {
-                        _category = _category.Replace(correction.Key.Trim(), correction.Value.Trim());
+                        if (correction.Key.Trim().StartsWith("*"))
+                            continue;
+                        var key = correction.Key.Trim().Replace("*", "");
+                        var value = correction.Value.Trim();
+                        _category = _category.Replace(key, value);
                     }
                     if (_category.Contains(";"))
                         _category = _category.Split(';')[0];
@@ -200,7 +204,8 @@ namespace BookUtils
                                     _category = _category.Substring(0, _category.Length - 1);
                                     foreach (var correction in corrections)
                                     {
-                                        _category = _category.Replace(correction.Key.Trim(), correction.Value.Trim());
+                                        var key = correction.Key.Trim().Replace("*", "");
+                                        _category = _category.Replace(key, correction.Value.Trim());
                                     }
                                     if (_category.Contains(";"))
                                         _category = _category.Split(';')[0];

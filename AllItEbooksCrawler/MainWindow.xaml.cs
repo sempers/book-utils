@@ -289,6 +289,11 @@ namespace BookUtils
 
         private void _Window_KeyUp(object sender, KeyEventArgs e)
         {
+            HandleKeyPress(e);
+        }
+
+        private async Task HandleKeyPress(KeyEventArgs e)
+        {
             if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back && e.Key != Key.F1 && e.Key != Key.F2)
                 return;
             if (e.Key == Key.Space)                     //Make Checked and Synchronized
@@ -312,6 +317,19 @@ namespace BookUtils
                 var book = listView.SelectedItem as Book;
                 if (book != null)
                 {
+                    if (book.Sync != 1)
+                    {
+                        book.Sync = 1;
+                        db.Save();
+                    }
+                    if (!book.IsChecked)
+                    {
+                        book.IsChecked = true;
+                    }
+                    if (!book.IsDownloaded)
+                    {
+                        await DownloadBooksAsync();
+                    }
                     if (book.IsDownloaded)
                     {
                         OpenProcess(book.LocalPath);
@@ -320,10 +338,6 @@ namespace BookUtils
                             book.Rating = 2;
                             db.Save();
                         }
-                    }
-                    else
-                    {
-                        DownloadBooksAsync();
                     }
                 }
             }
