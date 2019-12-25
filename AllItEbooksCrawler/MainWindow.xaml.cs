@@ -228,12 +228,7 @@ namespace BookUtils
 
         private void _btnCorrect_Click(object sender, RoutedEventArgs e)
         {
-            model.LoadCorrections();
-            db.Correct(model.TxtCorrections);
-            model.DeleteEmptyFolders(BOOKS_ROOT);
-            LoadBooksFromDb();
-            model.ListCategories();
-            Notify("Corrections made. Books reloaded.");
+            
         }
 
         private void _ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -274,7 +269,11 @@ namespace BookUtils
                 {
                     model.Filter.Category = catListBox.SelectedItem.ToString();
                     model.ApplyFilterAndLoad("category");
-                }
+                } /*else if (catListBox.Sele == "")
+                {
+                    model.Filter.Category = "";
+                    model.ApplyFilterAndLoad("category");
+                }*/
                 return;
             }
             //Присвоение категории
@@ -563,6 +562,13 @@ namespace BookUtils
                         model.ListCategories(); break;
                     case "catreport":
                         model.CatReport(); break;
+                    case "correct":
+                        model.LoadCorrections();
+                        db.Correct(model.TxtCorrections);
+                        model.DeleteEmptyFolders(BOOKS_ROOT);
+                        LoadBooksFromDb();
+                        model.ListCategories();
+                        Notify("Corrections made. Books reloaded."); break;
                 }
             }
         }
@@ -572,7 +578,14 @@ namespace BookUtils
             model.UnfilterFlag = true;
             txtTitle.Text = "";
             catListBox.SelectedItem = "(no category)";
+            chkOnlySync.IsChecked = false;
             model.ApplyFilterAndLoad("");            
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            model.Filter.OnlySync = chkOnlySync.IsChecked.Value;
+            model.ApplyFilterAndLoad("");
         }
     }
 }
