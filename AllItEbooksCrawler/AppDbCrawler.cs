@@ -82,6 +82,7 @@ namespace BookUtils
                     if (_category.Contains(";"))
                         _category = _category.Split(';')[0];
                     book.SetCategory(_category); //no approving
+                    book.Authors = book.Authors.Trim();
                 }
                 book.Summary = book.Summary?.Replace("&#8230;", "...");
             }
@@ -181,8 +182,8 @@ namespace BookUtils
                             }
 
                             book.Title = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a")?.InnerText;
-                            book.Title = book.Title?.Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
-                            book.Url = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a")?.Attributes["href"]?.Value;
+                            book.Title = book.Title?.Trim().Replace("&#8217;", "'").Replace("&#8211;", "-").Replace("&#038;", "&").Replace("&amp;", "&");
+                            book.Url = bookElement.SelectSingleNode("div/header/h2[@class='entry-title']/a")?.Attributes["href"]?.Value?.Trim();
                             book.Summary = bookElement.SelectSingleNode("div/div[@class='entry-summary']/p")?.InnerText;
                             book.Sync = 0;
 
@@ -216,7 +217,7 @@ namespace BookUtils
                                     book.Pages = int.Parse(ddNodes[i].InnerText);
 
                                 if (dtNodes[i].InnerText.Contains("Author"))
-                                    book.Authors = ddNodes[i].InnerText;
+                                    book.Authors = ddNodes[i].InnerText?.Trim();
                             }
                             var downloadLinks = detailPage.DocumentNode.SelectNodes("//span[@class='download-links']/a");
                             foreach (var node in downloadLinks)
@@ -241,7 +242,6 @@ namespace BookUtils
                         catch (Exception e)
                         {
                             errUrls.Add(book.Url);
-                            var x = 1;
                         }
 
                     LABEL_FINAL:
