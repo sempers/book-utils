@@ -1,5 +1,4 @@
-﻿using CodexMicroORM.Core.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BookUtils
 {
-    public class Book : INotifyPropertyChanged, ICEFIndexedListItem
+    public class Book : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

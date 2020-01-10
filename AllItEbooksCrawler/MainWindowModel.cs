@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Globalization;
-using CodexMicroORM.Core.Collections;
 
 namespace BookUtils
 {

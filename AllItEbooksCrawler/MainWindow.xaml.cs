@@ -19,7 +19,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using CodexMicroORM.Core.Collections;
 using HtmlAgilityPack;
 
 namespace BookUtils
