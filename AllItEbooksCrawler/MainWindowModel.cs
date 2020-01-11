@@ -142,6 +142,8 @@ namespace BookUtils
     {
         public string Title { get; set; }
         public string Category { get; set; }
+
+        public bool OnlySync { get; set; }
     }
 
     public class MainWindowModel : INotifyPropertyChanged
@@ -231,6 +233,11 @@ namespace BookUtils
                         var titleWords = Filter.Title.ToLower().Split(' ');
                         filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsEvery(titleWords));
                     }
+                }
+                //sync
+                if (Filter.OnlySync)
+                {
+                    filteredList = filteredList.FindAll(book => book.Sync == 1);
                 }
             } else
             {

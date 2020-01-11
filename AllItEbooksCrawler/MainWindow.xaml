@@ -85,7 +85,7 @@
                 <Button Content="▼ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="RestoreDB" Foreground="Green" ToolTip="Download db from google drive"></Button>
             <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnUpdate_Click"></Button>
             <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnDownload_Click"></Button>
-            <Button Content="Correct"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnCorrect_Click"></Button>
+                <CheckBox Name="chkOnlySync" Content="Only sync" Margin="5" VerticalAlignment="Center" Click="CheckBox_Click"></CheckBox>
             </StackPanel>
             <TextBox Name="txtTitle" VerticalContentAlignment="Center" Width="400" Margin="5" Text="{Binding SearchTitle}" TextChanged="_txtTitle_TextChanged"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="_btnAddCategory_Click"></Button>

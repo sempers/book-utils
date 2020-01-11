@@ -227,12 +227,7 @@ namespace BookUtils
 
         private void _btnCorrect_Click(object sender, RoutedEventArgs e)
         {
-            model.LoadCorrections();
-            db.Correct(model.TxtCorrections);
-            model.DeleteEmptyFolders(BOOKS_ROOT);
-            LoadBooksFromDb();
-            model.ListCategories();
-            Notify("Corrections made. Books reloaded.");
+            
         }
 
         private void _ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -273,7 +268,11 @@ namespace BookUtils
                 {
                     model.Filter.Category = catListBox.SelectedItem.ToString();
                     model.ApplyFilterAndLoad("category");
-                }
+                } /*else if (catListBox.Sele == "")
+                {
+                    model.Filter.Category = "";
+                    model.ApplyFilterAndLoad("category");
+                }*/
                 return;
             }
             //Присвоение категории
@@ -287,6 +286,11 @@ namespace BookUtils
         }
 
         private void _Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            HandleKeyPress(e);
+        }
+
+        private async Task HandleKeyPress(KeyEventArgs e)
         {
             if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back && e.Key != Key.F1 && e.Key != Key.F2)
                 return;
@@ -311,6 +315,19 @@ namespace BookUtils
                 var book = listView.SelectedItem as Book;
                 if (book != null)
                 {
+                    if (book.Sync != 1)
+                    {
+                        book.Sync = 1;
+                        db.Save();
+                    }
+                    if (!book.IsChecked)
+                    {
+                        book.IsChecked = true;
+                    }
+                    if (!book.IsDownloaded)
+                    {
+                        await DownloadBooksAsync();
+                    }
                     if (book.IsDownloaded)
                     {
                         OpenProcess(book.LocalPath);
@@ -319,10 +336,6 @@ namespace BookUtils
                             book.Rating = 2;
                             db.Save();
                         }
-                    }
-                    else
-                    {
-                        DownloadBooksAsync();
                     }
                 }
             }
@@ -548,6 +561,13 @@ namespace BookUtils
                         model.ListCategories(); break;
                     case "catreport":
                         model.CatReport(); break;
+                    case "correct":
+                        model.LoadCorrections();
+                        db.Correct(model.TxtCorrections);
+                        model.DeleteEmptyFolders(BOOKS_ROOT);
+                        LoadBooksFromDb();
+                        model.ListCategories();
+                        Notify("Corrections made. Books reloaded."); break;
                 }
             }
         }
@@ -557,7 +577,14 @@ namespace BookUtils
             model.UnfilterFlag = true;
             txtTitle.Text = "";
             catListBox.SelectedItem = "(no category)";
+            chkOnlySync.IsChecked = false;
             model.ApplyFilterAndLoad("");            
+        }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            model.Filter.OnlySync = chkOnlySync.IsChecked.Value;
+            model.ApplyFilterAndLoad("");
         }
     }
 }
