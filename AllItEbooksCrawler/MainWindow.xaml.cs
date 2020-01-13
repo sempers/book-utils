@@ -328,15 +328,7 @@ namespace BookUtils
                     {
                         await DownloadBooksAsync();
                     }
-                    if (book.IsDownloaded)
-                    {
-                        OpenProcess(book.LocalPath);
-                        if (book.Rating == 0)
-                        {
-                            book.Rating = 2;
-                            db.Save();
-                        }
-                    }
+                    OpenBook(book);
                 }
             }
             if (e.Key == Key.Back)           //Unsuggest and approve initial value
@@ -358,10 +350,27 @@ namespace BookUtils
             if (e.Key == Key.F2)            //Open the file
             {
                 var book = listView.SelectedItem as Book;
-                if (book != null && book.IsDownloaded)
-                {
-                    OpenProcess(book.LocalPath);
-                }
+                OpenBook(book);
+            }
+        }
+
+        private void OpenBook(Book book)
+        {
+            if (book == null || !book.IsDownloaded)
+                return;
+
+            if (book.Rating == 0)
+            {
+                book.Rating = 2;
+                db.Save();
+            }
+
+            if (book.PostId < 0)
+            {
+                OpenProcess(book?.DownloadUrl);
+            } else
+            {
+                OpenProcess(book?.LocalPath);
             }
         }
 

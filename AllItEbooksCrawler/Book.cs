@@ -69,7 +69,7 @@ namespace BookUtils
             if (category == null)
                 return;
             var oldPath = IsDownloaded ? LocalPath : null;
-            Category = category;            
+            Category = category;
             if (Approved == 0 && approve)
             {
                 Approved = 1;
@@ -137,11 +137,19 @@ namespace BookUtils
 
         public string LocalPath => Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), ClearFileName);
 
-        public bool IsDownloaded { get { var val = string.IsNullOrEmpty(LocalPath) ? false : File.Exists(LocalPath); DownloadedGUI = val;  return val; } }
+        public bool IsDownloaded
+        {
+            get
+            {
+                var val = PostId < 0 ? File.Exists(DownloadUrl) : (string.IsNullOrEmpty(LocalPath) ? false : File.Exists(LocalPath));
+                DownloadedGUI = val;
+                return val;
+            }
+        }
 
         private void AutoMove(string oldPath)
         {
-            if (oldPath == null)
+            if (oldPath == null || PostId < 0)
                 return;
             try
             {
