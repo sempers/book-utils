@@ -113,7 +113,7 @@ namespace BookUtils
 
         private static string ClearString(string s)
         {
-            return s.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ").Replace("?", "");
+            return s.Trim().Replace(":", "-").Replace("\"", "'").Replace("|", " ").Replace("?", "").Replace("/", "-");
         }
 
         public string ClearAuthors

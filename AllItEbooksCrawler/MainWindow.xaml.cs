@@ -225,11 +225,6 @@ namespace BookUtils
             await DownloadBooksAsync();
         }
 
-        private void _btnCorrect_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
         private void _ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var book = listView.SelectedItem as Book;
@@ -268,11 +263,7 @@ namespace BookUtils
                 {
                     model.Filter.Category = catListBox.SelectedItem.ToString();
                     model.ApplyFilterAndLoad("category");
-                } /*else if (catListBox.Sele == "")
-                {
-                    model.Filter.Category = "";
-                    model.ApplyFilterAndLoad("category");
-                }*/
+                }
                 return;
             }
             //Присвоение категории
