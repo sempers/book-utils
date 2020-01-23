@@ -131,11 +131,6 @@ namespace BookUtils
             return counter;
         }
 
-        public async Task UpdateBookFromWeb(Book book)
-        {
-
-        }
-
         public async Task<int> UpdateDbFromWeb(Dictionary<string, string> corrections)
         {
             try
@@ -152,9 +147,10 @@ namespace BookUtils
                 pageHtml = await web.LoadFromWebAsync("http://www.allitebooks.org");
                 var pagination = pageHtml.DocumentNode.SelectNodes("//div[@class='pagination clearfix']/a");
                 PAGES_NUM = int.Parse(pagination.Last().InnerText);
-                int MAX_THERE = 20;
+                int MAX_THERE = 10;
                 var alreadyThereCounter = 0;
                 int booksAdded = 0;
+
                 for (var page = 1; page <= PAGES_NUM; page++)
                 {
                     var list = new List<Book>();
@@ -173,7 +169,7 @@ namespace BookUtils
                                 alreadyThereCounter++;
                                 if (alreadyThereCounter > MAX_THERE)
                                 {
-                                    goto LABEL_FINAL;
+                                    goto PROCEDURE_END;
                                 }
                                 else
                                 {
@@ -244,8 +240,7 @@ namespace BookUtils
                             errUrls.Add(book.Url);
                         }
 
-                    LABEL_FINAL:
-                        foreach (var b in list)
+        PROCEDURE_END:  foreach (var b in list)
                         {
                             if (!db.Books.Any(_b => _b.PostId == b.PostId))
                             {
@@ -276,7 +271,6 @@ namespace BookUtils
         }
 
         /**/
-
         public void Dispose()
         {
             db.Dispose();

@@ -160,6 +160,12 @@
     <Content Include="lib\x86\SQLite.Interop.dll" />
     <Content Include="settings\suggestions.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
+      <Project>{9d2d4770-aed3-4c15-a8bc-8b31f1344ba3}</Project>
+      <Name>CommonUtils</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

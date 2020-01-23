@@ -33,7 +33,6 @@ namespace BookUtils
 
         private int _year;
         public int Year { get => _year; set { _year = value; OnPropertyChanged("Year"); } }
-
         public string Url { get; set; }
         public string DownloadUrl { get; set; }
         public string Authors { get; set; }
@@ -42,7 +41,8 @@ namespace BookUtils
         private string _category { get; set; }
         public string Category
         {
-            get => _category; set
+            get => _category;
+            set
             {
                 _category = value;
                 OnPropertyChanged("Category");
@@ -53,8 +53,7 @@ namespace BookUtils
 
         private int _approved;
         public int Approved { get => _approved; set { _approved = value; OnPropertyChanged("Approved"); } }
-
-
+        
         public bool _suggested;
         [NotMapped]
         public bool Suggested { get => _suggested; set { _suggested = value; OnPropertyChanged("Suggested"); } }
@@ -153,8 +152,7 @@ namespace BookUtils
                 return;
             try
             {
-                if (!Directory.Exists(Path.GetDirectoryName(LocalPath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(LocalPath));
+                CommonUtils.Utils.CreateDirectory(Path.GetDirectoryName(LocalPath));
                 File.Move(oldPath, LocalPath);
             }
             catch

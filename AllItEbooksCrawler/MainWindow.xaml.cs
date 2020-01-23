@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using CommonUtils;
 using HtmlAgilityPack;
 
 namespace BookUtils
@@ -29,16 +30,11 @@ namespace BookUtils
     public partial class MainWindow : Window
     {
         AppDbCrawler db;
-
         MainWindowModel model = new MainWindowModel();
-
         public const string BOOKS_ROOT = @"D:\books\it";
-
         public const string GOOGLE_DRIVE_DB_PATH = @"D:\books\google_drive\itdb\books.db";
+        public const string DB_PATH = @"..\..\data\books.db";
 
-        public const string DB_PATH = @"..\..\data\books.db";      
-
-       
         public MainWindow()
         {
             InitializeComponent();
@@ -59,14 +55,15 @@ namespace BookUtils
                 {
                     InitList();
                 }
-            } else
+            }
+            else
             {
                 InitList();
             }
         }
 
         /// <summary>
-        /// Инициализация основного списка
+        /// Initialize book list
         /// </summary>
         private void InitList()
         {
@@ -78,10 +75,10 @@ namespace BookUtils
         }
 
         /// <summary>
-        /// Процедура загрузки из БД
+        /// Load books from DB
         /// </summary>
         /// <param name="applyFilter"></param>
-        private void LoadBooksFromDb(bool applyFilter = false)
+        private void LoadBooksFromDb()
         {
             var list = db.LoadBooksFromDb();
             model.LoadHidden();
@@ -116,17 +113,15 @@ namespace BookUtils
             Notify($"Books loaded ok. DB last updated {lastUpdate}. Total {downloaded} books downloaded. {(syncNotDownloaded > 0 ? $"{syncNotDownloaded} books to synchronize." : "")}");
         }
 
-        public void MakeDir(string path)
-        {
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-        }
-
         private void Notify(string message)
         {
             Application.Current.Dispatcher.Invoke(() => { model.Message = message; });
-        }        
+        }
 
+        /// <summary>
+        /// Download book files (pdf/epub) from allitebooks.org
+        /// </summary>
+        /// <returns></returns>
         private async Task DownloadBooksAsync()
         {
             bool inSelection = listView.SelectedItems.Count > 0;
@@ -146,7 +141,7 @@ namespace BookUtils
             }
             if (booksToDownload.Count == 0)
                 return;
-            
+
             Notify(inSelection ? "Downloads in selection initialized..." : "Downloads initialized");
             int count = 0;
             int total = booksToDownload.Count;
@@ -160,13 +155,12 @@ namespace BookUtils
                         book.Sync = 1;
                         db.Save();
                     }
-
                     Notify($"Downloading book {count}/{total}: {book.Title}");
                     if (book.DownloadUrl.StartsWith("http"))
                     {
                         using (var wc = new WebClient())
                         {
-                            MakeDir(Path.GetDirectoryName(book.LocalPath));
+                            Utils.CreateDirectory(Path.GetDirectoryName(book.LocalPath));
                             if (!book.IsDownloaded)
                             {
                                 await wc.DownloadFileTaskAsync(new Uri(book.DownloadUrl), book.LocalPath);
@@ -180,13 +174,12 @@ namespace BookUtils
                         {
                             if (!book.IsDownloaded)
                             {
-                                MakeDir(Path.GetDirectoryName(book.LocalPath));
+                                Utils.CreateDirectory(Path.GetDirectoryName(book.LocalPath));
                                 File.Copy(book.DownloadUrl, book.LocalPath);
                                 book.DownloadedGUI = true;
                             }
                         }
                     }
-
                 }
                 catch (Exception e)
                 {
@@ -195,7 +188,7 @@ namespace BookUtils
                 }
             }
             Notify($"Downloads finished. Total {model.Books.Count(book => book.IsDownloaded)} books downloaded.");
-        }        
+        }
 
         private async void _btnUpdate_Click(object sender, RoutedEventArgs e)
         {
@@ -215,7 +208,7 @@ namespace BookUtils
                 var result = bookWindow.ShowDialog();
                 if (result == true && db.LastAction == "REMOVE")
                 {
-                    LoadBooksFromDb(applyFilter: true);
+                    LoadBooksFromDb();
                 }
             }
         }
@@ -256,7 +249,7 @@ namespace BookUtils
             }
 
             var books = listView.SelectedItems;
-            // Фильтр по категории
+            // Filter by category
             if (books.Count == 0)
             {
                 if (catListBox.SelectedItem != null)
@@ -266,7 +259,7 @@ namespace BookUtils
                 }
                 return;
             }
-            //Присвоение категории
+            // Assign a category
             foreach (Book book in books)
             {
                 if (catListBox.SelectedItem != null && book.FirstCategory != catListBox.SelectedItem.ToString())
@@ -281,6 +274,11 @@ namespace BookUtils
             HandleKeyPress(e);
         }
 
+        /// <summary>
+        /// Handle a keyboard key pressed when selected a book/some books
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
         private async Task HandleKeyPress(KeyEventArgs e)
         {
             if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back && e.Key != Key.F1 && e.Key != Key.F2)
@@ -345,26 +343,33 @@ namespace BookUtils
             }
         }
 
+        /// <summary>
+        /// Open a book
+        /// </summary>
+        /// <param name="book"></param>
         private void OpenBook(Book book)
         {
             if (book == null || !book.IsDownloaded)
                 return;
-
             if (book.Rating == 0)
             {
                 book.Rating = 2;
                 db.Save();
             }
-
             if (book.PostId < 0)
             {
                 OpenProcess(book?.DownloadUrl);
-            } else
+            }
+            else
             {
                 OpenProcess(book?.LocalPath);
             }
         }
 
+        /// <summary>
+        /// Open a file/url
+        /// </summary>
+        /// <param name="uri"></param>
         private void OpenProcess(string uri)
         {
             if (uri == null)
@@ -385,7 +390,7 @@ namespace BookUtils
             {
                 model.Filter.Title = "";
                 return;
-            }               
+            }
 
             var search = ((TextBox)e.Source).Text;
             if (!string.IsNullOrEmpty(search))
@@ -409,6 +414,9 @@ namespace BookUtils
             model.FilterMode = true;
         }
 
+        /// <summary>
+        /// Suggest a category (deprecated)
+        /// </summary>
         private void Suggest()
         {
             if (model.SuggestedFlag)
@@ -431,11 +439,10 @@ namespace BookUtils
         }
 
         /// <summary>
-        /// Добавляем категорию
+        /// Add a category
         /// </summary>
-        private void AddCategory()
+        private void AddCategory(string newCategory)
         {
-            var newCategory = catListBox.Text;
             if (!string.IsNullOrEmpty(newCategory) && !Book.Categories.Contains(newCategory))
             {
                 Book.AddCategory(newCategory);
@@ -476,11 +483,11 @@ namespace BookUtils
 
         private void _btnAddBook_Click(object sender, RoutedEventArgs e)
         {
-            AddBook(); 
+            AddBook();
         }
 
         /// <summary>
-        /// Добавление новой книги
+        /// Add a new custom book
         /// </summary>
         private void AddBook()
         {
@@ -488,7 +495,7 @@ namespace BookUtils
             {
                 PostId = db.GetCustomPostId(),
                 Title = "",
-                Category=model.Filter.Category,
+                Category = model.Filter.Category,
                 DownloadUrl = @"D:\books\google_drive\itdb\extra_books\"
             };
             var bookWindow = new BookWindow(newBook, db);
@@ -496,10 +503,15 @@ namespace BookUtils
             var result = bookWindow.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                LoadBooksFromDb(applyFilter: true);
+                LoadBooksFromDb();
             }
         }
 
+        /// <summary>
+        /// Backup DB to Google drive
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BackupDB(object sender, RoutedEventArgs e)
         {
             db.Save();
@@ -507,12 +519,20 @@ namespace BookUtils
             Notify("DB backed up");
         }
 
+        /// <summary>
+        /// Clear book list
+        /// </summary>
         private void ClearList()
         {
             model.Books.Clear();
             model.ShownBooks.Clear();
         }
 
+        /// <summary>
+        /// Restore DB from Google drive
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RestoreDB(object sender, RoutedEventArgs e)
         {
             Notify("DB restoring...");
@@ -525,6 +545,11 @@ namespace BookUtils
             }
         }
 
+        /// <summary>
+        /// Handle rating setting
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _TextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
             var book = (sender as TextBlock).DataContext as Book;
@@ -540,7 +565,7 @@ namespace BookUtils
 
         private void _btnAddCategory_Click(object sender, RoutedEventArgs e)
         {
-            AddCategory();
+            AddCategory(catListBox.Text);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -548,11 +573,17 @@ namespace BookUtils
             BackupDB(null, null);
         }
 
+        /// <summary>
+        /// Different commands
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _cmdBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (_cmdText.Text.Length>0)
+            if (_cmdText.Text.Length > 0)
             {
-                switch (_cmdText.Text){
+                switch (_cmdText.Text)
+                {
                     case "epubs":
                         db.UpdateEpubsFromWeb(); break;
                     case "suggest":
@@ -568,6 +599,14 @@ namespace BookUtils
                         LoadBooksFromDb();
                         model.ListCategories();
                         Notify("Corrections made. Books reloaded."); break;
+                    case "open_categories":
+                        Process.Start("../../settings/categories.txt"); break;
+                    case "open_corrections":
+                        Process.Start("../../settings/corrections.txt"); break;
+                    case "open_hidden":
+                        Process.Start("../../settings/hidden.txt"); break;
+                    case "open_suggestions":
+                        Process.Start("../../settings/suggestions.txt"); break;
                 }
             }
         }
@@ -578,7 +617,7 @@ namespace BookUtils
             txtTitle.Text = "";
             catListBox.SelectedItem = "(no category)";
             chkOnlySync.IsChecked = false;
-            model.ApplyFilterAndLoad("");            
+            model.ApplyFilterAndLoad("");
         }
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
