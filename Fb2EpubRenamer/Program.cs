@@ -53,16 +53,21 @@ namespace Fb2EpubRenamer
         static void Main(string[] args)
         {
             var root = Directory.Exists(@"D:\books\google_drive\books") ? @"D:\books\google_drive\books": ".";
+            var properFilePath = Path.Combine(root, "MoonReader", "proper.txt");
+            var properPaths = CommonUtils.Utils.ReadLines(properFilePath);
             if (args.Length > 0 && Directory.Exists(args[0]))
             {
                 root = args[0];
             }
             Console.WriteLine($"Loading files in {root} folder...");
-            var files = Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories).Where(path => path.EndsWith(".fb2") || path.EndsWith(".epub")).ToList();
+            var paths = Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories).Where(path => path.EndsWith(".fb2") || path.EndsWith(".epub")).ToList();
             List<Book2> books = new List<Book2>();
-            foreach (var file in files)
+            foreach (var path in paths)
             {
-                Book2 book = file.EndsWith(".fb2") ? LoadFb2(file) : LoadEpub(file);
+                //пропускаем
+                if (properPaths.Contains(path))
+                    continue;
+                Book2 book = path.EndsWith(".fb2") ? LoadFb2(path) : LoadEpub(path);
                 if (book != null)
                     books.Add(book);
             }
@@ -71,13 +76,19 @@ namespace Fb2EpubRenamer
             var counter = 0;
             foreach (var book in books)
             {
+                if (book.Path == book.ProperPath && !properPaths.Contains(book.ProperPath))
+                {
+                    properPaths.Add(book.ProperPath);
+                }
                 if (book.Path != book.ProperPath && !File.Exists(book.ProperPath))
                 {
                     try
                     {
                         File.Move(book.Path, book.ProperPath);
                         counter++;
+                        Console.WriteLine($"File '{Path.GetFileName(book.Path)} renamed to '{book.ProperFileName}.");
                         log.Add($"File '{Path.GetFileName(book.Path)} renamed to '{book.ProperFileName}.");
+                        properPaths.Add(book.ProperPath);
                     } catch (Exception e)
                     {
                         log.Add($"ERROR: '{Path.GetFileName(book.Path)} could not rename to '{book.ProperFileName}: {e.Message}");
@@ -86,6 +97,7 @@ namespace Fb2EpubRenamer
                 }
             }
             File.WriteAllLines("log.txt", log);
+            File.WriteAllLines(properFilePath, properPaths);
             Console.WriteLine($"{counter} books successfully renamed. OK!");
             Console.ReadLine();
         }

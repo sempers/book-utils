@@ -5,11 +5,14 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace CommonUtils
 {
     public static class Utils
     {
+        private static object _lock = new object();
+
         public static Dictionary<string, string> LoadMapping(string filename)
         {
             var lines = File.ReadAllLines(filename);
@@ -27,6 +30,34 @@ namespace CommonUtils
             dir = Path.GetFullPath(dir);
             if (Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
+        }
+
+        public static List<string> ReadLines(string path)
+        {
+            var result = new List<string>();
+            if (File.Exists(path))
+            {
+                result = File.ReadAllLines(path).ToList();
+            }
+            return result;
+        }
+
+        public static void DeleteFile(string path)
+        {
+            lock (_lock)
+            {
+                try
+                {
+                    if (File.Exists(path))
+                    {
+                        var fi = new FileInfo(path);
+                        if (fi.IsReadOnly)
+                            fi.IsReadOnly = false;
+                        File.Delete(path);
+                    }
+                }
+                catch { }
+            }
         }
 
         public static DateTime FromJSTicks(int ticks)

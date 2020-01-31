@@ -52,6 +52,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
+      <Project>{9d2d4770-aed3-4c15-a8bc-8b31f1344ba3}</Project>
+      <Name>CommonUtils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EpubSharp\EpubSharp.csproj">
       <Project>{ada80862-6d52-4a2a-b45d-27fed08fafde}</Project>
       <Name>EpubSharp</Name>
