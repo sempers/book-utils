@@ -174,8 +174,7 @@ namespace BookUtils
                         {
                             if (!book.IsDownloaded)
                             {
-                                Utils.CreateDirectory(Path.GetDirectoryName(book.LocalPath));
-                                File.Copy(book.DownloadUrl, book.LocalPath);
+                                Utils.FileCopy(book.DownloadUrl, book.LocalPath);
                                 book.DownloadedGUI = true;
                             }
                         }
@@ -515,7 +514,7 @@ namespace BookUtils
         private void BackupDB(object sender, RoutedEventArgs e)
         {
             db.Save();
-            File.Copy(DB_PATH, GOOGLE_DRIVE_DB_PATH, true);
+            Utils.FileCopy(DB_PATH, GOOGLE_DRIVE_DB_PATH);
             Notify("DB backed up");
         }
 
@@ -540,7 +539,7 @@ namespace BookUtils
             db?.ClearFile();
             if (File.Exists(GOOGLE_DRIVE_DB_PATH))
             {
-                File.Copy(GOOGLE_DRIVE_DB_PATH, DB_PATH, true);
+                Utils.FileCopy(GOOGLE_DRIVE_DB_PATH, DB_PATH);
                 InitList();
             }
         }

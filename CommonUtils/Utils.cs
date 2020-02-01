@@ -60,6 +60,28 @@ namespace CommonUtils
             }
         }
 
+        public static void FileCopy(string srcPath, string destPath)
+        {
+            if (File.Exists(srcPath))
+            {
+                CreateDirectory(Path.GetDirectoryName(destPath));
+                if (File.Exists(destPath))
+                    DeleteFile(destPath);
+                File.Copy(srcPath, destPath);
+            }
+        }
+
+        public static void FileMove(string srcPath, string destPath)
+        {
+            if (File.Exists(srcPath))
+            {
+                CreateDirectory(Path.GetDirectoryName(destPath));
+                if (File.Exists(destPath))
+                    DeleteFile(destPath);
+                File.Move(srcPath, destPath);
+            }
+        }
+
         public static DateTime FromJSTicks(int ticks)
         {
             var jan1st = new DateTime(1970, 1, 1);
