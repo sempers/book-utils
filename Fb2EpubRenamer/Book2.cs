@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonUtils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -43,7 +44,8 @@ namespace BookUtils
         {
             get
             {
-                var src = Title.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ").Replace(@"\", "").Replace("/", "").Replace("*", "");
+                var src = Title.Trim().Replace(":", "").Replace("\"", "'").Replace("|", "").Replace(@"\", "").Replace("/", "").Replace("*", "").Replace("«", "'").Replace("»", "'").Limit(100);
+                src = src.;
                 return src;
             }
         }
