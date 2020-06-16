@@ -33,10 +33,10 @@
                     <Setter Property="CheckBox.FontWeight" Value="Bold"></Setter>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Rating}" Value="4">
-                    <Setter Property="TextBlock.Foreground" Value="Green"/>
+                    <Setter Property="TextBlock.Foreground" Value="DarkGreen"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Rating}" Value="1">
-                    <Setter Property="TextBlock.Foreground" Value="Red"/>
+                    <Setter Property="TextBlock.Foreground" Value="DarkRed"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -45,6 +45,15 @@
         </DataTemplate>
         <DataTemplate x:Key="titleTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Title}" ToolTip="{Binding Summary}"></TextBlock>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Rating}" Value="3">
+                    <Setter Property="TextBlock.FontWeight" Value="Bold"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Rating}" Value="4">
+                    <Setter Property="TextBlock.Foreground" Value="DarkGreen"/>
+                    <Setter Property="TextBlock.FontWeight" Value="Bold"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="yearTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Year}" ></TextBlock>

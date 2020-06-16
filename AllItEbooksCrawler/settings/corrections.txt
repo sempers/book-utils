@@ -26,3 +26,5 @@ development-peopleware=management
 computer-science=comp-science
 *security=administration/security
 *marketing-seo=web/marketing-seo
+administration=sysadmin
+programming/ai-ml=ai-ml

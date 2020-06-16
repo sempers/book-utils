@@ -12,15 +12,10 @@ namespace BookUtils
 {
     public class Book2
     {
-        public int Id { get; set; }
-        public int PostId { get; set; }
         public string Title { get; set; }
         public int Year { get; set; }
         public string Path { get; set; }
         public string Authors { get; set; }
-        public string Summary { get; set; }
-        public string Category { get; set; }
-
 
         public override string ToString()
         {
@@ -31,12 +26,9 @@ namespace BookUtils
         {
             get
             {
-                var src = Authors.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ").Replace(@"\", "").Replace("/", "").Replace("*", "");
+                var src = Authors.Trim().Replace(":", " ").Replace("\"", "'").Replace("|", " ").Replace(@"\", "").Replace("/", "").Replace("*", "").Replace("«", "'").Replace("»", "'");
                 var split = src.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-                if (split.Length > 2)
-                    return $"{split[0]}, {split[1]} и др.";
-                else
-                    return src;
+                return split.Length > 2 ? $"{split[0]}, {split[1]} и др." : src;
             }
         }
 
@@ -44,24 +36,18 @@ namespace BookUtils
         {
             get
             {
+<<<<<<< HEAD
                 var src = Title.Trim().Replace(":", "").Replace("\"", "'").Replace("|", "").Replace(@"\", "").Replace("/", "").Replace("*", "").Replace("«", "'").Replace("»", "'").Limit(100);
                 return src;
+=======
+                return Title.Trim().Replace(":", "").Replace("\"", "'").Replace("|", "").Replace(@"\", "").Replace("/", "").Replace("*", "").Replace("«", "'").Replace("»", "'").Limit(100);
+>>>>>>> 58ba908911b7596f550e775f31aae75684a84e18
             }
         }
 
         public string ProperFileName
         {
             get { return $"{ClearTitle} - {ClearAuthors}{System.IO.Path.GetExtension(Path)}"; }
-        }
-
-        public string FirstCategory
-        {
-            get
-            {
-                if (Category == null)
-                    return "";
-                return Category.Split(';')[0];
-            }
         }
 
         public string ProperPath
