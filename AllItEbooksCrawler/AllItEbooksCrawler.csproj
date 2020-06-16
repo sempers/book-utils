@@ -40,6 +40,10 @@
     <ApplicationIcon>img\Robinweatherall-Library-Books.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommonUtils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\CommonUtils (2020)\bin\Debug\CommonUtils.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -159,12 +163,6 @@
     <Content Include="lib\System.Data.SQLite.Linq.dll" />
     <Content Include="lib\x86\SQLite.Interop.dll" />
     <Content Include="settings\suggestions.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CommonUtils\CommonUtils.csproj">
-      <Project>{9d2d4770-aed3-4c15-a8bc-8b31f1344ba3}</Project>
-      <Name>CommonUtils</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

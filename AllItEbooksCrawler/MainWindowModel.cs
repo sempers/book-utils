@@ -142,20 +142,18 @@ namespace BookUtils
     {
         public string Title { get; set; }
         public string Category { get; set; }
-
         public bool OnlySync { get; set; }
     }
 
     public class MainWindowModel : INotifyPropertyChanged
     {
         public bool SuggestedFlag { get; set; } = false;
-
         public bool UnfilterFlag { get; set; } = false;
-
         public event PropertyChangedEventHandler PropertyChanged;
-
         public const string NO_CATEGORY = "(no category)";
 
+        public string SETTINGS_PATH;
+               
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -169,6 +167,8 @@ namespace BookUtils
 
         private bool _filterMode;
         public bool FilterMode { get { return _filterMode; } set { _filterMode = value; OnPropertyChanged("FilterMode"); } }
+
+        public bool AuthorMode;
 
         public BookFilter Filter = new BookFilter { Title = "", Category = "" };
 
@@ -223,15 +223,21 @@ namespace BookUtils
                 if (!string.IsNullOrEmpty(Filter.Title))
                 {
                     var title = Filter.Title.ToLower();
+                    //Authors
+                    var authorMode = AuthorMode;
                     if (title.Contains("|"))
                     {
                         var titleWords = title.Split('|');
-                        filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsAny(titleWords));
+                        filteredList = authorMode
+                            ? filteredList.FindAll(book => book.Authors.ToLower().ContainsAny(titleWords))
+                            : filteredList.FindAll(book => book.Title.ToLower().ContainsAny(titleWords));
                     }
                     else
                     {
                         var titleWords = Filter.Title.ToLower().Split(' ');
-                        filteredList = filteredList.FindAll(book => book.Title.ToLower().ContainsEvery(titleWords));
+                        filteredList = authorMode
+                            ? filteredList.FindAll(book => book.Authors.ToLower().ContainsEvery(titleWords))
+                            : filteredList.FindAll(book => book.Title.ToLower().ContainsEvery(titleWords));
                     }
                 }
                 //sync
@@ -260,10 +266,10 @@ namespace BookUtils
 
         public void LoadCorrections()
         {
-            if (File.Exists("../../settings/corrections.txt"))
+            if (File.Exists(Path.Combine(SETTINGS_PATH, "corrections.txt")))
             {
                 TxtCorrections = new Dictionary<string, string>();
-                foreach (var line in File.ReadAllLines("../../settings/corrections.txt"))
+                foreach (var line in File.ReadAllLines(Path.Combine(SETTINGS_PATH, "corrections.txt")))
                 {
                     if (!line.Contains("="))
                         continue;
@@ -277,9 +283,9 @@ namespace BookUtils
 
         public void LoadHidden()
         {
-            if (File.Exists("../../settings/hidden.txt"))
+            if (File.Exists(Path.Combine(SETTINGS_PATH, "hidden.txt")))
             {
-                TxtHidden = File.ReadAllLines("../../settings/hidden.txt").ToList();
+                TxtHidden = File.ReadAllLines(Path.Combine(SETTINGS_PATH, "hidden.txt")).ToList();
             }
         }
         public bool HiddenIncludes(Book b)
@@ -298,9 +304,9 @@ namespace BookUtils
         {
             ListCategories();
             var list = CategoriesStats.OrderBy(kv => kv.Key).Select(kv => kv.Key.PadKey()+$"{kv.Value}".PadLeft(4,'.')).ToArray();
-            File.WriteAllLines("../../settings/catAZ.txt", list);
+            File.WriteAllLines(Path.Combine(SETTINGS_PATH, "catAZ.txt"), list);
             list = CategoriesStats.OrderByDescending(kv => kv.Value).Select(kv => kv.Key.PadKey() + $"{kv.Value}".PadLeft(4, '.')).ToArray();
-            File.WriteAllLines("../../settings/catMaxMin.txt", list);
+            File.WriteAllLines(Path.Combine(SETTINGS_PATH, "catMaxMin.txt"), list);
         }
 
         public void ListCategories()
@@ -314,7 +320,7 @@ namespace BookUtils
                 }
             } 
         
-            foreach (var add in File.ReadAllLines("../../settings/categories.txt"))
+            foreach (var add in File.ReadAllLines(Path.Combine(Path.Combine(SETTINGS_PATH, "categories.txt"))))
             {
                 if (!string.IsNullOrEmpty(add) && !set.ContainsKey(add))
                     set.Add(add, 0);
@@ -336,6 +342,9 @@ namespace BookUtils
                 case "PostId":
                 sortedList = GetSorting("PostId") < 0 ? sortedList.OrderByDescending(b => b.PostId) : sortedList.OrderBy(b => b.PostId);
                     break;
+                case "Authors":
+                    sortedList = GetSorting("Authors") < 0 ? sortedList.OrderByDescending(b => b.Authors) : sortedList.OrderBy(b => b.Authors);
+                    break;
                 case "Title":
                 sortedList = GetSorting("Title") < 0 ? sortedList.OrderByDescending(b => b.Title) : sortedList.OrderBy(b => b.Title);
                     break;
@@ -344,6 +353,9 @@ namespace BookUtils
                     break;
                 case "Category":
                 sortedList = GetSorting("Category") < 0 ? sortedList.OrderByDescending(b => b.Category) : sortedList.OrderBy(b => b.Category);
+                    break;
+                case "Pages":
+                    sortedList = GetSorting("Pages") < 0 ? sortedList.OrderByDescending(b => b.Pages) : sortedList.OrderBy(b => b.Pages);
                     break;
             }
             LoadList(sortedList.ToList());
@@ -381,10 +393,10 @@ namespace BookUtils
         public int SuggestCategories()
         {
             var result = 0;
-            if (File.Exists("../../settings/suggestions.txt"))
+            if (File.Exists(Path.Combine(SETTINGS_PATH, "suggestions.txt")))
             {
                 var dict = new Dictionary<string, string>();
-                foreach (var line in File.ReadAllLines("../../settings/suggestions.txt"))
+                foreach (var line in File.ReadAllLines(Path.Combine(SETTINGS_PATH, "suggestions.txt")))
                 {
                     var split = line.Split('=');
                     dict.Add(split[0], split[1]);

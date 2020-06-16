@@ -45,7 +45,6 @@ namespace BookUtils
             get
             {
                 var src = Title.Trim().Replace(":", "").Replace("\"", "'").Replace("|", "").Replace(@"\", "").Replace("/", "").Replace("*", "").Replace("«", "'").Replace("»", "'").Limit(100);
-                src = src.;
                 return src;
             }
         }

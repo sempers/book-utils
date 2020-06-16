@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookUtils"
         mc:Ignorable="d"
-        Title="Allitebooks.org Library" Height="788" Width="1534" KeyUp="_Window_KeyUp" Closing="Window_Closing">
+        Title="Allitebooks.org Library" Height="788" Width="1600" KeyUp="_Window_KeyUp" Closing="Window_Closing">
     <Window.Resources>
         <Style TargetType="ToolTip">
             <Style.Resources>
@@ -49,6 +49,9 @@
         <DataTemplate x:Key="yearTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Year}" ></TextBlock>
         </DataTemplate>
+        <DataTemplate x:Key="pagesTmpl" DataType="{x:Type local:Book}">
+            <TextBlock Text="{Binding Pages}" ></TextBlock>
+        </DataTemplate>
         <DataTemplate x:Key="categoryTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Category}"></TextBlock>
             <DataTemplate.Triggers>
@@ -80,12 +83,14 @@
             <RowDefinition Height="36"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Left" Height="40" Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,0">
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Width="325">
-                <Button Content="▲ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="BackupDB" Foreground="Red" ToolTip="Backup db to google drive" ></Button>
-                <Button Content="▼ DB" HorizontalAlignment="Left" Margin="5" Padding="5" Click="RestoreDB" Foreground="Green" ToolTip="Download db from google drive"></Button>
-            <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnUpdate_Click"></Button>
-            <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnDownload_Click"></Button>
-                <CheckBox Name="chkOnlySync" Content="Only sync" Margin="5" VerticalAlignment="Center" Click="CheckBox_Click"></CheckBox>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Width="365">
+                <Button Content="←" HorizontalAlignment="Left" Margin="5" Padding="5" Name="btnBack" Click="btnBack_Click" Foreground="Blue" ToolTip="Back where you searched" ></Button>
+                <Button Content="▲" HorizontalAlignment="Left" Margin="5" Padding="5" Click="BackupDB" Foreground="Red" ToolTip="Backup db to google drive" ></Button>
+                <Button Content="▼" HorizontalAlignment="Left" Margin="5" Padding="5" Click="RestoreDB" Foreground="Green" ToolTip="Download db from google drive"></Button>
+                <Button Content="Update"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnUpdate_Click" ToolTip="Update book list from the website"></Button>
+                <Button Content="Download"  HorizontalAlignment="Left" Margin="5" Padding="5" Click="_btnDownload_Click" ToolTip="Download all syncd books to hard drive"></Button>
+                <CheckBox Name="chkOnlySync" Content="Sync" Margin="5" VerticalAlignment="Center" Click="CheckBox_Click" ToolTip="Filter syncd books only"></CheckBox>
+                <CheckBox Name="chkAuthors" Content="Authors" Margin="5" VerticalAlignment="Center" Click="chkAuthors_Click" ToolTip="Filter by Authors"></CheckBox>
             </StackPanel>
             <TextBox Name="txtTitle" VerticalContentAlignment="Center" Width="400" Margin="5" Text="{Binding SearchTitle}" TextChanged="_txtTitle_TextChanged"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="_btnAddCategory_Click"></Button>
@@ -109,10 +114,11 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="PostId" Width="90" CellTemplate="{StaticResource postIdTmpl}"></GridViewColumn>
-                    <GridViewColumn Header="Authors" Width="239" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
+                    <GridViewColumn Header="Authors" Width="280" CellTemplate="{StaticResource authorsTmpl}" ></GridViewColumn>
                     <GridViewColumn Header="Title" Width="400" CellTemplate="{StaticResource titleTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Year" Width="60" CellTemplate="{StaticResource yearTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Category" Width="250" CellTemplate="{StaticResource categoryTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Pages" Width="45" CellTemplate="{StaticResource pagesTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Link" Width="450" CellTemplate="{StaticResource linkTmpl}"></GridViewColumn>
                 </GridView>
             </ListView.View>

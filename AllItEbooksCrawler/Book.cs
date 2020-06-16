@@ -14,7 +14,6 @@ namespace BookUtils
     public class Book : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
         public static string ROOT = null;
 
         protected virtual void OnPropertyChanged(string propertyName)
@@ -94,7 +93,10 @@ namespace BookUtils
 
         public string OldCategory;
         public string ISBN { get; set; }
-        public int Pages { get; set; }
+
+        private int _pages;
+        public int Pages { get => _pages; set { _pages = value; OnPropertyChanged("Pages"); } }
+
         public int Sync { get; set; }
 
         private bool _isChecked;
@@ -129,11 +131,8 @@ namespace BookUtils
         }
 
         public string ClearTitle => ClearString(Title);
-
         public string ClearFileName => $"[{Year}] {ClearTitle} - {ClearAuthors}.{Extension}";
-
         public string FirstCategory => Category == null ? "" : Category.Contains(";") ? Category.Split(';')[0] : Category;
-
         public string LocalPath => Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), ClearFileName);
 
         public bool IsDownloaded

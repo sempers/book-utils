@@ -33,12 +33,28 @@ namespace BookUtils
         MainWindowModel model = new MainWindowModel();
         public const string BOOKS_ROOT = @"D:\books\it";
         public const string GOOGLE_DRIVE_DB_PATH = @"D:\books\google_drive\itdb\books.db";
-        public const string DB_PATH = @"..\..\data\books.db";
+        public const string DB_PATH = @"books.db";
+        public const string SETTINGS_PATH = @"..\..\settings\";
+        
 
         public MainWindow()
         {
             InitializeComponent();
             Book.ROOT = BOOKS_ROOT;
+            model.SETTINGS_PATH = SETTINGS_PATH;
+
+            if (!File.Exists(GOOGLE_DRIVE_DB_PATH))
+            {
+                MessageBox.Show(@"Google drive db path (D:\books\google_drive\itdb\books.db does not exist!");
+                Utils.CreateDirectory(Path.GetDirectoryName(GOOGLE_DRIVE_DB_PATH));
+            }
+
+            if (!Directory.Exists(BOOKS_ROOT))
+            {
+                Utils.CreateDirectory(BOOKS_ROOT);
+            }
+
+
             if (!File.Exists(DB_PATH))
             {
                 RestoreDB(null, null);
@@ -599,13 +615,13 @@ namespace BookUtils
                         model.ListCategories();
                         Notify("Corrections made. Books reloaded."); break;
                     case "open_categories":
-                        Process.Start("../../settings/categories.txt"); break;
+                        Process.Start(SETTINGS_PATH + "categories.txt"); break;
                     case "open_corrections":
-                        Process.Start("../../settings/corrections.txt"); break;
+                        Process.Start(SETTINGS_PATH + "corrections.txt"); break;
                     case "open_hidden":
-                        Process.Start("../../settings/hidden.txt"); break;
+                        Process.Start(SETTINGS_PATH + "hidden.txt"); break;
                     case "open_suggestions":
-                        Process.Start("../../settings/suggestions.txt"); break;
+                        Process.Start(SETTINGS_PATH + "suggestions.txt"); break;
                 }
             }
         }
@@ -623,6 +639,17 @@ namespace BookUtils
         {
             model.Filter.OnlySync = chkOnlySync.IsChecked.Value;
             model.ApplyFilterAndLoad("");
+        }
+
+        private void chkAuthors_Click(object sender, RoutedEventArgs e)
+        {
+            model.AuthorMode = chkAuthors.IsChecked.Value;
+            model.ApplyFilterAndLoad("");
+        }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

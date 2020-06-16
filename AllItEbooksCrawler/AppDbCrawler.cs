@@ -14,11 +14,8 @@ namespace BookUtils
     public class AppDbCrawler : IDisposable
     {
         public static int PAGES_NUM = 50;
-
         public static int DELAY = 50;
-
         public event NotifyHandler Notify;
-
         private AppDbContext db;
 
         public string LastAction { get; set; }
