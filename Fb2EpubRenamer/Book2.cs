@@ -36,13 +36,8 @@ namespace BookUtils
         {
             get
             {
-<<<<<<< HEAD
-                var src = Title.Trim().Replace(":", "").Replace("\"", "'").Replace("|", "").Replace(@"\", "").Replace("/", "").Replace("*", "").Replace("«", "'").Replace("»", "'").Limit(100);
-                return src;
-=======
                 return Title.Trim().Replace(":", "").Replace("\"", "'").Replace("|", "").Replace(@"\", "").Replace("/", "").Replace("*", "").Replace("«", "'").Replace("»", "'").Limit(100);
->>>>>>> 58ba908911b7596f550e775f31aae75684a84e18
-            }
+			}
         }
 
         public string ProperFileName
