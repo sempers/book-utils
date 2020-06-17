@@ -155,6 +155,8 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="img\Robinweatherall-Library-Books.ico" />
+    <Content Include="lib\CommonUtils.dll" />
+    <Content Include="lib\HtmlAgilityPack.dll" />
     <Content Include="settings\hidden.txt" />
     <Content Include="settings\categories.txt" />
     <Content Include="settings\corrections.txt" />

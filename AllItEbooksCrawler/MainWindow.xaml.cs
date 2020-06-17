@@ -651,5 +651,31 @@ namespace BookUtils
         {
 
         }
+
+        private void ctxOpenBook(object sender, RoutedEventArgs e)
+        {
+            if (listView.SelectedItem != null && listView.SelectedItem is Book)
+            {
+                OpenBook(listView.SelectedItem as Book);
+            }
+        }
+
+        private void ctxOpenFolder(object sender, RoutedEventArgs e)
+        {
+            if (listView.SelectedItem != null && listView.SelectedItem is Book && ((Book)listView.SelectedItem).IsDownloaded)
+            {
+                Process.Start(Path.GetDirectoryName(((Book)listView.SelectedItem).LocalPath));
+            }
+        }
+
+        private void ListView_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+           /* if (e.ChangedButton == MouseButton.Right)
+            {
+                listView.ContextMenu.
+                listView.ContextMenu.IsOpen = true;
+               
+            }*/
+        }
     }
 }

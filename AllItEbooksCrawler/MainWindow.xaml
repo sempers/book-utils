@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:BookUtils"
         mc:Ignorable="d"
         Title="Allitebooks.org Library" Height="788" Width="1600" KeyUp="_Window_KeyUp" Closing="Window_Closing">
-    <Window.Resources>
+    <Window.Resources>        
+        <Style x:Key="MyItemContainerStyle" TargetType="{x:Type ListViewItem}">
+            <Setter Property="ContextMenu" Value="{StaticResource itemMenu}" />
+        </Style>
         <Style TargetType="ToolTip">
             <Style.Resources>
                 <Style TargetType="ContentPresenter">
@@ -38,10 +41,18 @@
                 <DataTrigger Binding="{Binding Rating}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="DarkRed"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                    <Setter Property="TextBlock.Foreground" Value="Gray"/>
+                </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="authorsTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Authors}" ></TextBlock>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                    <Setter Property="TextBlock.Foreground" Value="Gray"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="titleTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Title}" ToolTip="{Binding Summary}"></TextBlock>
@@ -53,13 +64,26 @@
                     <Setter Property="TextBlock.Foreground" Value="DarkGreen"/>
                     <Setter Property="TextBlock.FontWeight" Value="Bold"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                    <Setter Property="TextBlock.Foreground" Value="Gray"/>
+                </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="yearTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Year}" ></TextBlock>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                    <Setter Property="TextBlock.Foreground" Value="Gray"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="pagesTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Pages}" ></TextBlock>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                    <Setter Property="TextBlock.Foreground" Value="Gray"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="categoryTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Category}"></TextBlock>
@@ -79,10 +103,20 @@
                     <Setter Property="TextBlock.Foreground" Value="Black"></Setter>
                     <Setter Property="TextBlock.FontWeight" Value="Bold"></Setter>
                 </MultiDataTrigger>
+                
+                    <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                        <Setter Property="TextBlock.Foreground" Value="Gray"/>
+                    </DataTrigger>
+               
             </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="linkTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding DownloadUrl}"></TextBlock>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                    <Setter Property="TextBlock.Foreground" Value="Gray"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>        
     </Window.Resources>
     <Grid>
@@ -131,6 +165,12 @@
                     <GridViewColumn Header="Link" Width="450" CellTemplate="{StaticResource linkTmpl}"></GridViewColumn>
                 </GridView>
             </ListView.View>
+            <ListView.ContextMenu>
+                <ContextMenu Name="itemContextMenu">
+                    <MenuItem Header="Open file" Click="ctxOpenBook"></MenuItem>
+                    <MenuItem Header="Open containing folder" Click="ctxOpenFolder"></MenuItem>
+                </ContextMenu>
+            </ListView.ContextMenu>
         </ListView>
         <StatusBar Grid.Row="2" >
             <StatusBarItem>

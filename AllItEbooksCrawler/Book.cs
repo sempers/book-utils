@@ -27,6 +27,9 @@ namespace BookUtils
         public int Id { get; set; }
         public int PostId { get; set; }
 
+        private int? _newEditionPostId;
+        public int? NewEditionPostId { get => _newEditionPostId; set { _newEditionPostId = value; OnPropertyChanged("NewEditionPostId"); } }
+
         private string _title;
         public string Title { get => _title; set { _title = value; OnPropertyChanged("Title"); } }
 
