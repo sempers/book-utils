@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AllItEbooksCrawler;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,7 +15,6 @@ namespace BookUtils
     public class Book : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public static string ROOT = null;
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
@@ -36,7 +36,9 @@ namespace BookUtils
         private int _year;
         public int Year { get => _year; set { _year = value; OnPropertyChanged("Year"); } }
         public string Url { get; set; }
-        public string DownloadUrl { get; set; }
+
+        private string _downloadUrl;
+        public string DownloadUrl { get => _downloadUrl; set { _downloadUrl = value; OnPropertyChanged("DownloadUrl"); } }
         public string Authors { get; set; }
         public string Summary { get; set; }
 
@@ -61,9 +63,7 @@ namespace BookUtils
         public bool Suggested { get => _suggested; set { _suggested = value; OnPropertyChanged("Suggested"); } }
 
         public int _rating;
-        public int Rating { get => _rating; set { _rating = value; OnPropertyChanged("Rating"); } }
-
-        public static ObservableRangeCollection<string> Categories { get; set; } = new ObservableRangeCollection<string>();
+        public int Rating { get => _rating; set { _rating = value; OnPropertyChanged("Rating"); } }        
 
         public void SetCategory(string category, bool approve = false)
         {
@@ -84,15 +84,7 @@ namespace BookUtils
             {
                 AutoMove(oldPath);
             }
-        }
-
-        public static void AddCategory(string category)
-        {
-            Categories.Add(category);
-            var sorted = Categories.OrderBy(x => x).ToList();
-            Categories.Clear();
-            Categories.AddRange(sorted);
-        }
+        }        
 
         public string OldCategory;
         public string ISBN { get; set; }
@@ -136,8 +128,7 @@ namespace BookUtils
         public string ClearTitle => ClearString(Title);
         public string ClearFileName => $"[{Year}] {ClearTitle} - {ClearAuthors}.{Extension}";
         public string FirstCategory => Category == null ? "" : Category.Contains(";") ? Category.Split(';')[0] : Category;
-        public string LocalPath => Path.Combine(ROOT, FirstCategory.Replace("/", "\\"), ClearFileName);
-
+        public string LocalPath => Path.Combine(CommonData.BOOKS_ROOT, FirstCategory.Replace("/", "\\"), ClearFileName);
         public bool IsDownloaded
         {
             get

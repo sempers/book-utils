@@ -7,9 +7,6 @@
         mc:Ignorable="d"
         Title="Allitebooks.org Library" Height="788" Width="1600" KeyUp="_Window_KeyUp" Closing="Window_Closing">
     <Window.Resources>        
-        <Style x:Key="MyItemContainerStyle" TargetType="{x:Type ListViewItem}">
-            <Setter Property="ContextMenu" Value="{StaticResource itemMenu}" />
-        </Style>
         <Style TargetType="ToolTip">
             <Style.Resources>
                 <Style TargetType="ContentPresenter">
@@ -22,7 +19,7 @@
             </Style.Resources>
             <Setter Property="MaxWidth" Value="500" />
         </Style>
-        <local:Book x:Key="book"/>
+        <local:CommonData x:Key="commonData"/>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <local:RatingToEmojiConverter x:Key="RatingToEmojiConverter"/>
         <DataTemplate x:Key="postIdTmpl" DataType="{x:Type local:Book}">
@@ -137,7 +134,7 @@
             </StackPanel>
             <TextBox Name="txtTitle" VerticalContentAlignment="Center" Width="400" Margin="5" Text="{Binding SearchTitle}" TextChanged="_txtTitle_TextChanged"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="_btnAddCategory_Click"></Button>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" Width="250" Margin="8,5,5,5" SelectionChanged="_catListBox_SelectionChanged"></ComboBox>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource commonData}, Path=Categories}" Width="250" Margin="8,5,5,5" SelectionChanged="_catListBox_SelectionChanged"></ComboBox>
             <Button Content="Unselect" Margin="5" Padding="5" Click="_btnFilterMode_Click"></Button>
             <Button Name="btnUnfilter" Content="Unfilter" Margin="5" Padding="5" Click="_btnUnfilter_Click"></Button>
             <Button Content="+ Add book" Margin="5" Padding="5" Click="_btnAddBook_Click"></Button>
@@ -162,7 +159,7 @@
                     <GridViewColumn Header="Year" Width="60" CellTemplate="{StaticResource yearTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Category" Width="250" CellTemplate="{StaticResource categoryTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Pages" Width="45" CellTemplate="{StaticResource pagesTmpl}"></GridViewColumn>
-                    <GridViewColumn Header="Link" Width="450" CellTemplate="{StaticResource linkTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Download Url" Width="450" CellTemplate="{StaticResource linkTmpl}"></GridViewColumn>
                 </GridView>
             </ListView.View>
             <ListView.ContextMenu>

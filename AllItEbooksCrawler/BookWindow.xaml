@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Book details" Height="381.413" Width="536.907" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" >
     <Window.Resources>
-        <local:Book x:Key="book"/>
+        <local:CommonData x:Key="commonData"/>
     </Window.Resources>
     <StackPanel Margin="0,10,0,0" VerticalAlignment="Top">
         <StackPanel  Orientation="Horizontal" Height="40">
@@ -38,7 +38,7 @@
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
             <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Category</Label>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource book}, Path=Categories}" SelectedValue="{Binding Category}" Width="400" Margin="5,5,5,5"></ComboBox>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource commonData}, Path=Categories}" SelectedValue="{Binding Category}" Width="400" Margin="5,5,5,5"></ComboBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
             <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Download Url</Label>

@@ -19,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using AllItEbooksCrawler;
 using CommonUtils;
 using HtmlAgilityPack;
 
@@ -31,38 +32,34 @@ namespace BookUtils
     {
         AppDbCrawler db;
         MainWindowModel model = new MainWindowModel();
-        public const string BOOKS_ROOT = @"D:\books\it";
-        public const string GOOGLE_DRIVE_DB_PATH = @"D:\books\google_drive\itdb\books.db";
-        public const string DB_PATH = @"books.db";
-        public const string SETTINGS_PATH = @"..\..\settings\";
-        
+       
 
         public MainWindow()
         {
             InitializeComponent();
-            Book.ROOT = BOOKS_ROOT;
-            model.SETTINGS_PATH = SETTINGS_PATH;
+            //Book.ROOT = BOOKS_ROOT;
+            //model.SETTINGS_PATH = SETTINGS_PATH;
 
-            if (!File.Exists(GOOGLE_DRIVE_DB_PATH))
+            if (!File.Exists(CommonData.GOOGLE_DRIVE_DB_PATH))
             {
                 MessageBox.Show(@"Google drive db path (D:\books\google_drive\itdb\books.db does not exist!");
-                Utils.CreateDirectory(Path.GetDirectoryName(GOOGLE_DRIVE_DB_PATH));
+                Utils.CreateDirectory(Path.GetDirectoryName(CommonData.GOOGLE_DRIVE_DB_PATH));
             }
 
-            if (!Directory.Exists(BOOKS_ROOT))
+            if (!Directory.Exists(CommonData.BOOKS_ROOT))
             {
-                Utils.CreateDirectory(BOOKS_ROOT);
+                Utils.CreateDirectory(CommonData.BOOKS_ROOT);
             }
 
 
-            if (!File.Exists(DB_PATH))
+            if (!File.Exists(CommonData.DB_PATH))
             {
                 RestoreDB(null, null);
             }
-            else if (File.Exists(GOOGLE_DRIVE_DB_PATH))
+            else if (File.Exists(CommonData.GOOGLE_DRIVE_DB_PATH))
             {
-                var fi_backup = new FileInfo(GOOGLE_DRIVE_DB_PATH);
-                var fi_db_path = new FileInfo(DB_PATH);
+                var fi_backup = new FileInfo(CommonData.GOOGLE_DRIVE_DB_PATH);
+                var fi_db_path = new FileInfo(CommonData.DB_PATH);
                 if (fi_backup.LastWriteTime.Ticks > fi_db_path.LastWriteTime.Ticks)
                 {
                     RestoreDB(null, null);
@@ -97,8 +94,8 @@ namespace BookUtils
         private void LoadBooksFromDb()
         {
             var list = db.LoadBooksFromDb();
-            model.LoadHidden();
-            int count = list.RemoveAll(book => model.HiddenIncludes(book));
+            CommonData.LoadHidden();
+            int count = list.RemoveAll(book => CommonData.HiddenIncludes(book));
             int syncNotDownloaded = 0;
             int downloadedNotSynced = 0;
             int downloaded = 0;
@@ -125,7 +122,7 @@ namespace BookUtils
 
             model.GetSorting("PostId");
             model.ApplyFilterAndLoad("");
-            var lastUpdate = (new FileInfo(DB_PATH)).LastWriteTime.ToString("dd.MM.yyyy HH:mm:ss");
+            var lastUpdate = (new FileInfo(CommonData.DB_PATH)).LastWriteTime.ToString("dd.MM.yyyy HH:mm:ss");
             Notify($"Books loaded ok. DB last updated {lastUpdate}. Total {downloaded} books downloaded. {(syncNotDownloaded > 0 ? $"{syncNotDownloaded} books to synchronize." : "")}");
         }
 
@@ -207,8 +204,8 @@ namespace BookUtils
 
         private async void _btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            model.LoadCorrections();
-            int booksAdded = await db.UpdateDbFromWeb(model.TxtCorrections);
+            CommonData.LoadCorrections();
+            int booksAdded = await db.UpdateDbFromWeb();
             LoadBooksFromDb();
             Notify($"Books updated from the web, added {booksAdded} new books.");
         }
@@ -218,6 +215,7 @@ namespace BookUtils
             var book = ((FrameworkElement)e.OriginalSource).DataContext as Book;
             if (book != null)
             {
+                CommonData.LoadCorrections();
                 var bookWindow = new BookWindow(book, db, "EDIT");
                 bookWindow.Owner = this;
                 var result = bookWindow.ShowDialog();
@@ -298,6 +296,7 @@ namespace BookUtils
         {
             if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back && e.Key != Key.F1 && e.Key != Key.F2)
                 return;
+
             if (e.Key == Key.Space)                     //Make Checked and Synchronized
             {
                 foreach (Book book in listView.SelectedItems)
@@ -458,9 +457,9 @@ namespace BookUtils
         /// </summary>
         private void AddCategory(string newCategory)
         {
-            if (!string.IsNullOrEmpty(newCategory) && !Book.Categories.Contains(newCategory))
+            if (!string.IsNullOrEmpty(newCategory) && !CommonData.Categories.Contains(newCategory))
             {
-                Book.AddCategory(newCategory);
+                CommonData.AddCategory(newCategory);
                 var book = listView.SelectedItem as Book;
                 book?.SetCategory(newCategory, approve: true); //setter logic
             }
@@ -530,7 +529,7 @@ namespace BookUtils
         private void BackupDB(object sender, RoutedEventArgs e)
         {
             db.Save();
-            Utils.FileCopy(DB_PATH, GOOGLE_DRIVE_DB_PATH);
+            Utils.FileCopy(CommonData.DB_PATH, CommonData.GOOGLE_DRIVE_DB_PATH);
             Notify("DB backed up");
         }
 
@@ -553,9 +552,9 @@ namespace BookUtils
             Notify("DB restoring...");
             ClearList();
             db?.ClearFile();
-            if (File.Exists(GOOGLE_DRIVE_DB_PATH))
+            if (File.Exists(CommonData.GOOGLE_DRIVE_DB_PATH))
             {
-                Utils.FileCopy(GOOGLE_DRIVE_DB_PATH, DB_PATH);
+                Utils.FileCopy(CommonData.GOOGLE_DRIVE_DB_PATH, CommonData.DB_PATH);
                 InitList();
             }
         }
@@ -608,20 +607,20 @@ namespace BookUtils
                     case "catreport":
                         model.CatReport(); break;
                     case "correct":
-                        model.LoadCorrections();
-                        db.Correct(model.TxtCorrections);
-                        model.DeleteEmptyFolders(BOOKS_ROOT);
+                        CommonData.LoadCorrections();
+                        db.Correct();
+                        model.DeleteEmptyFolders(CommonData.BOOKS_ROOT);
                         LoadBooksFromDb();
                         model.ListCategories();
                         Notify("Corrections made. Books reloaded."); break;
                     case "open_categories":
-                        Process.Start(SETTINGS_PATH + "categories.txt"); break;
+                        Process.Start(CommonData.SETTINGS_PATH + "categories.txt"); break;
                     case "open_corrections":
-                        Process.Start(SETTINGS_PATH + "corrections.txt"); break;
+                        Process.Start(CommonData.SETTINGS_PATH + "corrections.txt"); break;
                     case "open_hidden":
-                        Process.Start(SETTINGS_PATH + "hidden.txt"); break;
+                        Process.Start(CommonData.SETTINGS_PATH + "hidden.txt"); break;
                     case "open_suggestions":
-                        Process.Start(SETTINGS_PATH + "suggestions.txt"); break;
+                        Process.Start(CommonData.SETTINGS_PATH + "suggestions.txt"); break;
                 }
             }
         }
@@ -670,12 +669,7 @@ namespace BookUtils
 
         private void ListView_MouseUp(object sender, MouseButtonEventArgs e)
         {
-           /* if (e.ChangedButton == MouseButton.Right)
-            {
-                listView.ContextMenu.
-                listView.ContextMenu.IsOpen = true;
-               
-            }*/
+
         }
     }
 }
