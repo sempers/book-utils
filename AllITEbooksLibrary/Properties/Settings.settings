@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AllItEbooksCrawler.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="UseGoogleDrive" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="GoogleDriveBooksPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\books\google_drive\itdb\books.db</Value>
+    </Setting>
+    <Setting Name="BooksRoot" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\books\it</Value>
+    </Setting>
+    <Setting Name="DbPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">books.db</Value>
+    </Setting>
+    <Setting Name="SettingsPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">..\..\settings\</Value>
+    </Setting>
+    <Setting Name="ExtraBooksPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\books\google_drive\itdb\extra_books\</Value>
+    </Setting>
+    <Setting Name="WebUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://www.allitebooks.in</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

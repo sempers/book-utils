@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllItEbooksCrawler", "AllItEbooksCrawler\AllItEbooksCrawler.csproj", "{358A4D09-9EB6-4512-89BE-7EBB993C6DDA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllITEbooksLib", "AllITEbooksLibrary\AllITEbooksLib.csproj", "{358A4D09-9EB6-4512-89BE-7EBB993C6DDA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EpubSharp", "EpubSharp\EpubSharp.csproj", "{ADA80862-6D52-4A2A-B45D-27FED08FAFDE}"
 EndProject
