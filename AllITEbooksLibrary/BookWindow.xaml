@@ -48,7 +48,7 @@
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
             <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Category</Label>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource commonData}, Path=Categories}" SelectedValue="{Binding Category}" Width="400" Margin="5,5,5,5" SelectionChanged="catListBox_SelectionChanged_1"></ComboBox>
+            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource commonData}, Path=Categories}" SelectedValue="{Binding Category}" Width="400" Margin="5,5,5,5"></ComboBox>
         </StackPanel>
         <StackPanel  Orientation="Horizontal" Height="40">
             <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Url</Label>

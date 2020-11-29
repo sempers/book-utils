@@ -25,7 +25,6 @@ namespace BookUtils
         AppDb db;
         Book model;
         BookActions action;
-        string oldCategory;
 
         public BookWindow(Book model, MainWindow main, BookActions action = BookActions.Add)
         {
@@ -35,7 +34,6 @@ namespace BookUtils
             DataContext = this.model;
             db = main.Model.Db;
             this.action = action;
-            oldCategory = model.Category;
             if (this.action == BookActions.Add)
             {
                 btnRemove.Visibility = Visibility.Hidden;
@@ -95,10 +93,6 @@ namespace BookUtils
             Process.Start(model.Url);
         }
 
-        private void catListBox_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
-        {
-            
-        }
 
         private void btnRead_Click(object sender, RoutedEventArgs e)
         {

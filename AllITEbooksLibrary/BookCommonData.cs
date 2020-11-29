@@ -18,7 +18,7 @@ namespace BookUtils
         public static string GOOGLE_DRIVE_DB_PATH = Settings.Default.GoogleDriveBooksPath;
         public static string DB_PATH = Settings.Default.DbPath;
         public static string SETTINGS_PATH = Settings.Default.SettingsPath;
-        public static string SOURCE = "ORG"; //"IN"  
+        public static string SOURCE = "ORG"; //"IN"
 
 
         public static ObservableRangeCollection<string> Categories { get; set; } = new ObservableRangeCollection<string>();
