@@ -693,7 +693,7 @@ namespace BookUtils
                             var dlButton = page.DocumentNode.SelectSingleNode("//a[@id='dlbutton']");
                             var endHref = dlButton.Attributes["href"].Value;
                             var href = "https://" + new Uri(book.DownloadUrl).Host + endHref;
-                            var rarFileName = Settings.Default.BooksRoot + "\\RAR\\" + href.Substring(href.LastIndexOf("/") + 1);
+                            var rarFileName = Settings.Default.BooksRoot + "\\[rar]\\" + href.Substring(href.LastIndexOf("/") + 1);
                             using (var wc = new WebClient())
                             {
                                 OnNotify($"Downloading book {count}/{total}: {book.Title}, downloading the link...");
@@ -703,6 +703,12 @@ namespace BookUtils
                             var finalPath = BookCommonData.UnrarFile(rarFileName);
                             book.Extension = Path.GetExtension(finalPath).Replace(".", "");
                             File.Move(finalPath, book.LocalPath);
+                            try
+                            {
+                                CommonUtils.Utils.CleanFolder(Settings.Default.BooksRoot + "\\[rar]");
+                            }
+                            catch { }
+
                         }
                         else if (!book.IsDownloaded)
                         {

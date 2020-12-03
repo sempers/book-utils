@@ -70,6 +70,8 @@ namespace BookUtils
 
         private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
+            if (model.PostId < 0)
+                return;
             if (model.Source == "IN")
                 model = await db.UpdateBookFromWeb_IN(model);
             else
@@ -80,17 +82,19 @@ namespace BookUtils
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
-            {Filter="PDF, EPUB|*.pdf;*.epub",
-            Multiselect=false,
-            InitialDirectory=System.IO.Path.GetDirectoryName(model.DownloadUrl)
+            {
+                Filter = "PDF, EPUB|*.pdf;*.epub",
+                Multiselect = false,
+                InitialDirectory = System.IO.Path.GetDirectoryName(model.DownloadUrl)
             };
             if (openFileDialog.ShowDialog() == true)
-            model.DownloadUrl = openFileDialog.FileName;
+                model.DownloadUrl = openFileDialog.FileName;
         }
 
         private void btnGoto_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(model.Url);
+            if (model.Url.StartsWith("http"))
+                Process.Start(model.Url);
         }
 
 
