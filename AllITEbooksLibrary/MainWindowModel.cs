@@ -429,9 +429,7 @@ namespace BookUtils
             }
             Save();
             OnNotify($"{c} books were corrected by Year field");
-        }
-
-        
+        }        
 
         public void ResetEdition()
         {
@@ -631,9 +629,9 @@ namespace BookUtils
         /// <returns></returns>
         public async Task DownloadBooksAsync(System.Collections.IList books, Book paramBook = null)
         {
-            var booksToDownload = new List<Book>();
             if (books == null)
                 return;
+            var booksToDownload = new List<Book>();
             bool inSelection = books.Count > 0;
             if (paramBook != null)
             {
@@ -704,7 +702,7 @@ namespace BookUtils
                             OnNotify($"Downloading book {count}/{total}: {book.Title}, unraring...");
                             var finalPath = BookCommonData.UnrarFile(rarFileName);
                             book.Extension = Path.GetExtension(finalPath).Replace(".", "");
-                            File.Move(finalPath, book.LocalPath);
+                            Utils.FileMove(finalPath, book.LocalPath);
                             try
                             {
                                 Utils.CleanFolder(Settings.Default.BooksRoot + "\\[rar]");
