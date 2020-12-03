@@ -530,10 +530,7 @@ namespace BookUtils
                         paths.AddRange(DirSearch(d));
                     }
                 }
-                catch (Exception e)
-                {
-
-                }
+                catch {  }
                 return paths;
             }
 
@@ -603,14 +600,13 @@ namespace BookUtils
             };
         }
 
-
         public void UnsyncBook(Book book)
         {
             book.Sync = 0;
             Save();
             if (book.IsDownloaded)
             {
-                CommonUtils.Utils.DeleteFile(book.LocalPath);
+                Utils.DeleteFile(book.LocalPath);
             }
             OnNotify($"Unsynced ok. Total {Books.Count(b => b.IsDownloaded)} books downloaded.");
         }
