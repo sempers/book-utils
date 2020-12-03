@@ -40,7 +40,7 @@
                 <DataTrigger Binding="{Binding Rating}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="DarkRed"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                <DataTrigger Binding="{Binding Obsolete}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="Gray"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -48,7 +48,7 @@
         <DataTemplate x:Key="authorsTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Authors}" ></TextBlock>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                <DataTrigger Binding="{Binding Obsolete}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="Gray"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -63,7 +63,7 @@
                     <Setter Property="TextBlock.Foreground" Value="DarkGreen"/>
                     <Setter Property="TextBlock.FontWeight" Value="Bold"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                <DataTrigger Binding="{Binding Obsolete}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="Gray"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -71,7 +71,7 @@
         <DataTemplate x:Key="yearTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Year}" ></TextBlock>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                <DataTrigger Binding="{Binding Obsolete}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="Gray"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -79,7 +79,7 @@
         <DataTemplate x:Key="pagesTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Pages}" ></TextBlock>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                <DataTrigger Binding="{Binding Obsolete}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="Gray"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -138,7 +138,7 @@
                     <Setter Property="TextBlock.FontWeight" Value="Bold"></Setter>
                 </MultiDataTrigger>
                 
-                    <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                    <DataTrigger Binding="{Binding Obsolete}" Value="1">
                         <Setter Property="TextBlock.Foreground" Value="Gray"/>
                     </DataTrigger>
                
@@ -147,7 +147,7 @@
         <DataTemplate x:Key="linkTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding DownloadUrl}"></TextBlock>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding NewEditionPostId}" Value="1">
+                <DataTrigger Binding="{Binding Obsolete}" Value="1">
                     <Setter Property="TextBlock.Foreground" Value="Gray"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -169,7 +169,7 @@
                 <CheckBox Name="chkOnlySync" Content="Sync" Margin="5" VerticalAlignment="Center" Click="CheckBox_Click" ToolTip="Filter syncd books only"></CheckBox>
                 <CheckBox Name="chkAuthors" Content="Authors" Margin="5" VerticalAlignment="Center" Click="chkAuthors_Click" ToolTip="Filter by Authors"></CheckBox>
             </StackPanel>
-            <TextBox Name="txtTitle" VerticalContentAlignment="Center" Width="400" Margin="5" Text="{Binding SearchTitle}" TextChanged="_txtTitle_TextChanged"/>
+            <TextBox Name="txtTitle" VerticalContentAlignment="Center" Width="400" Margin="5" TextChanged="_txtTitle_TextChanged"/>
             <Button Content="+ cat" Margin="5" Padding="5" Click="_btnAddCategory_Click"></Button>
             <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource commonData}, Path=Categories}" Width="250" Margin="8,5,5,5" SelectionChanged="_catListBox_SelectionChanged"></ComboBox>
             <Button Content="Unselect" Margin="5" Padding="5" Click="_btnFilterMode_Click"></Button>
@@ -177,8 +177,10 @@
             <Button Content="+ Add book" Margin="5" Padding="5" Click="_btnAddBook_Click"></Button>
             <Button Content="Cmd:" Margin="5" Padding="5" Click="_cmdBtn_Click"></Button>
             <TextBox Name="_cmdText" Width="100" Margin="5" Padding="5"></TextBox>
-            <RadioButton Content=".ORG" Name="rbOrg" HorizontalAlignment="Left" Margin="5,7,5,7" VerticalAlignment="Center" IsChecked="{Binding IsORG}"/>
-            <RadioButton Content=".IN" HorizontalAlignment="Left" Margin="5,7,5,7" VerticalAlignment="Center" IsChecked="{Binding IsIN}"/>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="110,7,7,7" Background="#DDDDDD">
+                <RadioButton Content=".ORG" Name="rbOrg" HorizontalAlignment="Left" Margin="5,7,5,7" VerticalAlignment="Center" IsChecked="{Binding IsORG}"/>
+                <RadioButton Content=".IN" HorizontalAlignment="Left" Margin="5,7,5,7" VerticalAlignment="Center" IsChecked="{Binding IsIN}"/>
+            </StackPanel>
         </StackPanel>
         <ListView Name="listView" Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" ItemsSource="{Binding Path=ShownBooks, Mode=OneWay}" MouseDoubleClick="_ListView_MouseDoubleClick" SelectionChanged="_ListView_SelectionChanged" Grid.ColumnSpan="2" GridViewColumnHeader.Click="_ListView_Click_1">
             <ListView.Resources>

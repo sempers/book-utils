@@ -60,7 +60,7 @@ namespace BookUtils
 
         private void _btnRemove_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Do you really want to delete the book?", "Delete book", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show($"Do you really want to delete the book `{model.Title}`?", "Delete book", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 db.RemoveBook(model);
                 DialogResult = true; //special

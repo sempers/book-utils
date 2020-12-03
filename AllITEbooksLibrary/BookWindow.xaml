@@ -5,75 +5,80 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookUtils"
         mc:Ignorable="d"
-        Title="Book details" Height="502" Width="540" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" Icon="img/Robinweatherall-Library-Books.ico" >
+        Title="Book details" Height="502" Width="828" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" Icon="img/Robinweatherall-Library-Books.ico" >
     <Window.Resources>
         <local:BookCommonData x:Key="commonData"/>
     </Window.Resources>
-    <StackPanel Margin="0,10,0,0" VerticalAlignment="Top" >
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">PostId</Label>
-            <TextBox Text="{Binding PostId}" IsEnabled="False" Width="60" Margin="5" VerticalContentAlignment="Center"></TextBox>
-            <Label Width="50" HorizontalAlignment="Center" Margin="5,7,5,7" VerticalAlignment="Center" Content="New ed"/>
-            <TextBox Width="58" Margin="5" VerticalContentAlignment="Center" Text="{Binding NewEditionPostId}"></TextBox>
-            <Label Width="46" HorizontalAlignment="Right" Margin="5,7,5,7" VerticalAlignment="Center" Content="Source"/>
-            <TextBox Width="34" Margin="5" VerticalContentAlignment="Center" Text="{Binding Source}"></TextBox>
-            <Label Width="46" HorizontalAlignment="Right" Margin="5,7,5,7" VerticalAlignment="Center" RenderTransformOrigin="1.2,0.5">Rating</Label>
-            <TextBox Text="{Binding Rating}" Width="45" Margin="5" VerticalContentAlignment="Center"/>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Authors</Label>
-            <TextBox Text="{Binding Authors}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" >Title</Label>
-            <TextBox Text="{Binding Title}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Year</Label>
-            <TextBox Text="{Binding Year}" Width="65" Margin="5" VerticalContentAlignment="Center"></TextBox>
-            <Label Width="25" HorizontalAlignment="Center" Margin="5,7" VerticalAlignment="Center">Ext</Label>
-            <TextBox Text="{Binding Extension}" Width="65" Margin="5" VerticalContentAlignment="Center"></TextBox>
-            <Label Width="42" HorizontalAlignment="Center" Margin="100,7,5,7" VerticalAlignment="Center" Content="Pages"/>
-            <TextBox Text="{Binding Pages}" Width="68" Margin="5" VerticalContentAlignment="Center"></TextBox>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Summary</Label>
-            <TextBox Text="{Binding Summary}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">ISBN</Label>
-            <TextBox Text="{Binding ISBN}" Width="246" Margin="5" VerticalContentAlignment="Center"></TextBox>
-            <Label Width="76" HorizontalAlignment="Center" Margin="5,7" VerticalAlignment="Center">Publisher</Label>
-            <TextBox Text="{Binding Publisher}" Width="58" Margin="5" VerticalContentAlignment="Center"></TextBox>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Category</Label>
-            <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource commonData}, Path=Categories}" SelectedValue="{Binding Category}" Width="400" Margin="5,5,5,5"></ComboBox>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Url</Label>
-            <TextBox Text="{Binding Url}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Download Url</Label>
-            <TextBox Text="{Binding DownloadUrl}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
-        </StackPanel>
-        <StackPanel  Orientation="Horizontal" Height="40">
-            <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Local path</Label>
-            <TextBox Text="{Binding Mode=OneWay, Path=LocalPath }" IsEnabled="False" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" >
-            <StackPanel Orientation="Horizontal" Height="45" Margin="5" Width="153">
-                <Button Content="OK" Margin="5" Padding="5" Width="60" Click="_btnOK_Click"/>
-                <Button Content="Cancel" Margin="5" Padding="5" Width="60" Click="_btnCancel_Click"/>
+    <StackPanel Orientation="Horizontal">
+        <StackPanel Margin="0,10,283,0" Width="530" VerticalAlignment="Top" >
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">PostId</Label>
+                <TextBox Text="{Binding PostId}" IsEnabled="False" Width="52" Margin="5" VerticalContentAlignment="Center"></TextBox>
+                <Label Width="25" HorizontalAlignment="Center" Margin="5,7,5,7" VerticalAlignment="Center" Content="Ed"/>
+                <TextBox Width="25" Margin="5" VerticalContentAlignment="Center" Text="{Binding Edition}"></TextBox>
+                <Label Width="25" HorizontalAlignment="Center" Margin="5,7,5,7" VerticalAlignment="Center" Content="Obs"/>
+                <TextBox Width="25" Margin="5" VerticalContentAlignment="Center" Text="{Binding Obsolete}"></TextBox>
+                <Label Width="45" HorizontalAlignment="Right" Margin="5,7,5,7" VerticalAlignment="Center" Content="Source"/>
+                <TextBox Width="35" Margin="5" VerticalContentAlignment="Center" Text="{Binding Source}"></TextBox>
+                <Label Width="51" HorizontalAlignment="Right" Margin="5,7,5,7" VerticalAlignment="Center" RenderTransformOrigin="1.2,0.5">Rating</Label>
+                <TextBox Text="{Binding Rating}" Width="37" Margin="5" VerticalContentAlignment="Center"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Height="45" Margin="5"  HorizontalAlignment="Right" Width="345">
-                <Button x:Name="btnRead" Content="Read" Margin="5" Padding="5" Width="43" Click="btnRead_Click" IsEnabled="{Binding IsDownloaded}"/>
-                <Button x:Name="btnGoto" Content="Go To" Margin="5" Padding="5" Width="45" Click="btnGoto_Click" />
-                <Button x:Name="btnUpdate" Content="Update" Margin="5" Padding="5" Width="70" Click="BtnUpdate_Click"/>
-                <Button x:Name="btnRemove" Content="[x] Remove" Foreground="Red" Margin="5" Padding="5" Width="70" Click="_btnRemove_Click"/>
-                <Button x:Name="btnBrowse" Content="Browse..." Margin="5" Padding="5" Width="70" Click="btnBrowse_Click"/>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Authors</Label>
+                <TextBox Text="{Binding Authors}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" >Title</Label>
+                <TextBox Text="{Binding Title}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Year</Label>
+                <TextBox Text="{Binding Year}" Width="65" Margin="5" VerticalContentAlignment="Center"></TextBox>
+                <Label Width="25" HorizontalAlignment="Center" Margin="5,7" VerticalAlignment="Center">Ext</Label>
+                <TextBox Text="{Binding Extension}" Width="65" Margin="5" VerticalContentAlignment="Center"></TextBox>
+                <Label Width="42" HorizontalAlignment="Center" Margin="100,7,5,7" VerticalAlignment="Center" Content="Pages"/>
+                <TextBox Text="{Binding Pages}" Width="68" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Summary</Label>
+                <TextBox Text="{Binding Summary}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">ISBN</Label>
+                <TextBox Text="{Binding ISBN}" Width="246" Margin="5" VerticalContentAlignment="Center"></TextBox>
+                <Label Width="76" HorizontalAlignment="Center" Margin="5,7" VerticalAlignment="Center">Publisher</Label>
+                <TextBox Text="{Binding Publisher}" Width="58" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Category</Label>
+                <ComboBox IsEditable="True" VerticalContentAlignment="Center" Name="catListBox" AllowDrop="True" ItemsSource="{Binding Source={StaticResource commonData}, Path=Categories}" SelectedValue="{Binding Category}" Width="400" Margin="5,5,5,5"></ComboBox>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Url</Label>
+                <TextBox Text="{Binding Url}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Download Url</Label>
+                <TextBox Text="{Binding DownloadUrl}" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" Height="40">
+                <Label Width="100" HorizontalAlignment="Center" Margin="5" VerticalAlignment="Center">Local path</Label>
+                <TextBox Text="{Binding Mode=OneWay, Path=LocalPath }" IsEnabled="False" Width="400" Margin="5" VerticalContentAlignment="Center"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" >
+                <StackPanel Orientation="Horizontal" Height="45" Margin="5" Width="153">
+                    <Button Content="OK" Margin="5" Padding="5" Width="60" Click="_btnOK_Click"/>
+                    <Button Content="Cancel" Margin="5" Padding="5" Width="60" Click="_btnCancel_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Height="45" Margin="5"  HorizontalAlignment="Right" Width="345">
+                    <Button x:Name="btnRead" Content="Read" Margin="5" Padding="5" Width="43" Click="btnRead_Click" IsEnabled="{Binding IsDownloaded}"/>
+                    <Button x:Name="btnGoto" Content="Go To" Margin="5" Padding="5" Width="45" Click="btnGoto_Click" />
+                    <Button x:Name="btnUpdate" Content="Update" Margin="5" Padding="5" Width="70" Click="BtnUpdate_Click"/>
+                    <Button x:Name="btnRemove" Content="[x] Remove" Foreground="Red" Margin="5" Padding="5" Width="70" Click="_btnRemove_Click"/>
+                    <Button x:Name="btnBrowse" Content="Browse..." Margin="5" Padding="5" Width="70" Click="btnBrowse_Click"/>
+                </StackPanel>
             </StackPanel>
         </StackPanel>
+        <Image x:Name="bookCover" Source="{Binding Cover}"  Width="278" Margin="-300,10,0,70"/>
     </StackPanel>
 </Window>

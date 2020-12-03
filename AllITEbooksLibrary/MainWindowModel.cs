@@ -36,14 +36,14 @@ namespace BookUtils
         public event PropertyChangedEventHandler PropertyChanged;
 
         public const string NO_CATEGORY = "(no category)";
-        
+
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private string _bookCount;
-        public string BookCount {  get { return _bookCount; } set { _bookCount = value; OnPropertyChanged("BookCount"); } }
+        public string BookCount { get { return _bookCount; } set { _bookCount = value; OnPropertyChanged("BookCount"); } }
 
         private string _message;
         public string Message { get { return _message; } set { _message = value; OnPropertyChanged("Message"); } }
@@ -52,7 +52,7 @@ namespace BookUtils
         public bool FilterMode { get { return _filterMode; } set { _filterMode = value; OnPropertyChanged("FilterMode"); } }
 
         private bool _isORG;
-        public bool IsOrg { get => _isORG; set { _isORG = value; _isIN = !value; BookCommonData.SOURCE = _isORG ? "ORG" : "IN"; OnPropertyChanged("IsORG"); OnPropertyChanged("IsIN"); } }
+        public bool IsORG { get => _isORG; set { _isORG = value; _isIN = !value; BookCommonData.SOURCE = _isORG ? "ORG" : "IN"; OnPropertyChanged("IsORG"); OnPropertyChanged("IsIN"); } }
 
         private bool _isIN;
         public bool IsIN { get => _isIN; set { _isORG = !value; _isIN = value; BookCommonData.SOURCE = _isORG ? "ORG" : "IN"; OnPropertyChanged("IsORG"); OnPropertyChanged("IsIN"); } }
@@ -76,14 +76,14 @@ namespace BookUtils
             ShownBooks = new ObservableRangeCollection<Book>();
             Books = new List<Book>();
             FilterMode = true;
-            
+
         }
 
         public void Init(NotifyHandler notifyHandler)
         {
-            db = new AppDb(notifyHandler);            
+            db = new AppDb(notifyHandler);
             OnNotify += notifyHandler;
-            IsOrg = true;
+            IsORG = true;
         }
 
         public async Task<int> UpdateDbFromWeb()
@@ -115,7 +115,7 @@ namespace BookUtils
             }
         }
 
-        public void LoadList(List<Book> list, bool noSavingBack=false)
+        public void LoadList(List<Book> list, bool noSavingBack = false)
         {
             if (list == null)
                 return;
@@ -131,11 +131,11 @@ namespace BookUtils
         {
             if (SortOrders.ContainsKey(column))
             {
-                SortOrders[column] *= -1;                
+                SortOrders[column] *= -1;
             }
             else
             {
-                SortOrders[column] = 1;               
+                SortOrders[column] = 1;
             }
             return SortOrders[column];
         }
@@ -177,13 +177,15 @@ namespace BookUtils
                 {
                     list = list.FindAll(book => book.Sync == 1);
                 }
-            } else
+            }
+            else
             {
-                UnfilterFlag = false; 
+                UnfilterFlag = false;
             }
             //sort
             IEnumerable<Book> sortedList = null;
-            switch (whatChanged) {
+            switch (whatChanged)
+            {
                 case "category":
                     sortedList = list.OrderBy(book => book.Category).ThenByDescending(book => book.PostId); break;
                 case "title":
@@ -198,7 +200,7 @@ namespace BookUtils
         public void CatReport()
         {
             ListCategories();
-            var list = CategoriesStats.OrderBy(kv => kv.Key).Select(kv => kv.Key.PadKey()+$"{kv.Value}".PadLeft(4,'.')).ToArray();
+            var list = CategoriesStats.OrderBy(kv => kv.Key).Select(kv => kv.Key.PadKey() + $"{kv.Value}".PadLeft(4, '.')).ToArray();
             File.WriteAllLines(Path.Combine(BookCommonData.SETTINGS_PATH, "catAZ.txt"), list);
             list = CategoriesStats.OrderByDescending(kv => kv.Value).Select(kv => kv.Key.PadKey() + $"{kv.Value}".PadLeft(4, '.')).ToArray();
             File.WriteAllLines(Path.Combine(BookCommonData.SETTINGS_PATH, "catMaxMin.txt"), list);
@@ -209,11 +211,12 @@ namespace BookUtils
             var set = new SortedDictionary<string, int>();
             foreach (var book in Books)
             {
-                if (!set.ContainsKey(book.FirstCategory)) {
+                if (!set.ContainsKey(book.FirstCategory))
+                {
                     var count = Books.Count(b => b.FirstCategory.FindCategory(book.FirstCategory));
                     set.Add(book.FirstCategory, count);
                 }
-            }        
+            }
             foreach (var addition in File.ReadAllLines(Path.Combine(Path.Combine(BookCommonData.SETTINGS_PATH, "categories.txt"))))
             {
                 if (!string.IsNullOrEmpty(addition) && !set.ContainsKey(addition))
@@ -230,23 +233,23 @@ namespace BookUtils
         public void SortList(string column, IEnumerable<Book> list = null)
         {
             list = list ?? ShownBooks;
-            
+
             switch (column)
             {
                 case "PostId":
-                list = GetOrder("PostId") < 0 ? list.OrderByDescending(b => b.PostId) : list.OrderBy(b => b.PostId);
+                    list = GetOrder("PostId") < 0 ? list.OrderByDescending(b => b.PostId) : list.OrderBy(b => b.PostId);
                     break;
                 case "Authors":
                     list = GetOrder("Authors") < 0 ? list.OrderByDescending(b => b.Authors) : list.OrderBy(b => b.Authors);
                     break;
                 case "Title":
-                list = GetOrder("Title") < 0 ? list.OrderByDescending(b => b.Title) : list.OrderBy(b => b.Title);
+                    list = GetOrder("Title") < 0 ? list.OrderByDescending(b => b.Title) : list.OrderBy(b => b.Title);
                     break;
                 case "Year":
-                list = GetOrder("Year") < 0 ? list.OrderByDescending(b => b.Year*1000000 + b.PostId) : list.OrderBy(b => b.Year*1000000 + b.PostId);
+                    list = GetOrder("Year") < 0 ? list.OrderByDescending(b => b.Year * 1000000 + b.PostId) : list.OrderBy(b => b.Year * 1000000 + b.PostId);
                     break;
                 case "Category":
-                list = GetOrder("Category") < 0 ? list.OrderByDescending(b => b.Category) : list.OrderBy(b => b.Category);
+                    list = GetOrder("Category") < 0 ? list.OrderByDescending(b => b.Category) : list.OrderBy(b => b.Category);
                     break;
                 case "Pages":
                     list = GetOrder("Pages") < 0 ? list.OrderByDescending(b => b.Pages) : list.OrderBy(b => b.Pages);
@@ -349,7 +352,6 @@ namespace BookUtils
             int downloaded = 0;
             list.ForEach(book =>
             {
-                //book.InferPublisher();
                 if (book.IsDownloaded)
                 {
                     book.IsChecked = true;
@@ -427,6 +429,76 @@ namespace BookUtils
             }
             Save();
             OnNotify($"{c} books were corrected by Year field");
+        }
+
+        
+
+        public void ResetEdition()
+        {
+            foreach (var book in Books)
+            {
+                book.Edition = 1;
+                book.Obsolete = 0;
+                for (var i = 0; i < BookCommonData.EDITION_TEXTS.Length/2; i++)
+                {
+                    if (book.Title.Contains(BookCommonData.EDITION_TEXTS[i, 0]) || book.Title.Contains(BookCommonData.EDITION_TEXTS[i, 1]))
+                    {
+                        book.Edition = i + 2;
+                        break;
+                    }
+                }
+            }
+            Save();
+        }
+
+        public void MakeObsolete()
+        {
+            int counter = 0;
+            foreach (var book in Books.Where(b=> b.Edition > 1))
+            {
+                try
+                {
+                    string titleWOEd = book.Title.Replace(BookCommonData.EDITION_TEXTS[book.Edition - 2, 0], "").Replace(BookCommonData.EDITION_TEXTS[book.Edition - 2, 1], "");
+                    foreach (var book_old in Books.Where(b => b.Title.StartsWith(titleWOEd) && b.Edition < book.Edition))
+                    {
+                        book_old.Obsolete = 1;
+                        counter++;
+                    }
+                }
+                catch { }
+            }
+            Save();
+            OnNotify($"{counter} books were made obsolete");
+        }
+
+        public async Task CheckEdition(int ed)
+        {
+            string[] SECOND_ED = new string[] { ", 2nd Edition", ", Second Edition" };
+            string[] THIRD_ED = new string[] { ", 3rd Edition", ", Third Edition" };
+            int counter = 0;
+            if (ed == 3)
+            {
+                foreach (var book in Books.Where(b => b.Title.ContainsAny(THIRD_ED)))
+                {
+                    foreach (var book_old in Books.Where(b => b.Authors == book.Authors && b.PostId != book.PostId &&
+                    (b.Title == book.Title.ReplaceAny(THIRD_ED, SECOND_ED[0]) || b.Title == book.Title.ReplaceAny(THIRD_ED, SECOND_ED[1]) || b.Title == book.Title.ReplaceAny(THIRD_ED, ""))))
+                    {
+                        book_old.Obsolete = 1; counter++;
+                    }
+                }
+            }
+            else if (ed == 2)
+            {
+                foreach (var book in Books.Where(b => b.Title.ContainsAny(SECOND_ED)))
+                {
+                    foreach (var book_old in Books.Where(b => b.Authors == book.Authors && b.PostId != book.PostId && (b.Title == book.Title.ReplaceAny(SECOND_ED, ""))))
+                    {
+                        book_old.Obsolete = 1; counter++;
+                    }
+                }
+            }
+            OnNotify($"{counter} books were adjusted.");
+            Save();
         }
 
         public async Task Modify_IN_ID()
@@ -530,7 +602,7 @@ namespace BookUtils
                 Title = "",
                 Category = Filter.Category,
                 DownloadUrl = Settings.Default.ExtraBooksPath
-            };            
+            };
         }
 
 

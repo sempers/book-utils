@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.IO;
 using AllITEbooksLib.Properties;
 using System.Text.RegularExpressions;
+using System.Net;
+using System.Drawing;
 
 namespace BookUtils
 {
@@ -157,17 +159,22 @@ namespace BookUtils
         {
             Dictionary<string, string> corrections = BookCommonData.Corrections;
             book.Source = "ORG";
-            OnNotify($"Updating book {book.ClearTitle} from web...");
+            OnNotify($"Updating book {book.ClearTitle} from web (ORG) ...");
             var web = new HtmlWeb();
             var detailPage = await web.LoadFromWebAsync(book.Url);
             var detail = detailPage.DocumentNode.SelectSingleNode("//div[@class='book-detail']/dl");
+            if (detail == null)
+            {
+                OnNotify($"Error updating: the book {book.Title} page does not exist.");
+                return book;
+            }
             var dtNodes = detail.SelectNodes("dt");
             var ddNodes = detail.SelectNodes("dd");
             for (var i = 0; i < dtNodes.Count; i++)
             {
                 if (dtNodes[i].InnerText == "Year:")
                     book.Year = int.Parse(ddNodes[i].InnerText);
-                if (dtNodes[i].InnerText == "Category:")
+                if (string.IsNullOrEmpty(book.Category) && dtNodes[i].InnerText == "Category:")
                 {
                     var _category = "";
                     foreach (var anode in ddNodes[i].SelectNodes("a"))
@@ -186,7 +193,7 @@ namespace BookUtils
                 }
 
                 if (dtNodes[i].InnerText == "ISBN-10:")
-                    book.ISBN = ddNodes[i].InnerText;
+                    book.ISBN = ddNodes[i].InnerText.Trim();
 
                 if (dtNodes[i].InnerText == "Pages:")
                     book.Pages = int.Parse(ddNodes[i].InnerText);
@@ -194,6 +201,19 @@ namespace BookUtils
                 if (dtNodes[i].InnerText.Contains("Author"))
                     book.Authors = ddNodes[i].InnerText?.Trim();
             }
+            var img = detailPage.DocumentNode.SelectSingleNode("//div[@class='entry-body-thumbnail hover-thumb']/a/img").Attributes["src"].Value;
+            try
+            {
+                using (var wc = new WebClient())
+                {
+                    byte[] data = wc.DownloadData(img);
+                    var bitmap = (Bitmap)((new ImageConverter()).ConvertFrom(data));
+                    ImageConverter converter = new ImageConverter();
+                    book.Cover = (byte[])converter.ConvertTo(bitmap, typeof(byte[]));
+                }
+            }
+            catch { } 
+
             var downloadLinks = detailPage.DocumentNode.SelectNodes("//span[@class='download-links']/a");
             foreach (var node in downloadLinks)
             {
@@ -219,10 +239,10 @@ namespace BookUtils
             var corrections = BookCommonData.Corrections;
             try
             {
-                OnNotify($"{addNotify + ": "}Updating book {book.ClearTitle} from web...");
+                OnNotify($"{addNotify + ": "}Updating book {book.ClearTitle} from web (IN)...");
                 book.Source = "IN";
                 var web = new HtmlWeb();
-                var page = await web.LoadFromWebAsync(book.Url.AdjustDomain());
+                var page = await web.LoadFromWebAsync(book.Url);
                 var article = page.DocumentNode.SelectSingleNode("//article");
                 if (article == null)
                 {
@@ -234,6 +254,17 @@ namespace BookUtils
                 var cat = CatchCategory(article.Attributes["class"]?.Value);
                 if (string.IsNullOrEmpty(book.Category) && !string.IsNullOrEmpty(cat))
                     book.Category = cat;
+                try
+                {
+                    var img = article.SelectSingleNode("div[@class='td-post-content']/p/img").Attributes["src"].Value;
+                    using (var wc = new WebClient())
+                    {
+                        byte[] data = wc.DownloadData(img);
+                        var bitmap = (Bitmap)((new ImageConverter()).ConvertFrom(data));
+                        book.Cover = (byte[])(new ImageConverter()).ConvertTo(bitmap, typeof(byte[]));
+                    }
+                }
+                catch { }
                 var detailText = article.SelectSingleNode("div[@class='td-post-content']").InnerText;
                 var lines = detailText.Split("\n\r".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 foreach (var line in lines)
@@ -242,13 +273,13 @@ namespace BookUtils
                     {
                         book.Year = int.Parse(line.Substring(5).Trim());
                     }
-                    if (line.StartsWith("Author: "))
+                    if (line.StartsWith("Author: ") || line.StartsWith("Authors: "))
                     {
                         book.Authors = line.Substring(8);
                     }
                     if (line.StartsWith("ISBN-10:"))
                     {
-                        book.ISBN = line.Substring(9);
+                        book.ISBN = line.Substring(9).Trim();
                     }
                     if (line.StartsWith("Pages:"))
                     {
@@ -292,7 +323,7 @@ namespace BookUtils
             var corrections = BookCommonData.Corrections;
             try
             {
-                OnNotify("Updating all from web...");
+                OnNotify("Updating all from web (ORG) ...");
                 HtmlDocument pageHtml = null;
                 var web = new HtmlWeb();
                 var postIDs = db.Books.Select(b => b.PostId).Distinct();

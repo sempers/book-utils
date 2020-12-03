@@ -59,5 +59,14 @@ namespace BookUtils
             }
             return result;
         }
+
+        public static string ReplaceAny(this string s, string[] array, string replacement)
+        {
+            foreach (var str in array)
+            {
+                s = s.Replace(str, replacement);
+            }
+            return s;
+        }
     }
 }

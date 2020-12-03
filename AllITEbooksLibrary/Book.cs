@@ -26,11 +26,18 @@ namespace BookUtils
         public int Id { get; set; }
         public int PostId { get; set; }
 
-        private int? _newEditionPostId;
-        public int? NewEditionPostId { get => _newEditionPostId; set { _newEditionPostId = value; OnPropertyChanged("NewEditionPostId"); } }
+        private int? _obsolete;
+        [Column("NewEditionPostId")]
+        public int? Obsolete { get => _obsolete; set { _obsolete = value; OnPropertyChanged("Obsolete"); } }
+
+        private int _edition;
+        public int Edition { get => _edition; set { _edition = value; OnPropertyChanged("Edition"); } }
 
         private string _title;
         public string Title { get => _title; set { _title = value; OnPropertyChanged("Title"); } }
+
+        [NotMapped]
+        public string TitleWOEdition { get; set; }
 
         private int _year;
         public int Year { get => _year; set { _year = value; OnPropertyChanged("Year"); } }
@@ -124,6 +131,13 @@ namespace BookUtils
             set { _source = value; OnPropertyChanged("Source"); }
         }
 
+        private byte[] _cover;
+        public byte[] Cover
+        {
+            get => _cover;
+            set { _cover = value; OnPropertyChanged("Cover"); }
+        }
+
         private string FromISBN()
         {
             var isbn = ISBN;
@@ -165,6 +179,8 @@ namespace BookUtils
 
         private static string ClearString(string s)
         {
+            if (s == null)
+                return "";
             return s.Trim().Replace(":", "-").Replace("\"", "'").Replace("|", " ").Replace("?", "").Replace("/", "-");
         }
 

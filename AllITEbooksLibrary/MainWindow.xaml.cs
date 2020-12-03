@@ -163,7 +163,6 @@ namespace BookUtils
                 }
             }
         }
-
         private async void _Window_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Space && e.Key != Key.Return && e.Key != Key.Back && e.Key != Key.F1 && e.Key != Key.F2 && e.Key != Key.Delete)
@@ -171,12 +170,14 @@ namespace BookUtils
 
             if (e.Key == Key.Delete)
             {
-                foreach (Book book in listView.SelectedItems)
+                var book = listView.SelectedItem as Book;
+
+                if (book != null && MessageBox.Show($"Do you really want to delete the book `{book.Title}`?", "Delete book", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    //listView.Items.Remove(book);
                     model.Db.RemoveBook(book);
-                    model.Save();
+                    model.LoadBooksFromDb();                       
                 }
+                
             }
 
             if (e.Key == Key.Space)                     //Make Checked and Synchronized
@@ -269,7 +270,6 @@ namespace BookUtils
             model.FilterMode = true;
         }
 
-
         private void _checkBox_Click(object sender, RoutedEventArgs e)
         {
             var book = (e.OriginalSource as CheckBox).DataContext as Book;
@@ -314,8 +314,7 @@ namespace BookUtils
         private void _btnBackup_Click(object sender, RoutedEventArgs e)
         {
             BackupDb();
-        }
-               
+        }               
         
         private void _btnRestore_Click(object sender, RoutedEventArgs e)
         {
@@ -435,6 +434,14 @@ namespace BookUtils
                         await model.UpdateYear(); break;
                     case "modify_in":
                         await model.Modify_IN_ID(); break;
+                    case "reset_edition":
+                        model.ResetEdition(); break;
+                    case "2edition":
+                        await model.CheckEdition(2); break;
+                    case "3edition":
+                        await model.CheckEdition(3); break;
+                    case "obsolete":
+                        model.MakeObsolete(); break;
                 }
             }
         }

@@ -21,6 +21,21 @@ namespace BookUtils
         public static string SOURCE = "ORG"; //"IN"
 
 
+        public static string[,] EDITION_TEXTS = new string [,]{
+                { ", 2nd Edition", ", Second Edition" },
+                { ", 3rd Edition", ", Third Edition" },
+                { ", 4th Edition", ", Fourth Edition" },
+                { ", 5th Edition", ", Fifth Edition" },
+                { ", 6th Edition", ", Sixth Edition" },
+                { ", 7th Edition", ", Seventh Edition" },
+                { ", 8th Edition", ", Eighth Edition" },
+                { ", 9th Edition", ", Ninth Edition" },
+                { ", 10th Edition", ", Tenth Edition" },
+                { ", 11th Edition", ", Eleventh Edition" },
+                { ", 12th Edition", ", Twelfth Edition" },
+                { ", 13th Edition", ", Thirteenth Edition"}
+         };
+
         public static ObservableRangeCollection<string> Categories { get; set; } = new ObservableRangeCollection<string>();
 
         public static void AddCategory(string category)
