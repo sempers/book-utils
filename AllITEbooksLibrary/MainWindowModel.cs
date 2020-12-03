@@ -677,7 +677,7 @@ namespace BookUtils
                     OnNotify($"Downloading book {count}/{total}: {book.Title}");
                     if (book.DownloadUrl.StartsWith("http"))
                     {
-                        CommonUtils.Utils.CreateDirectory(Path.GetDirectoryName(book.LocalPath));
+                        Utils.CreateDirectory(Path.GetDirectoryName(book.LocalPath));
                         book.DownloadUrl = book.DownloadUrl.Trim();
                         //Вот тут новая заморочь
                         if (book.DownloadUrl.EndsWith("file.html") && !book.IsDownloaded && paramBook != null)
@@ -685,9 +685,11 @@ namespace BookUtils
                             OnNotify($"Downloading book {count}/{total}: {book.Title}, starting Chrome Driver...");
                             if (driver == null)
                                 driver = new ChromeDriver();
+
                             driver.Navigate().GoToUrl(book.DownloadUrl);
                             IWait<IWebDriver> wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2.00));
                             wait.Until(driver1 => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+
                             HtmlDocument page = new HtmlDocument();
                             page.LoadHtml(driver.PageSource);
                             var dlButton = page.DocumentNode.SelectSingleNode("//a[@id='dlbutton']");
@@ -705,7 +707,7 @@ namespace BookUtils
                             File.Move(finalPath, book.LocalPath);
                             try
                             {
-                                CommonUtils.Utils.CleanFolder(Settings.Default.BooksRoot + "\\[rar]");
+                                Utils.CleanFolder(Settings.Default.BooksRoot + "\\[rar]");
                             }
                             catch { }
 
@@ -725,7 +727,7 @@ namespace BookUtils
                         {
                             if (!book.IsDownloaded)
                             {
-                                CommonUtils.Utils.FileCopy(book.DownloadUrl, book.LocalPath);
+                                Utils.FileCopy(book.DownloadUrl, book.LocalPath);
                                 book.DownloadedGUI = true;
                             }
                         }
