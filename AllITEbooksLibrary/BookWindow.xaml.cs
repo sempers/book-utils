@@ -40,7 +40,6 @@ namespace BookUtils
             }
         }
 
-
         private void _btnOK_Click(object sender, RoutedEventArgs e)
         {
             switch (action)
@@ -96,7 +95,6 @@ namespace BookUtils
             if (model.Url.StartsWith("http"))
                 Process.Start(model.Url);
         }
-
 
         private void btnRead_Click(object sender, RoutedEventArgs e)
         {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BookUtils"
         mc:Ignorable="d"
-        Title="IT Books Library" Height="788" Width="1685" KeyUp="_Window_KeyUp" Closing="Window_Closing" Icon="img/Robinweatherall-Library-Books.ico">
+        Title="IT Books Library" Height="788" Width="1700" KeyUp="_Window_KeyUp" Closing="Window_Closing" Icon="img/Robinweatherall-Library-Books.ico">
     <Window.Resources>        
         <Style TargetType="ToolTip">
             <Style.Resources>
@@ -85,16 +85,11 @@
             </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="readTmpl" DataType="{x:Type local:Book}">
-            <TextBlock Text="{Binding Read}" MouseUp="TextBlock_MouseUp" Width="40"></TextBlock>
-                <DataTemplate.Triggers>
-                    <DataTrigger Binding="{Binding Read}" Value="1">
-                        <Setter Property="TextBlock.Background" Value="LightSeaGreen"/>
-                        <Setter Property="TextBlock.Text" Value="Yes"/>
-                </DataTrigger>
-                    <DataTrigger Binding="{Binding Read}" Value="0">
-                        <Setter Property="TextBlock.Background" Value="White"/>                            
-                    </DataTrigger>
-                </DataTemplate.Triggers>
+            <!--<TextBlock Text="{Binding Read}" MouseUp="TextBlock_MouseUp" Width="40"></TextBlock>-->
+            <CheckBox IsChecked="{Binding ReadGUI}" />
+        </DataTemplate>
+        <DataTemplate x:Key="formatTmpl" DataType="{x:Type local:Book}">
+            <TextBlock Text="{Binding Extension}"></TextBlock>
         </DataTemplate>
         <DataTemplate x:Key="pubTmpl" DataType="{x:Type local:Book}">
             <TextBlock Text="{Binding Publisher}" FontWeight="Bold"></TextBlock>
@@ -202,6 +197,7 @@
                     <GridViewColumn Header="Pages" Width="45" CellTemplate="{StaticResource pagesTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Pub" Width="35" CellTemplate="{StaticResource pubTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Read" Width="40" CellTemplate="{StaticResource readTmpl}"></GridViewColumn>
+                    <GridViewColumn Header="Ext" Width="40" CellTemplate="{StaticResource formatTmpl}"></GridViewColumn>
                     <GridViewColumn Header="Download Url" Width="415" CellTemplate="{StaticResource linkTmpl}"></GridViewColumn>
                 </GridView>
             </ListView.View>

@@ -176,8 +176,7 @@ namespace BookUtils
                 {
                     model.Db.RemoveBook(book);
                     model.LoadBooksFromDb();                       
-                }
-                
+                }               
             }
 
             if (e.Key == Key.Space)                     //Make Checked and Synchronized
@@ -231,7 +230,7 @@ namespace BookUtils
             if (e.Key == Key.F1)              //Old dblclick, now go to url
             {
                 var book = listView.SelectedItem as Book;
-                BookCommonData.OpenProcess(book?.Url.AdjustDomain().Replace("/the-", "/"));
+                BookCommonData.OpenProcess(book?.Url);
             }
             if (e.Key == Key.F2)            //Open the file
             {
@@ -289,6 +288,7 @@ namespace BookUtils
             {
                 Owner = this
             };
+
             var result = bookWindow.ShowDialog();
             if (result.Value == true)
             {
@@ -487,7 +487,5 @@ namespace BookUtils
                 Process.Start(Path.GetDirectoryName(((Book)listView.SelectedItem).LocalPath));
             }
         }
-
-
     }
 }

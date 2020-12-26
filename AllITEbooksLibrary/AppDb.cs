@@ -409,17 +409,17 @@ namespace BookUtils
             var corrections = BookCommonData.Corrections;
             try
             {
-                OnNotify("Updating all from web...");
+                OnNotify("Updating all from web (IN) ...");
                 HtmlDocument pageHtml = null;
                 var web = new HtmlWeb();
                 var maxPostID = db.Books.Select(b => b.PostId).Max();
-                var bookTitles = db.Books.Where(b => b.PostId > 33634).Select(b => b.Title);
+                var bookTitles = db.Books.Select(b => b.Title);
                 pageHtml = await web.LoadFromWebAsync(Settings.Default.WebUrl);
                 var pagination = pageHtml.DocumentNode.SelectNodes("//span[@class='pages']");
                 var pagText = pagination.First().InnerText;
                 var lastnum = pagText.Substring(pagText.LastIndexOf(' ') + 1);
                 PAGES_NUM = int.Parse(lastnum);
-                int MAX_THERE = 2;
+                int MAX_THERE = 10;
                 var alreadyThereCounter = 0;
                 int booksAdded = 0;
 
@@ -430,7 +430,6 @@ namespace BookUtils
                     pageHtml = await web.LoadFromWebAsync($"{Settings.Default.WebUrl}/page/{page}");
                     var pageBookNodes = pageHtml.DocumentNode.SelectNodes("//div[@class='meta-info-container']");  //h3[@class='entry-title td-module-title']/a");
                                                                                                                    //цикл по нодам страницы
-
                     foreach (var bookNode in pageBookNodes)
                     {
                         var book = new Book();
@@ -456,7 +455,6 @@ namespace BookUtils
                             book.Title = title;
                             book.Url = bookNode.SelectSingleNode("div/div[@class='td-read-more']/a").Attributes["href"].Value;
                             //Secondary properties
-
                             book = await UpdateBookFromWeb_IN(book);
                             OnNotify($"Loading page {page}...");
                             newBooks.Add(book);

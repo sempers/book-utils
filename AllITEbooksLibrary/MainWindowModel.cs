@@ -19,6 +19,7 @@ using HtmlAgilityPack;
 using System.Net;
 using System.Windows;
 using CommonUtils;
+using System.Windows.Controls;
 
 namespace BookUtils
 {
@@ -122,7 +123,7 @@ namespace BookUtils
             if (!noSavingBack)
                 SaveBackList();
             ShownBooks.Clear();
-            list.ForEach(book => { book.DownloadedGUI = book.IsDownloaded; });
+            list.ForEach(book => { book.DownloadedGUI = book.IsDownloaded; book.ReadGUI = book.Read == 1; });
             ShownBooks.AddRange(list);
             BookCount = $"Shown: {ShownBooks.Count}";
         }
@@ -676,6 +677,7 @@ namespace BookUtils
                         //Вот тут новая заморочь
                         if (book.DownloadUrl.EndsWith("file.html") && !book.IsDownloaded && paramBook != null)
                         {
+                            //OnNotify($"Downloading book {count}/{total}: {book.Title}, starting Web Browser...");
                             OnNotify($"Downloading book {count}/{total}: {book.Title}, starting Chrome Driver...");
                             if (driver == null)
                                 driver = new ChromeDriver();
@@ -685,13 +687,20 @@ namespace BookUtils
                             wait.Until(driver1 => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
 
                             HtmlDocument page = new HtmlDocument();
+                            // page.LoadHtml(wb.Document.ToString());
                             page.LoadHtml(driver.PageSource);
                             var dlButton = page.DocumentNode.SelectSingleNode("//a[@id='dlbutton']");
                             var endHref = dlButton.Attributes["href"].Value;
                             var href = "https://" + new Uri(book.DownloadUrl).Host + endHref;
+                            Utils.CreateDirectory(Settings.Default.BooksRoot + "\\[rar]\\");
                             var rarFileName = Settings.Default.BooksRoot + "\\[rar]\\" + href.Substring(href.LastIndexOf("/") + 1);
                             using (var wc = new WebClient())
                             {
+                                wc.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
+                                {
+                                    OnNotify($"Downloading book {count}/{total}: {book.Title}, downloaded {e.BytesReceived/1000} of {e.TotalBytesToReceive/1000} KB. {e.ProgressPercentage} % complete...");
+                                };
+
                                 OnNotify($"Downloading book {count}/{total}: {book.Title}, downloading the link...");
                                 await wc.DownloadFileTaskAsync(new Uri(href), rarFileName);
                             }
@@ -701,10 +710,9 @@ namespace BookUtils
                             Utils.FileMove(finalPath, book.LocalPath);
                             try
                             {
-                                Utils.CleanFolder(Settings.Default.BooksRoot + "\\[rar]");
+                                Utils.CleanFolder(Settings.Default.BooksRoot + "\\[rar]", removeSelf: false);
                             }
                             catch { }
-
                         }
                         else if (!book.IsDownloaded)
                         {
@@ -741,5 +749,6 @@ namespace BookUtils
             }
             OnNotify($"Downloads finished. Total {Books.Count(book => book.IsDownloaded)} books downloaded.");
         }
+
     }
 }

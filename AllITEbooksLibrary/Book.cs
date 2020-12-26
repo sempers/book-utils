@@ -41,7 +41,7 @@ namespace BookUtils
 
         private int _year;
         public int Year { get => _year; set { _year = value; OnPropertyChanged("Year"); } }
-        
+
 
         private string _url;
         public string Url { get => _url; set { _url = value; OnPropertyChanged("Url"); } }
@@ -116,6 +116,17 @@ namespace BookUtils
             }
         }
 
+        private bool _readGUI;
+        [NotMapped]
+        public bool ReadGUI
+        {
+            get => _readGUI;
+            set
+            {
+                _readGUI = value; Read = _readGUI ? 1 : 0; OnPropertyChanged("ReadGUI");
+            }
+        }
+
         private string _pub;
         [Column("Pub")]
         public string Publisher
@@ -142,7 +153,7 @@ namespace BookUtils
         {
             var isbn = ISBN;
             if (isbn == null) return "";
-            isbn = isbn.Trim().Replace("978-","");
+            isbn = isbn.Trim().Replace("978-", "");
             if (isbn.StartsWith("978"))
                 isbn = isbn.Replace("978", "");
             if (isbn.StartsWith("149") || isbn.StartsWith("1449")) return "OR";
@@ -161,7 +172,7 @@ namespace BookUtils
             if (string.IsNullOrEmpty(Publisher))
                 Publisher = FromISBN();
         }
-            
+
         public int Sync { get; set; }
 
         private bool _isChecked;
@@ -200,7 +211,18 @@ namespace BookUtils
         public string ClearTitle => ClearString(Title);
         public string ClearFileName => $"[{Year}] {ClearTitle} - {ClearAuthors}.{Extension}";
         public string FirstCategory => Category == null ? "" : Category.Contains(";") ? Category.Split(';')[0] : Category;
-        public string LocalPath => Path.Combine(BookCommonData.BOOKS_ROOT, FirstCategory.Replace("/", "\\"), ClearFileName);
+        public string LocalPath
+        {
+            get
+            {
+                if (DownloadUrl == null)
+                    return "";
+                if (DownloadUrl.StartsWith("http"))
+                    return Path.Combine(BookCommonData.BOOKS_ROOT, FirstCategory.Replace("/", "\\"), ClearFileName);
+                else
+                    return DownloadUrl;
+            }
+        }
         public bool IsDownloaded
         {
             get
